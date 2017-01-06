@@ -1,0 +1,109 @@
+---
+# Copyright 2017, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- include: octavia_install_apt.yml
+  static: no
+  when:
+    - ansible_pkg_mgr == 'apt'
+
+- include: octavia_install_yum.yml
+  static: no
+  when:
+    - ansible_pkg_mgr == 'yum'
+
+- name: Create developer mode constraint file
+  copy:
+    dest: "/opt/developer-pip-constraints.txt"
+    content: |
+      {% for item in octavia_developer_constraints %}
+      {{ item }}
+      {% endfor %}
+  when: octavia_developer_mode | bool
+
+- name: Install required pip packages
+  pip:
+    name: "{{ octavia_requires_pip_packages }}"
+    state: "{{ octavia_pip_package_state }}"
+    extra_args: >-
+      {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
+      {{ pip_install_options | default('') }}
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+
+- name: Attempt venv download
+  get_url:
+    url: "{{ octavia_venv_download_url }}"
+    dest: "/var/cache/{{ octavia_venv_download_url | basename }}"
+    checksum: "sha1:{{ lookup('url', octavia_venv_download_url | replace('tgz', 'checksum')) }}"
+  register: octavia_get_venv
+  when: not octavia_developer_mode | bool
+
+- name: Remove existing venv
+  file:
+    path: "{{ octavia_bin | dirname }}"
+    state: absent
+  when: octavia_get_venv | changed
+
+- name: Create octavia venv dir
+  file:
+    path: "{{ octavia_bin | dirname }}"
+    state: directory
+    mode: "0755"
+  register: octavia_venv_dir
+
+- name: Unarchive pre-built venv
+  unarchive:
+    src: "/var/cache/{{ octavia_venv_download_url | basename }}"
+    dest: "{{ octavia_bin | dirname }}"
+    copy: "no"
+  when:
+    - not octavia_developer_mode | bool
+    - octavia_get_venv | changed or octavia_venv_dir | changed
+  notify: Restart octavia services
+
+- name: Install pip packages
+  pip:
+    name: "{{ octavia_pip_packages }}"
+    state: "{{ octavia_pip_package_state }}"
+    virtualenv: "{{ octavia_bin | dirname }}"
+    virtualenv_site_packages: "no"
+    extra_args: >-
+      {{ octavia_developer_mode | ternary('--constraint /opt/developer-pip-constraints.txt', '') }}
+      {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
+      {{ pip_install_options | default('') }}
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  when: octavia_developer_mode | bool
+  notify: Restart octavia services
+
+- name: CentOS remove python from path first
+  file:
+    path:  "{{ octavia_bin | dirname }}/bin/python2.7"
+    state: "absent"
+  when:
+    - ansible_pkg_mgr == 'yum'
+    - not octavia_developer_mode | bool
+    - octavia_get_venv | changed or octavia_venv_dir | changed
+
+- name: Update virtualenv path
+  command: >
+    virtualenv-tools --update-path=auto --reinitialize {{ octavia_bin | dirname }}
+  when:
+    - not octavia_developer_mode | bool
+    - octavia_get_venv | changed or octavia_venv_dir | changed

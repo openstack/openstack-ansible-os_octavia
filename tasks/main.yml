@@ -1,0 +1,81 @@
+---
+# Copyright 2017, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Gather variables for each operating system
+  include_vars: "{{ item }}"
+  with_first_found:
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_os_family | lower }}-{{ ansible_distribution_major_version | lower }}.yml"
+    - "{{ ansible_distribution | lower }}.yml"
+    - "{{ ansible_os_family | lower }}.yml"
+  tags:
+    - always
+
+- name: Fail if our required secrets are not present
+  fail:
+    msg: "Please set the {{ item }} variable prior to applying this role."
+  when: (item is undefined) or (item is none)
+  with_items: "{{ octavia_required_secrets }}"
+  tags:
+    - always
+
+- include: octavia_pre_install.yml
+  tags:
+    - octavia-install
+
+- include: octavia_install.yml
+  tags:
+    - octavia-install
+
+- include: octavia_init_common.yml
+  tags:
+    - octavia-install
+
+- include: octavia_service_add.yml
+  when: inventory_hostname == groups['octavia_all'][0]
+  tags:
+    - octavia-install
+
+- include: octavia_mgmt_network.yml
+  when:
+    - octavia_neutron_management_network_uuid is not defined
+    - octavia_neutron_management_network_name is defined
+  tags:
+    - octavia-install
+
+- include: octavia_security_group.yml
+  tags:
+    - octavia-install
+
+- include: octavia_flavor_create.yml
+  when:
+    - octavia_nova_flavor_uuid is not defined
+  tags:
+    - octavia-install
+
+- include: octavia_post_install.yml
+  tags:
+    - octavia-install
+    - octavia-config
+
+- include: octavia_db_setup.yml
+  when: inventory_hostname == groups['octavia_all'][0]
+  tags:
+    - octavia-install
+
+
+- name: Flush handlers
+  meta: flush_handlers

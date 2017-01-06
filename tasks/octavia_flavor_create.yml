@@ -1,0 +1,66 @@
+---
+# Copyright 2016, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Install shade
+  pip:
+    name: shade
+    state: "{{ octavia_pip_package_state }}"
+    extra_args: "{{ pip_install_options | default('') }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+
+- name: Create Octavia Flavor
+  os_nova_flavor:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    state: present
+    name: "{{ octavia_amp_flavor_name}}"
+    ram: "{{ octavia_amp_ram }}"
+    vcpus: "{{ octavia_amp_vcpu }}"
+    disk: "{{ octavia_amp_disk }}"
+    is_public: False
+  ignore_errors: yes # that module is buggy?
+  when:
+    - octavia_nova_flavor_uuid is not defined
+
+
+- name: Gather Octavia Flavor Id
+  os_flavor_facts:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    name: "{{ octavia_amp_flavor_name}}"
+  ignore_errors: yes
+  when:
+    - octavia_nova_flavor_uuid is not defined
+
+- name: Set Octavia Flavor UUID fact 1
+  set_fact:
+     octavia_nova_flavor_uuid: "{{ openstack_flavors[0].id }}"
+  when:
+    - openstack_flavors | length > 0

@@ -1,0 +1,92 @@
+---
+# Copyright 2016, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Install shade
+  pip:
+    name: shade
+    state: "{{ octavia_pip_package_state }}"
+    extra_args: "{{ pip_install_options | default('') }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+
+- name: Create Octavia security group
+  os_security_group:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    state: present
+    name: "{{ octavia_security_group_name }}"
+    description: "security group for octavia amphora"
+  run_once: true
+
+- name: Create security group rule for agent
+  os_security_group_rule:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    protocol: "tcp"
+    port_range_min: "{{ octavia_agent_port }}"
+    port_range_max: "{{ octavia_agent_port }}"
+    remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+    security_group: "{{ octavia_security_group_name }}"
+  run_once: true
+
+- name: Create security group rule for ssh
+  os_security_group_rule:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    security_group: "{{ octavia_security_group_name }}"
+    protocol: tcp
+    port_range_min: 22
+    port_range_max: 22
+    remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+  run_once: true
+  when:
+    - octavia_ssh_enabled|bool == true
+- name: Create security group rule for icmp
+  os_security_group_rule:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    security_group: "{{ octavia_security_group_name }}"
+    protocol: icmp
+    remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+  run_once: true
+  when:
+    - debug|bool == true
+

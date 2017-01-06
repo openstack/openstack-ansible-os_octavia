@@ -1,0 +1,4 @@
+# {{ ansible_managed }}
+
+D /var/lock/{{ item.value.service_name }} 2755 {{ octavia_system_user_name }} {{ octavia_system_group_name }}
+D /var/run/{{ item.value.service_name }} 2755 {{ octavia_system_user_name }} {{ octavia_system_group_name }}

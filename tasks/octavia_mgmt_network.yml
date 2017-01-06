@@ -1,0 +1,46 @@
+---
+# Copyright 2016, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Install shade
+  pip:
+    name: shade
+    state: "{{ octavia_pip_package_state }}"
+    extra_args: "{{ pip_install_options | default('') }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+
+- name: Get neutron network
+  os_networks_facts:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    region_name: "{{ octavia_service_region }}"
+    validate_certs: "{{ keystone_service_adminuri_insecure }}"
+    auth_type: "{{ octavia_keystone_auth_plugin }}"
+    name: "{{ octavia_neutron_management_network_name }}"
+
+- name: Set provisioning UUID fact
+  set_fact:
+     octavia_neutron_management_network_uuid: "{{ openstack_networks[0].id }}"
+  when:
+    - octavia_neutron_management_network_uuid is not defined
+    - octavia_neutron_management_network_name is defined

@@ -1,0 +1,64 @@
+---
+# Copyright 2017, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Create certs directory
+  file: path=/etc/octavia/certs/ state=directory
+
+- name: Copy certificates
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+  with_items:
+    - src: "{{ octavia_client_ca }}"
+      dest: "/etc/octavia/certs/client_ca.pem"
+    - src: "{{ octavia_client_cert }}"
+      dest: "/etc/octavia/certs/client.pem"
+    - src: "{{ octavia_server_ca }}"
+      dest: "/etc/octavia/certs/server_ca.pem"
+    - src: "{{ octavia_ca_certificate }}"
+      dest: "/etc/octavia/certs/ca.pem"
+    - src: "{{ octavia_ca_private_key }}"
+      dest: "/etc/octavia/certs/ca_key.pem"
+
+- name: Drop octavia Config(s)
+  config_template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+    config_overrides: "{{ item.config_overrides }}"
+    config_type: "{{ item.config_type }}"
+  with_items:
+    - src: "octavia.conf.j2"
+      dest: "/etc/octavia/octavia.conf"
+      config_overrides: "{{ octavia_octavia_conf_overrides }}"
+      config_type: "ini"
+#    - src: "api-paste.ini.j2"
+#      dest: "/etc/octavia/api-paste.ini"
+#      config_overrides: "{{ octavia_api_paste_ini_overrides }}"
+#      config_type: "ini"
+#    - src: "policy.json.j2"
+#      dest: "/etc/octavia/policy.json"
+#      config_overrides: "{{ octavia_policy_overrides }}"
+#      config_type: "json"
+  notify:
+    - Restart octavia services
+
+
+

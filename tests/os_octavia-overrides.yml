@@ -1,0 +1,129 @@
+---
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+## Octavia rewuires currently nested virtualization (VT-X) which only one jenkins
+## gate cloud provides reliabley. To cut down on gate errors this will
+## disbale the tests which spin up an amphora
+test_octavia_amphora: False
+
+test_octavia_api_group: "{{ ((groups['octavia_api'] is defined) and (groups['octavia_api'] | length > 0)) | ternary('octavia_api', 'all_containers') }}"
+test_octavia_api_host: "{{ hostvars[groups[test_octavia_api_group][0]]['ansible_host'] }}"
+
+## octavia User / Group
+octavia_system_user_name: octavia
+octavia_system_group_name: octavia
+octavia_system_shell: /bin/false
+octavia_system_comment: octavia system user
+octavia_system_home_folder: "/var/lib/{{ octavia_system_user_name }}"
+
+# Octavia specific settings
+octavia_venv_tag: "testing"
+octavia_developer_mode: True
+octavia_git_install_branch: master
+octavia_service_internaluri: "http://{{ test_octavia_api_host }}:9876"
+octavia_service_internalurl: "{{ octavia_service_internaluri }}"
+octavia_service_password: "secrete"
+octavia_service_name: octavia
+octavia_service_project_name: "service"
+octavia_galera_address: "{{ test_galera_host }}"
+octavia_galera_database: octavia
+octavia_galera_user: octavia
+octavia_container_mysql_password: "secrete"
+octavia_rabbitmq_password: "{{ rabbitmq_password }}"
+octavia_rabbitmq_userid: octavia
+octavia_rabbitmq_vhost: /octavia
+octavia_rabbitmq_servers: "{{ rabbitmq_servers }}"
+octavia_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
+octavia_rabbitmq_port: "{{ rabbitmq_port }}"
+octavia_standalone: False
+octavia_swift_temp_url_secret_key: secrete
+octavia_keystone_auth_plugin: password
+octavia_service_project_domain_id: default
+octavia_service_user_domain_id: default
+octavia_service_user_name: "octavia"
+octavia_ansible_endpoint_type: "internal"
+
+
+octavia_health_hmac_key: secrete
+
+test_swift_storage_network: "eth3"
+test_swift_repl_network: "eth3"
+glance_file_store: swift
+test_swift_repl_number: 2
+nova_console_type: novnc
+
+neutron_provider_networks:
+  network_types: "vxlan,flat"
+  network_vxlan_ranges: "1:1000"
+  network_flat_networks: "flat,mgmt"
+  network_mappings: "flat:eth12,mgmt:eth14"
+
+# Must be set to a normal MTU
+neutron_network_device_mtu: 1500
+neutron_l2_population: True
+neutron_dhcp_config:
+  dhcp-option-force: "26,1500"
+  log-facility: "/var/log/neutron/neutron-dnsmasq.log"
+neutron_l3: True
+neutron_metadata: True
+
+octavia_pip_package_state: latest
+octavia_package_state: latest
+octavia_neutron_management_network_name: mgmt
+
+octavia_git_install_branch: stable/ocata
+
+octavia_ssh_enabled: True
+
+octavia_amphora_driver: "{% if test_octavia_amphora | bool %}amphora_haproxy_rest_driver{% else %}amphora_noop_driver{% endif %}"
+octavia_compute_driver: "{% if test_octavia_amphora | bool %}compute_nova_driver{% else %}compute_noop_driver{% endif %}"
+octavia_network_driver: "{% if test_octavia_amphora | bool %}allowed_address_pairs_driver{% else %}network_noop_driver{% endif %}"
+
+#Neutron mappings
+neutron_plugin_base:
+  - router
+  - metering
+  - neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
+
+neutron_lbaasv2_service_provider: LOADBALANCERV2:Octavia:neutron_lbaas.drivers.octavia.driver.OctaviaDriver:default
+
+neutron_rpc_conn_pool_size: |
+  30
+  [octavia]
+  base_url= http://{{ hostvars['octavia1']['ansible_host'] }}:9876
+  request_poll_timeout = 500
+
+  # if we have Barbican
+  [certificates]
+
+  # Certificate Manager plugin. Defaults to barbican. (string value)
+  cert_manager_type = barbican
+
+  # Name of the Barbican authentication method to use (string value)
+  #barbican_auth = barbican_acl_auth
+
+  [service_auth]
+  insecure = {{ keystone_service_internaluri_insecure | bool }}
+  auth_plugin = password
+  # this needs to have a v3 added manually :-(
+  auth_url = "http://{{ test_keystone_host }}:5000/v3"
+  admin_project_domain = default
+  admin_user_domain = default
+  admin_tenant_name = service
+  admin_user = neutron
+  admin_password = secrete
+  region = RegionOne
+  endpoint_type = internalURL
+  service_name = neutron
+  auth_version = 3

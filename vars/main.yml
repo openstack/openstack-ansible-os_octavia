@@ -1,0 +1,12 @@
+---
+# vars file for openstack-ansible-os_octavia
+
+octavia_services:
+  octavia_api:
+    service_name: octavia-api
+  octavia_worker:
+    service_name: octavia-worker
+  octavia_health_manager:
+    service_name: octavia-health-manager
+  octavia_housekeeping:
+    service_name: octavia-housekeeping
