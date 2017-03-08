@@ -17,26 +17,29 @@ set -xeuo pipefail
 
 FUNCTIONAL_TEST=${FUNCTIONAL_TEST:-true}
 
-if which sudo; then
-   sudo = "sudo"
-else
-   sudo=""
+# Install python2 for Ubuntu 16.04 and CentOS 7
+if which apt-get; then
+    sudo apt-get update && sudo apt-get install -y python
+fi
+
+if which yum; then
+    sudo yum install -y python
 fi
 
 # Install pip.
-if which pip; then
+if ! which pip; then
   curl --silent --show-error --retry 5 \
-    https://bootstrap.pypa.io/get-pip.py | $sudo python2.7
+    https://bootstrap.pypa.io/get-pip.py | sudo python2.7
 fi
 
 # Install bindep and tox with pip.
-$sudo pip install bindep tox
+sudo pip install bindep tox
 
 # CentOS 7 requires two additional packages:
 #   redhat-lsb-core - for bindep profile support
 #   epel-release    - required to install python-ndg_httpsclient/python2-pyasn1
 if which yum; then
-    $sudo yum -y install redhat-lsb-core epel-release
+    sudo yum -y install redhat-lsb-core epel-release
 fi
 
 # Get a list of packages to install with bindep. If packages need to be
@@ -46,15 +49,15 @@ echo "Packages to install: ${BINDEP_PKGS}"
 
 # Install a list of OS packages provided by bindep.
 if which apt-get; then
-    $sudo apt-get update
+    sudo apt-get update
     DEBIAN_FRONTEND=noninteractive \
-      $sudo apt-get -q --option "Dpkg::Options::=--force-confold" \
+      sudo apt-get -q --option "Dpkg::Options::=--force-confold" \
       --assume-yes install $BINDEP_PKGS
 elif which yum; then
     # Don't run yum with an empty list of packages.
     # It will fail and cause the script to exit with an error.
     if [[ ${#BINDEP_PKGS} > 0 ]]; then
-      $sudo yum install -y $BINDEP_PKGS
+      sudo yum install -y $BINDEP_PKGS
     fi
 fi
 
