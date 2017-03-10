@@ -24,22 +24,28 @@ OpenStack-Ansible deployment
 Setup a neutron network for use by octavia
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In a general case, neutron networking can be a simple flat network. However,
-in a complex case, this can be whatever you need and want. Ensure
-you adjust the deployment accordingly. The following is an example:
+Octavia needs connectivity between the control plane and the
+load balancing VMs. For this purpose a provide rnetwork should be
+created which bridges containers (if the control plane is installed
+in a container) or hosts with vms. Refer to the appropriate documentation
+and consult the tests in this project. In a general case, neutron networking
+can be a simple flat network. However in a complex case, this can be whatever
+you need and want. Ensure you adjust the deployment accordingly. The following
+is an example how to set it up in neutron:
 
 
 .. code-block:: bash
 
-    neutron net-create cleaning-net --shared \
+    neutron net-create mgmt-net --shared \
                                     --provider:network_type flat \
                                     --provider:physical_network mgmt
 
-    neutron subnet-create ironic-net 172.19.0.0/22 --name mgmt-subnet
+    neutron subnet-create mgmt-net 172.19.0.0/22 --name mgmt-subnet
                           --ip-version=4 \
                           --allocation-pool start=172.19.1.100,end=172.19.1.200 \
                           --enable-dhcp \
                           --dns-nameservers list=true 8.8.4.4 8.8.8.8
+
 
 Building Octavia images
 ~~~~~~~~~~~~~~~~~~~~~~~
