@@ -13,16 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Install shade
-  pip:
-    name: shade
-    state: "{{ octavia_pip_package_state }}"
-    extra_args: "{{ pip_install_options | default('') }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-
 - name: Create Octavia Flavor
   os_nova_flavor:
     auth:
