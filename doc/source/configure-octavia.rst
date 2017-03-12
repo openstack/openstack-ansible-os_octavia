@@ -76,6 +76,7 @@ For this process, use one of the physical hosts within the environment.
 #. Run Octavia's diskimage script
 
    In the ``octavia/diskimage-create`` directory run:
+
    .. code-block:: bash
 
      ./diskimage-create.sh
@@ -92,6 +93,7 @@ You can find more information abpout the diskimage script and the process at
 https://github.com/openstack/octavia/tree/master/diskimage-create
 
 Here is a script to perform all those tasks at once:
+
    .. code-block:: bash
 
           #/bin/sh
@@ -124,6 +126,7 @@ Creating the cryptographic certificates
 #. Run the certificate script.
 
    In the bin directory of the Octavia project you cloned above run:
+
    .. code-block:: bash
 
       mkdir /var/lib/octavia/certs
