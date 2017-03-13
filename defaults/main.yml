@@ -143,10 +143,11 @@ octavia_plugin_dirs:
 
 # octavia packages that must be installed before anything else
 octavia_requires_pip_packages:
+  - httplib2
+  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
+  - shade
   - virtualenv
   - virtualenv-tools
-  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
-  - httplib2
 
 # Common pip packages
 octavia_pip_packages:
