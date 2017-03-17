@@ -55,6 +55,7 @@
     - octavia_neutron_management_network_name is defined
   tags:
     - octavia-install
+    - octavia-config
 
 - include: octavia_security_group.yml
   tags:
@@ -65,6 +66,7 @@
     - octavia_nova_flavor_uuid is not defined
   tags:
     - octavia-install
+    - octavia-config
 
 - include: octavia_post_install.yml
   tags:

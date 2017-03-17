@@ -209,8 +209,6 @@ octavia_loadbalancer_topology: SINGLE
 octavia_glance_image_tag: octavia-amphora-image
 # add here the id of the image owner to avoid faked images being used
 octavia_amp_image_owner_id:
-# Name of the Octavia management network
-octavia_neutron_management_network_name: mgmt
 # Name of the Octavia security group
 octavia_security_group_name: octavia_sec_grp
 # Restrict access to only authorized hosts
@@ -262,8 +260,78 @@ octavia_enable_anti_affinity: False
 # for amphora creation
 #octavia_amp_availability_zone:
 
+# Name of the Octavia management network in Neutron
+octavia_neutron_management_network_name: lbaas-mgmt
+# Name of the provider net in the system
+octavia_provider_network_name: lbaas
+# This sets it to the container managment network based on how you setup
+# the provider net
+octavia_container_network_name: "{{ octavia_provider_network_name }}_address"
+octavia_provider_network: "{{ provider_networks|map(attribute='network')|selectattr('net_name','defined')|selectattr('net_name', 'equalto', octavia_provider_network_name)|list|first }}"
 octavia_hm_group: "octavia-health-manager"
-octavia_hm_hosts: "{% for host in groups[octavia_hm_group] %}{{ hostvars[host]['ansible_host'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+# Note: We use some heuritsics here but if you do anyhting special make sure to use the
+# ip addresses on the right network. This will use the container newtorking to figure out the ip
+octavia_hm_hosts: "{% for host in groups[octavia_hm_group] %}{{ hostvars[host]['container_networks'][octavia_container_network_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+# Set this to the right container port aka the eth you connect to the octavia
+# management network
+octavia_container_interface: "{{ octavia_provider_network.container_interface }}"
+# Set this to true to drop the iptables rules
+octavia_ip_tables_fw: True
+# The iptable rules
+octavia_iptables_rules:
+  - # Allow icmp
+    chain: INPUT
+    protocol: icmp
+    ctstate: NEW
+    icmp_type: 8
+    jump: ACCEPT
+  - # Allow existing connections:
+    chain: INPUT
+    in_interface: "{{ octavia_container_interface }}"
+    ctstate:  RELATED,ESTABLISHED
+    jump: ACCEPT
+  - # Allow heartbeat:
+    chain: INPUT
+    in_interface: "{{ octavia_container_interface }}"
+    protocol: udp
+    destination_port: "{{ octavia_health_manager_port }}"
+    jump: ACCEPT
+  - # Reject INPUT:
+    chain: INPUT
+    in_interface: "{{ octavia_container_interface }}"
+    reject_with: icmp-port-unreachable
+  - # Reject FORWARD:
+    chain: FORWARD
+    in_interface: "{{ octavia_container_interface }}"
+    reject_with: icmp-port-unreachable
+  - # Allow icmp6
+    chain: INPUT
+    protocol: icmpv6
+    jump: ACCEPT
+    ip_version: ipv6
+  - # Allow existing connections
+    chain: INPUT
+    in_interface: "{{ octavia_container_interface }}"
+    ctstate:  RELATED,ESTABLISHED
+    jump: ACCEPT
+    ip_version: ipv6
+  - # Allow heartbeat
+    chain: INPUT
+    in_interface: "{{ octavia_container_interface }}"
+    protocol: udp
+    destination_port: "{{ octavia_health_manager_port }}"
+    jump: ACCEPT
+    ip_version: ipv6
+  - # Reject INPUT
+    chain: INPUT
+    in_interface: "{{ octavia_container_interface }}"
+    reject_with: icmp6-port-unreachable
+    ip_version: ipv6
+  - # Reject FORWARD
+    chain: FORWARD
+    in_interface: "{{ octavia_container_interface }}"
+    reject_with: icmp6-port-unreachable
+    ip_version: ipv6
 
 # Set up the drivers
 octavia_amphora_driver: amphora_haproxy_rest_driver
@@ -274,8 +342,3 @@ octavia_network_driver: allowed_address_pairs_driver
 octavia_octavia_conf_overrides: {}
 octavia_api_paste_ini_overrides: {}
 octavia_policy_overrides: {}
-
-
-
-
-

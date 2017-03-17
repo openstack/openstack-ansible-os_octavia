@@ -13,6 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# iptables module doesn't see empty string as a null value so this is the only
+# way to get a configurable rule definition in right now
+- name: iptables rules
+  iptables: "{{ item }}"
+  with_items: "{{ octavia_iptables_rules }}"
+  when: octavia_ip_tables_fw|bool == true
+
+# This is totally odd: If you run the commands via run-parts (as the script
+# in the distro does) they return 1; but do their job. If you run them
+# directly they work. Ignoring errors for now --
+- name: save iptables rules (Ubuntu 16.04)
+  command: netfilter-persistent save
+  ignore_errors: yes
+  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '16.04'
+
+- name: save iptables rules (CentOS & RHEL)
+  command: service iptables save
+  args:
+    warn: False # since we use save service module doesn't apply
+  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
 - name: Create certs directory
   file: path=/etc/octavia/certs/ state=directory
 
@@ -59,6 +80,3 @@
 #      config_type: "json"
   notify:
     - Restart octavia services
-
-
-

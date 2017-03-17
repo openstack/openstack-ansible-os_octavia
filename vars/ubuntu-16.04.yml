@@ -17,4 +17,5 @@
 cache_timeout: 600
 
 octavia_distro_packages:
-  - haproxy
+  - iptables-persistent
+  - netfilter-persistent

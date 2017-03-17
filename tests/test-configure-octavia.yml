@@ -87,15 +87,15 @@
         openrc_path: /root/openrc
         net_name: "{{ octavia_neutron_management_network_name }}"
         provider_network_type: flat
-        provider_physical_network: mgmt
+        provider_physical_network: lbaas
         insecure: "{{ keystone_service_internaluri_insecure }}"
     - name: Ensure mgmt subnet exists
       neutron:
         command: create_subnet
         openrc_path: /root/openrc
         net_name: "{{ octavia_neutron_management_network_name }}"
-        subnet_name: "mgmt-subnet"
-        cidr: "10.1.1.0/24"
+        subnet_name: "lbaas-mgmt-subnet"
+        cidr: "10.1.7.0/24"
         insecure: "{{ keystone_service_internaluri_insecure }}"
 
   vars_files:
