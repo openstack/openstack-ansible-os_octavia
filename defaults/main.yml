@@ -99,7 +99,8 @@ octavia_service_user_name: "octavia"
 octavia_service_role_name: admin
 octavia_service_project_domain_id: default
 octavia_service_user_domain_id: default
-octavia_keystone_auth_plugin: password
+octavia_keystone_auth_plugin: "{{ octavia_keystone_auth_type }}"
+octavia_keystone_auth_type: password
 octavia_ansible_endpoint_type: "internal" # endpoint for ansible
 
 ## Trustee Auth

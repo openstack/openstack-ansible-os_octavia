@@ -58,7 +58,7 @@ event_streamer_driver = {% if octavia_event_streamer|bool %}queue_event_streamer
 
 [keystone_authtoken]
 insecure = {{ keystone_service_internaluri_insecure | bool }}
-auth_plugin = {{ octavia_keystone_auth_plugin }}
+auth_type = {{ octavia_keystone_auth_plugin }}
 auth_url = {{ keystone_service_internaluri }}/v3
 auth_uri = {{ keystone_service_internaluri }}/v3
 auth_version = 3
