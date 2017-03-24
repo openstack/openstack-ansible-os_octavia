@@ -119,7 +119,7 @@ octavia_service_proto: http
 octavia_service_publicuri_proto: "{{ openstack_service_publicuri_proto | default(octavia_service_proto) }}"
 octavia_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(octavia_service_proto) }}"
 octavia_service_internaluri_proto: "{{ openstack_service_internaluri_proto | default(octavia_service_proto) }}"
-octavia_service_type: load-balancing
+octavia_service_type: load-balancer
 octavia_service_publicuri: "{{ octavia_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ octavia_service_port }}"
 octavia_service_publicurl: "{{ octavia_service_publicuri }}/v1/%(tenant_id)s"
 octavia_service_adminuri: "{{ octavia_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ octavia_service_port }}"
