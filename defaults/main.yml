@@ -251,6 +251,17 @@ octavia_task_flow_max_workers: 5
 # your queue is crashing (Octavia will stream events to the neutron DB)
 octavia_event_streamer: True
 
+# this controls if Octavia should add an anti-affinity hint to make sure
+# two amphora are not placed pn the same host (the most common setup of
+# ant affinity features in Nova).
+# Since AIO only has one compute host this is set to false
+octavia_enable_anti_affinity: False
+
+# Some installations put hardware more suited for load balancing in special
+# availability zones. This allows to target a specific availability zone
+# for amphora creation
+#octavia_amp_availability_zone:
+
 octavia_hm_group: "octavia-health-manager"
 octavia_hm_hosts: "{% for host in groups[octavia_hm_group] %}{{ hostvars[host]['ansible_host'] }}{% if not loop.last %},{% endif %}{% endfor %}"
 

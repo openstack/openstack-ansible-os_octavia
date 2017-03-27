@@ -171,8 +171,10 @@ Optional: Tuning Octavia for production use
 
 Please have a close look at the ``main.yml`` for tunable parameters.
 The most important change is to set Octavia into ACTIVE_STANDBY mode
-by adding ``octavia_loadbalancer_topology: ACTIVE_STANDBY`` to the
-user file in /etc/openstack-deploy
+by adding ``octavia_loadbalancer_topology: ACTIVE_STANDBY`` and
+``octavia_enable_anti_affinity=True`` to ensure that the active and passive
+amphora are (depending on the anti-affinity filter deployed in nova)  on two
+different hosts to the user file in /etc/openstack-deploy
 
 To speed up the creation of load balancers or in a SINGLE topolgy
 to speed up the failover a spare pool can be used.

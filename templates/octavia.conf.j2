@@ -321,6 +321,10 @@ endpoint_type = {{ octavia_clients_endpoint }}
 # insecure = False
 # ca_certificates_file =
 
+enable_anti_affinity = {{ octavia_enable_anti_affinity }}
+
+{% if octavia_amp_availability_zone is defined %}availability_zone={{ octavia_amp_availability_zone }}{%endif%}
+
 [glance]
 # The name of the glance service in the keystone catalog
 # service_name =
