@@ -168,20 +168,29 @@ octavia_pip_packages:
   - python-troveclient
   - octavia
 
+octavia_api_init_overrides: {}
+octavia_worker_init_overrides: {}
+octavia_housekeeping_init_overrides: {}
+octavia_health_manager_init_overrides: {}
+
 ## Service Name-Group Mapping
 octavia_services:
   octavia-api:
     group: octavia_api
     service_name: octavia-api
+    init_config_overrides: "{{ octavia_api_init_overrides }}"
   octavia-worker:
     group: octavia_worker
     service_name: octavia-worker
+    init_config_overrides: "{{ octavia_worker_init_overrides }}"
   octavia-housekeeping:
     group: octavia_housekeeping
     service_name: octavia-housekeeping
+    init_config_overrides: "{{ octavia_housekeeping_init_overrides }}"
   octavia-health-manager:
     group: octavia_health_manager
     service_name: octavia-health-manager
+    init_config_overrides: "{{ octavia_health_manager_init_overrides }}"
 
 # Required secrets for the role
 octavia_required_secrets:
