@@ -66,8 +66,11 @@ nova_console_type: novnc
 neutron_provider_networks:
   network_types: "vxlan,flat"
   network_vxlan_ranges: "1:1000"
-  network_flat_networks: "flat,mgmt"
-  network_mappings: "flat:eth12,mgmt:eth14"
+  network_flat_networks: "flat,lbaas"
+  network_mappings: "flat:eth12,lbaas:eth14"
+
+#couldn't find provider_networks inventory var?
+octavia_container_interface: "eth14"
 
 # Must be set to a normal MTU
 neutron_network_device_mtu: 1500
@@ -80,7 +83,7 @@ neutron_metadata: True
 
 octavia_pip_package_state: latest
 octavia_package_state: latest
-octavia_neutron_management_network_name: mgmt
+octavia_neutron_management_network_name: lbaas-mgmt
 
 octavia_git_install_branch: stable/ocata
 

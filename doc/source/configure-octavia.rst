@@ -25,27 +25,63 @@ Setup a neutron network for use by octavia
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Octavia needs connectivity between the control plane and the
-load balancing VMs. For this purpose a provide rnetwork should be
-created which bridges containers (if the control plane is installed
-in a container) or hosts with vms. Refer to the appropriate documentation
+load balancing VMs. For this purpose a provider network should be
+created which bridges the octavia containers (if the control plane is installed
+in a container) or hosts with VMs. Refer to the appropriate documentation
 and consult the tests in this project. In a general case, neutron networking
 can be a simple flat network. However in a complex case, this can be whatever
-you need and want. Ensure you adjust the deployment accordingly. The following
-is an example how to set it up in neutron:
+you need and want. Ensure you adjust the deployment accordingly. An example
+entry into ``openstack_user_config.yml`` is shown below:
+
+.. code-block:: yaml
+
+     - network:
+        container_bridge: "br-lbaas"
+        container_type: "veth"
+        container_interface: "eth14"
+        host_bind_override: "eth14"
+        ip_from_q: "octavia"
+        type: "flat"
+        net_name: "octavia"
+        group_binds:
+          - neutron_linuxbridge_agent
+          - octavia-worker
+          - octavia-housekeeping
+          - octavia-health-manager
+
+Make sure to modify the other entries in this file as well.
+
+There are a couple of variables which need to be adjusted if you don't use
+``lbaas`` for the provider network name and ``lbaas-mgmt`` for the neutron
+name. Furthermore, the system tries to infer certain values based on the
+inventory which might not always work and hence might need to be explicitly
+declared. Review the file ``defaults\main.yml`` for more information.
+
+The following is an example how to set up a provider network in neutron:
 
 
 .. code-block:: bash
 
-    neutron net-create mgmt-net --shared \
+    neutron net-create lbaas-mgmt --shared \
                                     --provider:network_type flat \
-                                    --provider:physical_network mgmt
+                                    --provider:physical_network lbaas
 
-    neutron subnet-create mgmt-net 172.19.0.0/22 --name mgmt-subnet
+    neutron subnet-create mgmt-net 172.19.0.0/22 --name lbaas-subnet
                           --ip-version=4 \
                           --allocation-pool start=172.19.1.100,end=172.19.1.200 \
                           --enable-dhcp \
                           --dns-nameservers list=true 8.8.4.4 8.8.8.8
 
+Special attention needs to be applied to the ``--allocation-pool`` to not have
+ips which overlap with ips assigned to hosts or containers (see the ``used_ips``
+variable in ``openstack_user_config.yml``)
+
+.. note::
+    The system will deploy an iptables firewall if ``octavia_ip_tables_fw`` is set
+    to ``True`` (the default). This adds additional protection to the control plane
+    in the rare instance a load balancing vm is compromised. Please review carefully
+    the rules and adjust them for your installation. Please be aware that logging
+    of dropped packages is not enabled and you will need to add those rules manually.
 
 Building Octavia images
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -182,3 +218,4 @@ The variable ``octavia_spare_amphora_pool_size`` controls
 the size of the pool. The system will try
 to prebuild this number so using too big a number will
 consumes a lot of unnecessary resources.
+
