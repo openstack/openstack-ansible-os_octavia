@@ -44,11 +44,18 @@
   retries: 5
   delay: 2
 
+- name: Retrieve checksum for venv download
+  uri:
+    url: "{{ octavia_venv_download_url | replace('tgz', 'checksum') }}"
+    return_content: yes
+  register: octavia_venv_checksum
+  when: not octavia_developer_mode | bool
+
 - name: Attempt venv download
   get_url:
     url: "{{ octavia_venv_download_url }}"
     dest: "/var/cache/{{ octavia_venv_download_url | basename }}"
-    checksum: "sha1:{{ lookup('url', octavia_venv_download_url | replace('tgz', 'checksum')) }}"
+    checksum: "sha1:{{ octavia_venv_checksum.content | trim }}"
   register: octavia_get_venv
   when: not octavia_developer_mode | bool
 
