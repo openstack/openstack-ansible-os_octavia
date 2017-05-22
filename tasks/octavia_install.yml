@@ -115,3 +115,10 @@
   when:
     - not octavia_developer_mode | bool
     - octavia_get_venv | changed or octavia_venv_dir | changed
+
+- name: Record the venv tag deployed
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: octavia
+    option: venv_tag
+    value: "{{ octavia_venv_tag }}"
