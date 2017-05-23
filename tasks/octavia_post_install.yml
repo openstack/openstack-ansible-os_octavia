@@ -56,6 +56,15 @@
     - src: "{{ octavia_ca_private_key }}"
       dest: "/etc/octavia/certs/ca_key.pem"
 
+- name: Copy user provided HAProxy templates
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+  with_items: "{{ octavia_user_haproxy_templates }}"
+
 - name: Drop octavia Config(s)
   config_template:
     src: "{{ item.src }}"

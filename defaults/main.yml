@@ -269,6 +269,18 @@ octavia_enable_anti_affinity: False
 # for amphora creation
 #octavia_amp_availability_zone:
 
+# List of haproxy template files to copy from deployment host to octavia hosts
+# octavia_user_haproxy_templates:
+#  - src: "/etc/openstack_deploy/octavia/haproxy_templates/base.cfg.j2"
+#    dest: "/etc/octavia/templates/base.cfg.j2"
+#  - src: "/etc/openstack_deploy/octavia/haproxy_templates/haproxy.cfg.j2"
+#    dest: "/etc/octavia/templates/haproxy.cfg.j2"
+#  - src: "/etc/openstack_deploy/octavia/haproxy_templates/macros.cfg.j2"
+#    dest: "/etc/octavia/templates/macros.cfg.j2"
+octavia_user_haproxy_templates: {}
+# Path of custom haproxy template file
+#octavia_haproxy_amphora_template: /etc/octavia/templates/haproxy.cfg.j2
+
 # Name of the Octavia management network in Neutron
 octavia_neutron_management_network_name: lbaas-mgmt
 # Name of the provider net in the system
