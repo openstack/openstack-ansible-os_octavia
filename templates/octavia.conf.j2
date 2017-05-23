@@ -26,7 +26,7 @@ transport_url = rabbit://{% for host in octavia_rabbitmq_servers.split(',') %}{{
 
 # pre Ocata
 [oslo_messaging_rabbit]
-rabbit_use_ssl = {{ octavia_rabbitmq_use_ssl }}
+ssl = {{ octavia_rabbitmq_use_ssl }}
 rpc_conn_pool_size = {{ octavia_rpc_conn_pool_size }}
 
 [database]
