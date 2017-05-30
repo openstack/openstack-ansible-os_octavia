@@ -120,7 +120,9 @@ lb_network_name = {{ octavia_neutron_management_network_uuid }}
 # base_path = /var/lib/octavia
 # base_cert_dir = /var/lib/octavia/certs
 # Absolute path to a custom HAProxy template file
-# haproxy_template =
+{% if octavia_haproxy_amphora_template is defined %}
+haproxy_template = {{ octavia_haproxy_amphora_template }}
+{% endif %}
 # connection_max_retries = 300
 # connection_retry_interval = 5
 
