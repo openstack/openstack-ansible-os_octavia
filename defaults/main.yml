@@ -47,7 +47,6 @@ octavia_db_pool_timeout: 30
 ## RabbitMQ info
 
 ## Configuration for RPC communications
-octavia_rpc_backend: octavia.openstack.common.rpc.impl_kombu
 octavia_rabbitmq_userid: octavia
 octavia_rabbitmq_vhost: /octavia
 octavia_rabbitmq_servers: 127.0.0.1
@@ -127,7 +126,6 @@ octavia_service_internalurl: "{{ octavia_service_internaluri }}/v1/%(tenant_id)s
 octavia_service_in_ldap: false
 
 ## RPC
-octavia_rpc_backend: rabbit
 octavia_rpc_thread_pool_size: 64
 octavia_rpc_conn_pool_size: 30
 octavia_rpc_response_timeout: 60
