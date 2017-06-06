@@ -88,10 +88,6 @@ octavia_trusts_delegated_roles: []
 ## Cinder backups
 octavia_cinder_backups_enabled: false
 
-# osprofiler
-octavia_profiler_enabled: false
-octavia_profiler_trace_sqlalchemy: false
-
 ## Auth
 octavia_service_region: RegionOne
 octavia_service_project_name: "service"
