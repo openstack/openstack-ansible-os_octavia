@@ -148,15 +148,15 @@ octavia_requires_pip_packages:
 
 # Common pip packages
 octavia_pip_packages:
+  - cryptography
   - keystonemiddleware
   - PyMySQL
-  - python-memcached
-  - pycrypto
   - python-ceilometerclient
   - python-cinderclient
   - python-glanceclient
   - python-heatclient
   - python-keystoneclient
+  - python-memcached
   - python-neutronclient
   - python-novaclient
   - python-openstackclient
