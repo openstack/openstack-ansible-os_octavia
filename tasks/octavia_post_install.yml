@@ -56,6 +56,54 @@
     - src: "{{ octavia_ca_private_key }}"
       dest: "/etc/octavia/certs/ca_key.pem"
 
+- name: Copy image
+  copy:
+    src: "{{ octavia_amp_image_file_name}}"
+    dest: "{{ octavia_amp_image_file_name}}"
+  when: octavia_amp_image_upload_enabled
+
+- name: Upload image to glance
+  os_image:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    region_name: "{{ octavia_service_region }}"
+    validate_certs: "{{ keystone_service_adminuri_insecure }}"
+    auth_type: "{{ octavia_keystone_auth_plugin }}"
+    name: amphora-x64-haproxy
+    container_format: bare
+    disk_format: qcow2
+    state: present
+    filename: "{{ octavia_amp_image_file_name}}"
+    is_public:
+  when: octavia_amp_image_upload_enabled
+
+- name: Get image uuid
+  os_image_facts:
+    auth:
+      auth_url: "{{ keystone_service_adminurl }}"
+      username: "{{ octavia_service_user_name }}"
+      password: "{{ octavia_service_password }}"
+      project_name: "{{ octavia_service_project_name }}"
+      user_domain_name: "{{ octavia_service_user_domain_id }}"
+      project_domain_name: "{{ octavia_service_project_domain_id }}"
+    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
+    region_name: "{{ octavia_service_region }}"
+    validate_certs: "{{ keystone_service_adminuri_insecure }}"
+    auth_type: "{{ octavia_keystone_auth_plugin }}"
+    image: amphora-x64-haproxy
+  when: octavia_amp_image_upload_enabled
+
+- name: Set image UUID fact
+  set_fact:
+     octavia_amp_image_id: "{{ openstack_image.id }}"
+  when: octavia_amp_image_upload_enabled
+
 - name: Copy user provided HAProxy templates
   copy:
     src: "{{ item.src }}"
