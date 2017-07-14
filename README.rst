@@ -14,6 +14,6 @@ OpenStack-Ansible Octavia
 Ansible role that installs and configures OpenStack Octavia.
 
 Documentation for the project can be found at:
-`<http://docs.openstack.org/developer/openstack-ansible-os_octavia/>`_
+`<https://docs.openstack.org/openstack-ansible-os_octavia/latest/>`_
 
 The project home is at: `<http://launchpad.net/openstack-ansible>`_
