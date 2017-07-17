@@ -16,6 +16,15 @@
 ## Verbosity Options
 debug: False
 
+## Octavia stnadalone (v2) experimental
+octavia_v2: false
+
+## Activate Octavia V1 API
+octavia_v1: True
+
+## Allow TLS listener
+octavia_tls_listener_enabled: True
+
 # Set the package install state for distribution and pip packages
 # Options are 'present' and 'latest'
 octavia_package_state: "latest"
@@ -37,9 +46,7 @@ octavia_fatal_deprecations: False
 
 octavia_clients_endpoint: internalURL
 
-# Workaround for https://bugs.launchpad.net/octavia/+bug/1704468
-# API haproxy needs "/" to return 200 for healthcheck
-octavia_auth_strategy: noauth
+octavia_auth_strategy: keystone
 
 ## DB
 octavia_galera_user: octavia
@@ -121,11 +128,11 @@ octavia_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(o
 octavia_service_internaluri_proto: "{{ openstack_service_internaluri_proto | default(octavia_service_proto) }}"
 octavia_service_type: load-balancer
 octavia_service_publicuri: "{{ octavia_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ octavia_service_port }}"
-octavia_service_publicurl: "{{ octavia_service_publicuri }}/v1/%(tenant_id)s"
+octavia_service_publicurl_v2: "{{ octavia_service_publicuri }}/"
 octavia_service_adminuri: "{{ octavia_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ octavia_service_port }}"
-octavia_service_adminurl: "{{ octavia_service_adminuri }}/v1/%(tenant_id)s"
+octavia_service_adminurl_v2: "{{ octavia_service_adminuri }}"
 octavia_service_internaluri: "{{ octavia_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ octavia_service_port }}"
-octavia_service_internalurl: "{{ octavia_service_internaluri }}/v1/%(tenant_id)s"
+octavia_service_internalurl_v2: "{{ octavia_service_internaluri }}"
 
 octavia_service_in_ldap: false
 
@@ -154,17 +161,13 @@ octavia_pip_packages:
   - cryptography
   - keystonemiddleware
   - PyMySQL
-  - python-ceilometerclient
-  - python-cinderclient
   - python-glanceclient
-  - python-heatclient
   - python-keystoneclient
   - python-memcached
   - python-neutronclient
   - python-novaclient
   - python-openstackclient
-  - python-swiftclient
-  - python-troveclient
+  - python-octaviaclient
   - octavia
   - uwsgi
 
