@@ -84,6 +84,7 @@ neutron_metadata: True
 octavia_pip_package_state: latest
 octavia_package_state: latest
 octavia_neutron_management_network_name: lbaas-mgmt
+octavia_management_net_subnet_cidr: 10.1.7.0/24
 
 octavia_git_install_branch: stable/ocata
 

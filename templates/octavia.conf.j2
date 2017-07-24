@@ -24,6 +24,8 @@ bind_port = {{ octavia_service_port }}
 
 transport_url = rabbit://{% for host in octavia_rabbitmq_servers.split(',') %}{{ octavia_rabbitmq_userid }}:{{ octavia_rabbitmq_password }}@{{ host }}:{{ octavia_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ octavia_rabbitmq_vhost }}{% endif %}{% endfor %}
 
+# for pre Pike
+auth_strategy = {{ octavia_auth_strategy }}
 # pre Ocata
 [oslo_messaging_rabbit]
 ssl = {{ octavia_rabbitmq_use_ssl }}
@@ -156,7 +158,7 @@ server_ca = /etc/octavia/certs/server_ca.pem
 # amp_active_wait_sec = 10
 # Glance parameters to extract image ID to use for amphora. Only one of
 # parameters is needed. Using tags is the recommended way to refer to images.
-# amp_image_id =
+amp_image_id = {{ octavia_amp_image_id }}
 amp_image_tag = {{ octavia_glance_image_tag }}
 # Optional owner ID used to restrict glance images to one owner ID.
 # This is a recommended security setting.

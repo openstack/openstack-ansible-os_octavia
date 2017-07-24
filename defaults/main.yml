@@ -37,6 +37,10 @@ octavia_fatal_deprecations: False
 
 octavia_clients_endpoint: internalURL
 
+# Workaround for https://bugs.launchpad.net/octavia/+bug/1704468
+# API haproxy needs "/" to return 200 for healthcheck
+octavia_auth_strategy: noauth
+
 ## DB
 octavia_galera_user: octavia
 octavia_galera_database: octavia
@@ -143,6 +147,7 @@ octavia_requires_pip_packages:
   - shade
   - virtualenv
   - virtualenv-tools
+  - python-openstackclient
 
 # Common pip packages
 octavia_pip_packages:
@@ -212,6 +217,14 @@ octavia_loadbalancer_topology: SINGLE
 octavia_glance_image_tag: octavia-amphora-image
 # add here the id of the image owner to avoid faked images being used
 octavia_amp_image_owner_id:
+# add here the glance image id if tagging is not used (not recommended for prod)
+octavia_amp_image_id:
+# add here the file name of the image if it should be uplaoded automatically
+# Note: This does not support image tags so don't use for prod
+octavia_amp_image_file_name:
+# enable uploading image to glance automatically
+# Note: This does not support image tags so don't use for prod
+octavia_amp_image_upload_enabled: False
 # Name of the Octavia security group
 octavia_security_group_name: octavia_sec_grp
 # Restrict access to only authorized hosts
@@ -279,6 +292,14 @@ octavia_user_haproxy_templates: {}
 octavia_neutron_management_network_name: lbaas-mgmt
 # Name of the provider net in the system
 octavia_provider_network_name: lbaas
+# Network type
+octavia_provider_network_type: flat
+# Network CIDR
+octavia_management_net_subnet_cidr: 172.29.232.0/22
+# Do we require the Neutron DHCP server
+octavia_management_net_dhcp: "True"
+# Should Octavia set up the network and subnet?
+octavia_service_net_setup: True
 # This sets it to the container managment network based on how you setup
 # the provider net
 octavia_container_network_name: "{{ octavia_provider_network_name }}_address"

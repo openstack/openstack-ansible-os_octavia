@@ -57,24 +57,14 @@ name. Furthermore, the system tries to infer certain values based on the
 inventory which might not always work and hence might need to be explicitly
 declared. Review the file ``defaults\main.yml`` for more information.
 
-The following is an example how to set up a provider network in neutron:
-
-
-.. code-block:: bash
-
-    neutron net-create lbaas-mgmt --shared \
-                                    --provider:network_type flat \
-                                    --provider:physical_network lbaas
-
-    neutron subnet-create mgmt-net 172.19.0.0/22 --name lbaas-subnet
-                          --ip-version=4 \
-                          --allocation-pool start=172.19.1.100,end=172.19.1.200 \
-                          --enable-dhcp \
-                          --dns-nameservers list=true 8.8.4.4 8.8.8.8
+Octavia can create the required neutron networks itself. Please review the
+corresponding settings - especially ``octavia_service_net_subnet_cidr``
+needs to be adjusted. Alternatively, they can be created elsewhere and
+consumed by Octavia.
 
 Special attention needs to be applied to the ``--allocation-pool`` to not have
-ips which overlap with ips assigned to hosts or containers (see the ``used_ips``
-variable in ``openstack_user_config.yml``)
+ips which overlap with ips assigned to hosts or containers (see the
+``used_ips`` variable in ``openstack_user_config.yml``)
 
 .. note::
     The system will deploy an iptables firewall if ``octavia_ip_tables_fw`` is set
