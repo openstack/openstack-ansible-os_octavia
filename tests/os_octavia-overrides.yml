@@ -86,8 +86,6 @@ octavia_package_state: latest
 octavia_neutron_management_network_name: lbaas-mgmt
 octavia_management_net_subnet_cidr: 10.1.7.0/24
 
-octavia_git_install_branch: stable/ocata
-
 octavia_ssh_enabled: True
 
 octavia_amphora_driver: "{% if test_octavia_amphora | bool %}amphora_haproxy_rest_driver{% else %}amphora_noop_driver{% endif %}"

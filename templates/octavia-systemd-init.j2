@@ -10,10 +10,10 @@ Type=simple
 User={{ octavia_system_user_name }}
 Group={{ octavia_system_group_name }}
 
-{% if program_override is defined %}
-ExecStart={{ program_override }} {{ program_config_options|default('') }} --log-file=/var/log/octavia/{{ item.value.service_name }}.log
+{% if item.value.program_override is defined %}
+ExecStart={{ item.value.program_override }} {{ item.value.program_config_options|default('') }} {{ item.value.log_string | default('--log-file=') }}/var/log/octavia/{{ item.value.service_name }}.log
 {% else %}
-ExecStart={{ octavia_bin }}/{{ item.value.service_name }} {{ program_config_options|default('') }} --log-file=/var/log/octavia/{{ item.value.service_name }}.log
+ExecStart={{ octavia_bin }}/{{ item.value.service_name }} {{ item.value.program_config_options|default('') }} --log-file=/var/log/octavia/{{ item.value.service_name }}.log
 {% endif %}
 
 # Give a reasonable amount of time for the server to start up/shut down

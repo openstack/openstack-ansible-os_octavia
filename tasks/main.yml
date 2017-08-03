@@ -40,6 +40,10 @@
   tags:
     - octavia-install
 
+- include: octavia_uwsgi.yml
+  tags:
+    - octavia-config
+
 - include: octavia_init_common.yml
   tags:
     - octavia-install

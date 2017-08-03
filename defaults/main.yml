@@ -166,6 +166,7 @@ octavia_pip_packages:
   - python-swiftclient
   - python-troveclient
   - octavia
+  - uwsgi
 
 octavia_api_init_overrides: {}
 octavia_worker_init_overrides: {}
@@ -178,6 +179,13 @@ octavia_services:
     group: octavia_api
     service_name: octavia-api
     init_config_overrides: "{{ octavia_api_init_overrides }}"
+    wsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
+    wsgi_app: True
+    log_string: "--logto "
+    wsgi_name: octavia-wsgi
+    uwsgi_port: "{{ octavia_service_port }}"
+    uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
+    program_override: "{{ octavia_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
   octavia-worker:
     group: octavia_worker
     service_name: octavia-worker
@@ -368,6 +376,14 @@ octavia_iptables_rules:
     in_interface: "{{ octavia_container_interface }}"
     reject_with: icmp6-port-unreachable
     ip_version: ipv6
+
+# uWSGI Settings
+octavia_wsgi_processes_max: 16
+octavia_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
+octavia_wsgi_threads: 1
+octavia_wsgi_buffer_size: 65535
+octavia_uwsgi_bind_address: "0.0.0.0"
+octavia_api_uwsgi_ini_overrides: {}
 
 # Set up the drivers
 octavia_amphora_driver: amphora_haproxy_rest_driver
