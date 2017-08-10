@@ -273,6 +273,9 @@ octavia_task_flow_max_workers: 5
 # your queue is crashing (Octavia will stream events to the neutron DB)
 octavia_event_streamer: True
 
+# Enable provisioning status sync with neutron db
+octavia_sync_provisioning_status: False
+
 # this controls if Octavia should add an anti-affinity hint to make sure
 # two amphora are not placed pn the same host (the most common setup of
 # ant affinity features in Nova).
