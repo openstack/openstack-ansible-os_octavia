@@ -16,3 +16,4 @@
 octavia_distro_packages:
   - haproxy
   - iptables-services
+  - libxml2-devel

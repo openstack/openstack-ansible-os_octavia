@@ -19,3 +19,4 @@ cache_timeout: 600
 octavia_distro_packages:
   - iptables-persistent
   - netfilter-persistent
+  - libxml2-dev
