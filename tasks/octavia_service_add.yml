@@ -66,7 +66,8 @@
   retries: 5
   delay: 10
 
-# Create an endpoint
+# Create an endpoint (v2 only)
+# V1 uses a direct URL in the neutron conf
 - name: Ensure octavia endpoint
   keystone:
     command: "ensure_endpoint"
@@ -79,14 +80,14 @@
     service_type: "{{ octavia_service_type }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
     endpoint_list:
-# Versions pre Pike only have an internal endpoint
-#      - url: "{{ service_publicurl }}"
-#        interface: "public"
-      - url: "{{ octavia_service_internalurl }}"
+      - url: "{{ octavia_service_publicurl_v2 }}"
+        interface: "public"
+      - url: "{{ octavia_service_internalurl_v2 }}"
         interface: "internal"
-#      - url: "{{ service_adminurl }}"
-#        interface: "admin"
-  register: add_service
-  until: add_service|success
+      - url: "{{ octavia_service_adminurl_v2 }}"
+        interface: "admin"
+  register: add_service_v2
+  until: add_service_v2|success
   retries: 5
   delay: 10
+  when: octavia_v2 | bool
