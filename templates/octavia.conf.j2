@@ -70,6 +70,7 @@ heartbeat_key = {{ octavia_health_hmac_key }}
 #                            queue_event_streamer,
 #                            noop_event_streamer
 event_streamer_driver = {% if octavia_event_streamer|bool %}queue_event_streamer{% else %}noop_event_streamer{% endif %}
+
 # Enable provisioning status sync with neutron db
 sync_provisioning_status = {{ octavia_sync_provisioning_status }}
 
