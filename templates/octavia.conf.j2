@@ -238,6 +238,12 @@ topic = octavia_prov
 # Topic for octavia's events sent to a queue
 event_stream_topic = neutron_lbaas_event
 
+# Put it into the Neutron queue
+{% if octavia_event_streamer|bool %}
+event_stream_transport_url = rabbit://{% for host in neutron_rabbitmq_servers.split(',') %}{{ octavia_neutron_rabbitmq_userid }}:{{ octavia_neutron_rabbitmq_password }}@{{ host }}:{{ neutron_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ neutron_rabbitmq_vhost }}{% endif %}{% endfor %}
+{% endif %}
+
+
 [house_keeping]
 # Interval in seconds to initiate spare amphora checks
 # spare_check_interval = 30
