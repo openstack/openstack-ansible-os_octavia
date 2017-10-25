@@ -30,6 +30,7 @@
     name: "{{ octavia_neutron_management_network_name }}"
     provider_network_type: "{{ octavia_provider_network_type }}"
     provider_physical_network: "{{ octavia_provider_network_name }}"
+    provider_segmentation_id: "{{ octavia_provider_segmentation_id | default(omit) }}"
   when: octavia_service_net_setup
 
 - name: Ensure mgmt subnet exists
