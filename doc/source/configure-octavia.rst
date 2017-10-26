@@ -58,7 +58,7 @@ inventory which might not always work and hence might need to be explicitly
 declared. Review the file ``defaults\main.yml`` for more information.
 
 Octavia can create the required neutron networks itself. Please review the
-corresponding settings - especially ``octavia_service_net_subnet_cidr``
+corresponding settings - especially ``octavia_management_net_subnet_cidr``
 needs to be adjusted. Alternatively, they can be created elsewhere and
 consumed by Octavia.
 
