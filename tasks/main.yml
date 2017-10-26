@@ -55,6 +55,7 @@
 
 - include: octavia_mgmt_network.yml
   when:
+    - inventory_hostname == groups['octavia_all'][0]
     - octavia_neutron_management_network_uuid is not defined
     - octavia_neutron_management_network_name is defined
   tags:
