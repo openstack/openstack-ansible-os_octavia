@@ -50,6 +50,8 @@
     name: "{{ octavia_neutron_management_network_name }}-subnet"
     cidr: "{{ octavia_management_net_subnet_cidr }}"
     enable_dhcp: "{{ octavia_management_net_dhcp }}"
+    allocation_pool_start: "{{ octavia_management_net_subnet_allocation_pools.split('-')[0] | default(omit) }}"
+    allocation_pool_end: "{{ octavia_management_net_subnet_allocation_pools.split('-')[1] | default(omit) }}"
   when: octavia_service_net_setup
 
 - name: Get neutron network

@@ -310,6 +310,9 @@ octavia_provider_network_name: lbaas
 octavia_provider_network_type: flat
 # Network CIDR
 octavia_management_net_subnet_cidr: 172.29.232.0/22
+# Example allocation range:
+# octavia_management_net_subnet_allocation_pools: "172.29.232.10-172.29.235.200"
+octavia_management_net_subnet_allocation_pools: ""
 # Do we require the Neutron DHCP server
 octavia_management_net_dhcp: "True"
 # Should Octavia set up the network and subnet?
