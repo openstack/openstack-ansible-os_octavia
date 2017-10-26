@@ -20,3 +20,4 @@ octavia_distro_packages:
   - iptables-persistent
   - netfilter-persistent
   - libxml2-dev
+  - git
