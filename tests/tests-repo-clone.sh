@@ -100,7 +100,6 @@ elif [[ ! -d tests/common ]]; then
             https://git.openstack.org/openstack/openstack-ansible-tests \
             ${WORKING_DIR}/tests/common
     fi
-
 fi
 
 # If this test set includes an upgrade test, the
