@@ -68,6 +68,7 @@
 
 - include: octavia_flavor_create.yml
   when:
+    - inventory_hostname == groups['octavia_all'][0]
     - octavia_nova_flavor_uuid is not defined
   tags:
     - octavia-install
