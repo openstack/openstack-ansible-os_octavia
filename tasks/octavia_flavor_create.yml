@@ -29,10 +29,6 @@
     vcpus: "{{ octavia_amp_vcpu }}"
     disk: "{{ octavia_amp_disk }}"
     is_public: False
-  ignore_errors: yes # that module is buggy?
-  when:
-    - octavia_nova_flavor_uuid is not defined
-
 
 - name: Gather Octavia Flavor Id
   os_flavor_facts:
@@ -45,9 +41,6 @@
       project_domain_name: "{{ octavia_service_project_domain_id }}"
     endpoint_type: "{{ octavia_ansible_endpoint_type }}"
     name: "{{ octavia_amp_flavor_name}}"
-  ignore_errors: yes
-  when:
-    - octavia_nova_flavor_uuid is not defined
 
 - name: Set Octavia Flavor UUID fact 1
   set_fact:
