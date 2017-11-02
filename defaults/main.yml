@@ -277,7 +277,22 @@ octavia_task_flow_max_workers: 5
 octavia_event_streamer: True
 
 # Enable provisioning status sync with neutron db
-octavia_sync_provisioning_status: False
+octavia_sync_provisioning_status: True
+
+# OSA is architected to use vHosts for queues so we need to post events
+# into the Neutron queue for them to be picked up
+neutron_rabbitmq_userid: neutron
+neutron_rabbitmq_vhost: /neutron
+neutron_rabbitmq_port: 5672
+neutron_rabbitmq_servers: 127.0.0.1
+neutron_rabbitmq_use_ssl: False
+neutron_rabbitmq_password: changeme
+
+# For additional security use a different user on the Neutron queue
+# for Octavia with restricted access to only the event streamer
+# queues
+octavia_neutron_rabbitmq_userid: "{{ neutron_rabbitmq_userid }}"
+octavia_neutron_rabbitmq_password: "{{ neutron_rabbitmq_password }}"
 
 # this controls if Octavia should add an anti-affinity hint to make sure
 # two amphora are not placed pn the same host (the most common setup of
