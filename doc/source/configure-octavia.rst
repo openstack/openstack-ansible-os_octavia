@@ -83,7 +83,7 @@ For this process, use one of the physical hosts within the environment.
 
    .. code-block:: bash
 
-      apt-get install -y qemu uuid-runtime curl kpartx git jq python-pip
+      apt-get install qemu uuid-runtime curl kpartx git jq python-pip
 
 #. Install the necessary pip packages:
 
@@ -123,8 +123,8 @@ Here is a script to perform all those tasks at once:
    .. code-block:: bash
 
           #/bin/sh
-          apt-get install -y qemu uuid-runtime curl kpartx git jq
-          pip -v >/dev/null || {apt-get install -y python-pip}
+          apt-get install qemu uuid-runtime curl kpartx git jq
+          pip -v >/dev/null || {apt-get install python-pip}
           pip install argparse Babel>=1.3 dib-utils PyYAML
           pushd /tmp
           git clone https://github.com/openstack/octavia.git
