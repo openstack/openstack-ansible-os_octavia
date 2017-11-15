@@ -305,6 +305,8 @@ octavia_neutron_management_network_name: lbaas-mgmt
 octavia_provider_network_name: lbaas
 # Network type
 octavia_provider_network_type: flat
+# Network segmentation ID if vlan, gre...
+#octavia_provider_segmentation_id:
 # Network CIDR
 octavia_management_net_subnet_cidr: 172.29.232.0/22
 # Example allocation range:
