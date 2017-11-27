@@ -16,7 +16,7 @@
 ## Verbosity Options
 debug: False
 
-## Octavia stnadalone (v2) experimental
+## Octavia standalone (v2) experimental
 octavia_v2: false
 
 ## Activate Octavia V1 API
@@ -24,6 +24,13 @@ octavia_v1: True
 
 ## Allow TLS listener
 octavia_tls_listener_enabled: True
+
+# Legacy policy disables the requirement for load-balancer service users to
+# have one of the load-balancer:* roles.  It provides a similar policy to
+# legacy OpenStack policies where any user or admin has access to load-balancer
+# resources that they own.  Users with the admin role has access to all
+# load-balancer resources, whether they own them or not.
+octavia_legacy_policy: False
 
 # Set the package install state for distribution and pip packages
 # Options are 'present' and 'latest'

@@ -82,6 +82,11 @@
   tags:
     - octavia-install
 
+- include: octavia_policy.yml
+  tags:
+    - octavia-install
+    - octavia-config
+
 
 - name: Flush handlers
   meta: flush_handlers
