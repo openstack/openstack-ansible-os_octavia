@@ -1,0 +1,50 @@
+---
+# Copyright 2017, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Create load-balancer_observer role
+  keystone:
+    command: "ensure_role"
+    endpoint: "{{ keystone_service_adminurl }}"
+    login_user: "{{ keystone_admin_user_name }}"
+    login_password: "{{ keystone_auth_admin_password }}"
+    login_project_name: "{{ keystone_admin_tenant_name }}"
+    region_name: "{{ octavia_service_region }}"
+    service_name: "{{ octavia_service_name }}"
+    service_type: "{{ octavia_service_type }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    role_name: "{{ item }}"
+  register: add_role
+  until: add_role|success
+  retries: 5
+  delay: 10
+  with_items:
+    - load-balancer_observer
+    - load-balancer_global_observer
+    - load-balancer_member
+    - load-balancer_admin
+    - load-balancer_quota_admin
+
+- name: Set legacy role policies
+  config_template:
+    src: policy.json.j2
+    dest: /etc/octavia/policy.json
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+    config_overrides: "{{ octavia_policy_overrides }}"
+    config_type: "json"
+  notify:
+    - Restart octavia services
+  when: octavia_legacy_policy
