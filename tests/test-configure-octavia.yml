@@ -55,12 +55,15 @@
       git:
         repo: "https://git.openstack.org/openstack/diskimage-builder"
         dest: "{{ octavia_system_home_folder }}/diskimage-builder"
+        version: "2.9.0"
     - name: Create amphora image
       shell: "./diskimage-create.sh -o {{ octavia_system_home_folder }}/amphora-x64-haproxy.qcow2"
       args:
         chdir: "{{ octavia_system_home_folder }}/octavia/diskimage-create"
         creates: "{{ octavia_system_home_folder }}/amphora-x64-haproxy.qcow2"
       when: test_octavia_amphora | bool
+      tags:
+        - skip_ansible_lint
     - name: Change permission
       file:
         path: "{{ octavia_system_home_folder }}/octavia/bin/create_certificates.sh"
@@ -69,6 +72,8 @@
       shell: "{{ octavia_system_home_folder }}/octavia/bin/create_certificates.sh {{ octavia_system_home_folder }}/certs {{ octavia_system_home_folder }}/octavia/etc/certificates/openssl.cnf"
       args:
         creates: "{{ octavia_system_home_folder }}/certs/ca_01.pem"
+      tags:
+        - skip_ansible_lint
     - name: Fix certs/private directory access
       file:
         path: "{{ octavia_system_home_folder }}/certs/private"
