@@ -82,11 +82,15 @@
         creates: "{{ octavia_system_home_folder }}/image"
       environment: "{{ env }}"
       when: test_octavia_amphora | bool
+      tags:
+        - skip_ansible_lint
     - name: Create ssh-key
       shell: >
           cat /dev/zero | ssh-keygen -q -N ""
       args:
         creates: /root/.ssh/id_rsa.pub
+      tags:
+        - skip_ansible_lint
     - name: Upload key to nova
       os_keypair:
         auth:
@@ -106,6 +110,8 @@
       shell: >
          neutron lbaas-loadbalancer-create --name test-lb public-subnet
       environment: "{{ env }}"
+      tags:
+        - skip_ansible_lint
     - name: Wait until LB is up
       shell: >
         neutron lbaas-loadbalancer-show test-lb | grep ONLINE
@@ -114,16 +120,22 @@
       until: lb_up|success
       retries: 100
       delay: 5
+      tags:
+        - skip_ansible_lint
     - name: Create a listener
       shell: >
         neutron lbaas-listener-create  --loadbalancer test-lb --protocol HTTP --protocol-port 80 --name listener
       environment: "{{ env }}"
+      tags:
+        - skip_ansible_lint
     - name: Curl the Listener
       shell: >
         curl -s -o /dev/null -w "%{http_code}" http://`neutron lbaas-loadbalancer-show test-lb | awk '/ vip_address / {print $4}'`
       environment: "{{ env }}"
       register: http_status_code
       when: test_octavia_amphora | bool
+      tags:
+        - skip_ansible_lint
     - name: Check that we got 503
       assert:
         that:
