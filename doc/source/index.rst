@@ -24,11 +24,10 @@ Default variables
    :start-after: under the License.
 
 
-Required variables
-~~~~~~~~~~~~~~~~~~
+Dependencies
+~~~~~~~~~~~~
 
-None.
-
+This role needs pip >= 7.1 installed on the target host.
 
 Example playbook
 ~~~~~~~~~~~~~~~~
@@ -43,4 +42,3 @@ Tags
 This role supports the ``octavia-install`` and ``octavia-config`` tags.
 Use the ``octavia-install`` tag to install and upgrade. Use the
 ``octavia-config`` tag to maintain configuration of the service.
-
