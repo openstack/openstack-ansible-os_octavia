@@ -55,9 +55,11 @@ octavia_clients_endpoint: internalURL
 
 octavia_auth_strategy: keystone
 
-## DB
+## Database info
 octavia_galera_user: octavia
 octavia_galera_database: octavia
+octavia_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"
+octavia_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('/etc/ssl/certs/galera-ca.pem') }}"
 octavia_db_max_overflow: 20
 octavia_db_pool_size: 120
 octavia_db_pool_timeout: 30

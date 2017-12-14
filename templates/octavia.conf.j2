@@ -47,7 +47,8 @@ ssl = {{ octavia_rabbitmq_use_ssl }}
 rpc_conn_pool_size = {{ octavia_rpc_conn_pool_size }}
 
 [database]
-connection = mysql+pymysql://{{ octavia_galera_user }}:{{ octavia_container_mysql_password }}@{{ octavia_galera_address }}/{{ octavia_galera_database }}?charset=utf8
+connection = mysql+pymysql://{{ octavia_galera_user }}:{{ octavia_container_mysql_password }}@{{ octavia_galera_address }}/{{ octavia_galera_database }}?charset=utf8{% if octavia_galera_use_ssl | bool %}&ssl_ca={{ octavia_galera_ssl_ca_cert }}{% endif %}
+
 max_overflow = {{ octavia_db_max_overflow }}
 max_pool_size = {{ octavia_db_pool_size }}
 pool_timeout = {{ octavia_db_pool_timeout }}
