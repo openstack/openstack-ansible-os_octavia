@@ -162,7 +162,6 @@ octavia_requires_pip_packages:
   - python-keystoneclient # Keystoneclient needed to OSA keystone lib
   - shade
   - virtualenv
-  - virtualenv-tools
   - python-openstackclient
 
 # Common pip packages

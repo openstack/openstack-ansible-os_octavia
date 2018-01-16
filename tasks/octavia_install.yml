@@ -111,11 +111,14 @@
     - octavia_get_venv | changed or octavia_venv_dir | changed
 
 - name: Update virtualenv path
-  command: >
-    virtualenv-tools --update-path=auto --reinitialize {{ octavia_bin | dirname }}
+  shell: |
+    find {{ octavia_bin }} -name \*.pyc -delete
+    sed -si '1s/^.*python.*$/#!{{ octavia_bin | replace ('/','\/') }}\/python/' {{ octavia_bin }}/*
   when:
     - not octavia_developer_mode | bool
     - octavia_get_venv | changed or octavia_venv_dir | changed
+  tags:
+    - skip_ansible_lint
 
 - name: Record the venv tag deployed
   ini_file:
