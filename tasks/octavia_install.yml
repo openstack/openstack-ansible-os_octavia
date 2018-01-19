@@ -114,6 +114,7 @@
   shell: |
     find {{ octavia_bin }} -name \*.pyc -delete
     sed -si '1s/^.*python.*$/#!{{ octavia_bin | replace ('/','\/') }}\/python/' {{ octavia_bin }}/*
+    virtualenv {{ octavia_bin | dirname }}
   when:
     - not octavia_developer_mode | bool
     - octavia_get_venv | changed or octavia_venv_dir | changed
