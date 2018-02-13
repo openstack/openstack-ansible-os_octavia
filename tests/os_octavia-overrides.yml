@@ -17,8 +17,11 @@
 ## disbale the tests which spin up an amphora
 test_octavia_amphora: False
 
-test_octavia_api_group: "{{ ((groups['octavia_api'] is defined) and (groups['octavia_api'] | length > 0)) | ternary('octavia_api', 'all_containers') }}"
-test_octavia_api_host: "{{ hostvars[groups[test_octavia_api_group][0]]['ansible_host'] }}"
+# Test Octavia standalone
+octavia_v2: True
+octavia_v1: False
+
+test_octavia_api_host: "{{ hostvars['octavia1']['ansible_host'] }}"
 
 ## octavia User / Group
 octavia_system_user_name: octavia
@@ -31,8 +34,10 @@ octavia_system_home_folder: "/var/lib/{{ octavia_system_user_name }}"
 octavia_venv_tag: "testing"
 octavia_developer_mode: True
 octavia_git_install_branch: master
-octavia_service_internaluri: "http://{{ test_octavia_api_host }}:9876"
-octavia_service_internalurl: "{{ octavia_service_internaluri }}"
+octavia_service_internalurl_v2: "http://{{ test_octavia_api_host }}:9876"
+octavia_service_adminurl_v2: "{{ octavia_service_internalurl_v2 }}"
+octavia_service_publicurl_v2: "{{ octavia_service_internalurl_v2 }}"
+
 octavia_service_password: "secrete"
 octavia_service_name: octavia
 octavia_service_project_name: "service"
@@ -92,41 +97,3 @@ octavia_ssh_enabled: True
 octavia_amphora_driver: "{% if test_octavia_amphora | bool %}amphora_haproxy_rest_driver{% else %}amphora_noop_driver{% endif %}"
 octavia_compute_driver: "{% if test_octavia_amphora | bool %}compute_nova_driver{% else %}compute_noop_driver{% endif %}"
 octavia_network_driver: "{% if test_octavia_amphora | bool %}allowed_address_pairs_driver{% else %}network_noop_driver{% endif %}"
-
-#Neutron mappings
-neutron_plugin_base:
-  - router
-  - metering
-  - neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPluginv2
-
-neutron_lbaasv2_service_provider: LOADBALANCERV2:Octavia:neutron_lbaas.drivers.octavia.driver.OctaviaDriver:default
-
-neutron_rpc_conn_pool_size: |
-  30
-  [octavia]
-  base_url= http://{{ hostvars['octavia1']['ansible_host'] }}:9876
-  request_poll_timeout = 500
-
-  # if we have Barbican
-  [certificates]
-
-  # Certificate Manager plugin. Defaults to barbican. (string value)
-  cert_manager_type = barbican
-
-  # Name of the Barbican authentication method to use (string value)
-  #barbican_auth = barbican_acl_auth
-
-  [service_auth]
-  insecure = {{ keystone_service_internaluri_insecure | bool }}
-  auth_plugin = password
-  # this needs to have a v3 added manually :-(
-  auth_url = "http://{{ test_keystone_host }}:5000/v3"
-  admin_project_domain = default
-  admin_user_domain = default
-  admin_tenant_name = service
-  admin_user = neutron
-  admin_password = secrete
-  region = RegionOne
-  endpoint_type = internalURL
-  service_name = neutron
-  auth_version = 3

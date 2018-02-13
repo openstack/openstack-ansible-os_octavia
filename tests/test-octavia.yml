@@ -30,6 +30,8 @@
       OS_USER_DOMAIN_NAME: Default
       OS_PROJECT_DOMAIN_NAME: Default
       OS_REGION_NAME: RegionOne
+      OS_IDENTITY_API_VERSION: 3
+      OS_AUTH_VERSION: 3
   tasks:
     - name: Install pip requirements
       pip:
@@ -43,6 +45,8 @@
         - "python-neutronclient"
         - "python-glanceclient"
         - "shade"
+        - "python-octaviaclient"
+        - "python-openstackclient"
 
     - name: Ensure public network exists
       os_network:
@@ -108,38 +112,69 @@
 
     - name: Create a loadbalancer
       shell: >
-         neutron lbaas-loadbalancer-create --name test-lb public-subnet
+         openstack --debug loadbalancer create  --name test-lb --vip-subnet-id public-subnet
       environment: "{{ env }}"
       tags:
         - skip_ansible_lint
-    - name: Wait until LB is up
+    - name: Wait until LB is active
       shell: >
-        neutron lbaas-loadbalancer-show test-lb | grep ONLINE
+         openstack loadbalancer show test-lb -c provisioning_status -f value
       environment: "{{ env }}"
-      register: lb_up
-      until: lb_up|success
-      retries: 100
-      delay: 5
+      register: lb_active
+      until: lb_active.stdout == "ACTIVE"
+      retries: 50
+      delay: 10
       tags:
         - skip_ansible_lint
     - name: Create a listener
       shell: >
-        neutron lbaas-listener-create  --loadbalancer test-lb --protocol HTTP --protocol-port 80 --name listener
+       openstack loadbalancer listener create --protocol HTTP --protocol-port 80 --name listener test-lb
       environment: "{{ env }}"
       tags:
         - skip_ansible_lint
-    - name: Curl the Listener
+    - name: Wait until Listener is active
       shell: >
-        curl -s -o /dev/null -w "%{http_code}" http://`neutron lbaas-loadbalancer-show test-lb | awk '/ vip_address / {print $4}'`
+         openstack loadbalancer show test-lb -c provisioning_status -f value
       environment: "{{ env }}"
-      register: http_status_code
-      when: test_octavia_amphora | bool
+      register: lb_active
+      until: lb_active.stdout == "ACTIVE"
+      retries: 10
+      delay: 10
       tags:
         - skip_ansible_lint
-    - name: Check that we got 503
-      assert:
-        that:
-          - "'503' in http_status_code.stdout"
-      when: test_octavia_amphora | bool
+    - name: Run Show (for debugging)
+      shell: >
+        openstack loadbalancer show test-lb
+      environment: "{{ env }}"
+      when:
+        - debug|bool == true
+      tags:
+        - skip_ansible_lint
+
+    - name: Register VIP IP # this is likley changing with a newer version of octaviaclient
+      shell: >
+         openstack loadbalancer show test-lb -c vip_address -f value
+      environment: "{{ env }}"
+      register: vip_output
+      tags:
+        - skip_ansible_lint
+    - name: Set VIP fact
+      set_fact:
+        vip: "{{ vip_output.stdout }}"
+    - name: Test the Listener
+      uri:
+        url: "http://{{ vip }}"
+        status_code: 503
+      when: test_octavia_amphora|bool == true
+    - name: Delete LoadBalancer
+      shell: >
+        openstack loadbalancer delete --cascade test-lb
+      environment: "{{ env }}"
+      register: lb_deleted
+      until: lb_deleted|success
+      retries: 10
+      delay: 15
+      tags:
+        - skip_ansible_lint
   vars_files:
     - common/test-vars.yml

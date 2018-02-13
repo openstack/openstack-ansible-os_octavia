@@ -51,6 +51,8 @@
         repo: "https://git.openstack.org/openstack/octavia"
         dest: "{{ octavia_system_home_folder }}/octavia"
         version: "{{ octavia_git_install_branch }}"
+      tags:
+        - skip_ansible_lint
     - name: Clone Diskimage-Builder
       git:
         repo: "https://git.openstack.org/openstack/diskimage-builder"
