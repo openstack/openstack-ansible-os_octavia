@@ -55,7 +55,7 @@ There are a couple of variables which need to be adjusted if you don't use
 ``lbaas`` for the provider network name and ``lbaas-mgmt`` for the neutron
 name. Furthermore, the system tries to infer certain values based on the
 inventory which might not always work and hence might need to be explicitly
-declared. Review the file ``defaults\main.yml`` for more information.
+declared. Review the file ``defaults/main.yml`` for more information.
 
 Octavia can create the required neutron networks itself. Please review the
 corresponding settings - especially ``octavia_management_net_subnet_cidr``
