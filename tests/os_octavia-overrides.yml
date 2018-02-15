@@ -30,7 +30,8 @@ octavia_system_home_folder: "/var/lib/{{ octavia_system_user_name }}"
 # Octavia specific settings
 octavia_venv_tag: "testing"
 octavia_developer_mode: True
-octavia_git_install_branch: master
+# Octavia branch is used outside the role in the test-configure-octavia.yml step
+octavia_git_install_branch: "stable/queens"
 octavia_service_internaluri: "http://{{ test_octavia_api_host }}:9876"
 octavia_service_internalurl: "{{ octavia_service_internaluri }}"
 octavia_service_password: "secrete"
