@@ -27,3 +27,7 @@
     - role: "{{ octavia_rolename | default('os_octavia') }}"
   vars_files:
     - common/test-vars.yml
+  environment:
+    # for some reason in the Queens version we don't have a USER set?
+    USER: zuul
+
