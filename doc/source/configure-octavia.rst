@@ -163,18 +163,9 @@ Creating the cryptographic certificates
     For production installation make sure that you review this very carefully with your
     own security requirements and potantially use your own CA to sign the certificates.
 
-#. Run the certificate script.
-
-   In the bin directory of the Octavia project you cloned above run:
-
-   .. code-block:: bash
-
-      mkdir /var/lib/octavia/certs
-      source create_certificates.sh /var/lib/octavia/certs `pwd`/../etc/certificates/openssl.cnf
-
-.. note::
-   The certificates will be created in ``/var/lib/octavia/certs`` where the
-   ansible script are expecting them.
+The system will automatically generate and use self-signed certificates with different
+Certificate Authorities for control plane and amphora. Make sure to store a copy in
+a safe place for potential disaster recovery.
 
 Optional: Configuring Octavia with ssh access to the amphora
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

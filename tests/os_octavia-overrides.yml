@@ -98,3 +98,7 @@ octavia_ssh_enabled: True
 octavia_amphora_driver: "{% if test_octavia_amphora | bool %}amphora_haproxy_rest_driver{% else %}amphora_noop_driver{% endif %}"
 octavia_compute_driver: "{% if test_octavia_amphora | bool %}compute_nova_driver{% else %}compute_noop_driver{% endif %}"
 octavia_network_driver: "{% if test_octavia_amphora | bool %}allowed_address_pairs_driver{% else %}network_noop_driver{% endif %}"
+
+# cert generation
+octavia_cert_password_client: 'changeme'
+
