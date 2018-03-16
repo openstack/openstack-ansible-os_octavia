@@ -29,6 +29,7 @@
     vcpus: "{{ octavia_amp_vcpu }}"
     disk: "{{ octavia_amp_disk }}"
     is_public: False
+  run_once: True
 
 - name: Gather Octavia Flavor Id
   os_flavor_facts:
