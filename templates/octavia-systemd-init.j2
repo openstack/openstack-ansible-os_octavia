@@ -17,7 +17,12 @@ ExecStart={{ octavia_bin }}/{{ item.value.service_name }} {{ item.value.program_
 {% endif %}
 
 # Give a reasonable amount of time for the server to start up/shut down
-TimeoutSec=120
+TimeoutStartSec=120
+# Give extra time for shutdown to allow flows to finish (failover, etc.)
+# This timer expiring early can lead to load balancers stuck in PENDING_*
+# states as the flows were interrupted before completing.
+# This setting depends on the performance of your cloud.
+TimeoutStopSec=300
 Restart=on-failure
 RestartSec=2
 
