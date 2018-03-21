@@ -76,6 +76,16 @@ ips which overlap with ips assigned to hosts or containers (see the
 Building Octavia images
 ~~~~~~~~~~~~~~~~~~~~~~~
 
+.. note::
+    The default behavior is to download a test image from the OpenStack artifact
+    storage the Octavia team provides daily. Because this image doesn't apply
+    operating system security patches in a timely manner it is unsuited
+    for production use.
+
+    Some Operating System vendors might provide official amphora builds or an
+    organization might maintain their own artifact storage - for those cases the
+    automatic download can be leveraged, too.
+
 Images using the ``diskimage-builder`` must be built outside of a container.
 For this process, use one of the physical hosts within the environment.
 
@@ -114,6 +124,10 @@ For this process, use one of the physical hosts within the environment.
 
       glance image-create --name amphora-x64-haproxy --visibility private --disk-format qcow2 \
          --container-format bare --tags octavia-amphora-image </var/lib/octavia/amphora-x64-haproxy.qcow2
+
+   .. note::
+        Alternatively you can specify the new image in the appropriate settings and rerun the
+        ansible with an appropriate tag.
 
 You can find more information abpout the diskimage script and the process at
 https://github.com/openstack/octavia/tree/master/diskimage-create
