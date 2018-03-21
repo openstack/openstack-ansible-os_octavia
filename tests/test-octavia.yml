@@ -73,17 +73,6 @@
         network_name: "public"
         name: "public-subnet"
         cidr: "10.1.3.0/24"
-    - name: Upload image to glance
-      shell: >-
-          glance image-create --name amphora-x64-haproxy --visibility private --disk-format qcow2 \
-            --container-format bare --tags octavia-amphora-image <{{ octavia_system_home_folder }}/amphora-x64-haproxy.qcow2 \
-            && touch {{ octavia_system_home_folder }}/image
-      args:
-        creates: "{{ octavia_system_home_folder }}/image"
-      environment: "{{ env }}"
-      when: test_octavia_amphora | bool
-      tags:
-        - skip_ansible_lint
     - name: Create ssh-key
       shell: >
           cat /dev/zero | ssh-keygen -q -N ""

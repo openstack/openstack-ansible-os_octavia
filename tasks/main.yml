@@ -87,6 +87,10 @@
     - octavia-install
     - octavia-config
 
+- include: octavia_amp_image.yml
+  tags:
+    - octavia-config
+
 
 - name: Flush handlers
   meta: flush_handlers
