@@ -192,31 +192,35 @@ enable access.
    /etc/openstack-deploy
 
 
-Optional: Enable Octavia V2 API
+Optional: Enable Octavia V1 API
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Beginning with the Pike release, Octavia can be deployed in a stand-alone
-version thus avoiding the Neutron integration. Currently, the following
-configuration should be added to ``openstack_user_config.yml``:
+Beginning with the Queens release, neutron lbaas has started it's
+deprecation cycle and therefore Octavia stand alone is the default
+configuration beginning Rocky. If the neutron lbaas endpoint is still
+needed consider deploying the neutron lbaas proxy plugin.
+
+If for legacy reasons neutron lbaas still needs the internal Octavia V1
+API endpoint add the following parameters to ``openstack_user_config.yml``:
 
 .. code-block:: yaml
 
-  # Disable Octavia support in Neutron
-  neutron_lbaas_octavia: False
-  # Disable LBaaS V2
-  neutron_lbaasv2: False
-  # Enable Octavia V2 API/standalone
-  octavia_v2: True
-  # Disable Octavia V1 API
-  octavia_v1: False
+  # Enable Octavia support in Neutron
+  neutron_lbaas_octavia: True
+  # Enable LBaaS V2
+  neutron_lbaasv2: True
+  # Disable Octavia V2 API/standalone
+  octavia_v2: False
+  # Enable Octavia V1 API
+  octavia_v1: True
+  # event_streamer - set to True if you are using neutron lbaas with Octavia
+  # (Octavia will stream events to the neutron DB)
+  octavia_event_streamer: True
+  # Enable provisioning status sync with neutron db
+  octavia_sync_provisioning_status: True
 
 Please note that in some settings the LBaaS plugin is directly enabled in the
 ``neutron_plugin_base`` so adjust this as necessary.
-
-Please be aware that if you enable only the Octavia endpoint, only
-Octavia load balancers can be created because the integration with 3rd party
-load balancer vendors nor with the haproxy namespace driver is available
-in the Pike release.
 
 Optional: Tuning Octavia for production use
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

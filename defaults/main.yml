@@ -17,10 +17,10 @@
 debug: False
 
 ## Octavia standalone (v2) experimental
-octavia_v2: false
+octavia_v2: True
 
 ## Activate Octavia V1 API
-octavia_v1: True
+octavia_v1: False
 
 ## Allow TLS listener
 octavia_tls_listener_enabled: True
@@ -280,12 +280,12 @@ octavia_spare_amphora_pool_size: 1
 # e.g. 3 hosts, 5 workers (this param) per host, results in 15 worker total
 octavia_task_flow_max_workers: 5
 
-# event_streamer - set to False if you don't need up to date lb information and/or
-# your queue is crashing (Octavia will stream events to the neutron DB)
-octavia_event_streamer: True
+# event_streamer - set to True if you are using neutron lbaas with Octavia
+# (Octavia will stream events to the neutron DB)
+octavia_event_streamer: False
 
 # Enable provisioning status sync with neutron db
-octavia_sync_provisioning_status: True
+octavia_sync_provisioning_status: False
 
 # OSA is architected to use vHosts for queues so we need to post events
 # into the Neutron queue for them to be picked up
