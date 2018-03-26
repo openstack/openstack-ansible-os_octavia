@@ -139,7 +139,7 @@ Here is a script to perform all those tasks at once:
             --container-format bare --tags octavia-amphora-image </var/lib/octavia/amphora-x64-haproxy.qcow2
 
 .. note::
-    If you have trouble installing dib-utils from pipy consider installing it directly from souce
+    If you have trouble installing dib-utils from pipy consider installing it directly from source
     ` pip install git+https://github.com/openstack/dib-utils.git`
 
 Creating the cryptographic certificates
