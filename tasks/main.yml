@@ -49,7 +49,7 @@
     - octavia-install
 
 - include: octavia_service_add.yml
-  when: inventory_hostname == groups['octavia_all'][0]
+  run_once: true
   tags:
     - octavia-install
 
