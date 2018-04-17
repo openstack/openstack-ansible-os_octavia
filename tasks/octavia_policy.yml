@@ -29,6 +29,7 @@
   until: add_role|success
   retries: 5
   delay: 10
+  no_log: True
   with_items:
     - load-balancer_observer
     - load-balancer_global_observer
