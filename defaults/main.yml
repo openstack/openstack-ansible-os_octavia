@@ -49,8 +49,6 @@ octavia_bin: "/openstack/venvs/octavia-{{ octavia_venv_tag }}/bin"
 
 octavia_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/octavia.tgz
 
-octavia_fatal_deprecations: False
-
 octavia_clients_endpoint: internalURL
 
 octavia_auth_strategy: keystone
@@ -89,24 +87,6 @@ octavia_system_shell: /bin/false
 octavia_system_comment: octavia system user
 octavia_system_home_folder: "/var/lib/{{ octavia_system_user_name }}"
 
-## Default domain
-octavia_project_domain_name: Default
-octavia_project_name: admin
-octavia_user_domain_name: Default
-
-## Stack
-octavia_stack_domain_admin: stack_domain_admin
-octavia_stack_owner_name: octavia_stack_owner
-octavia_stack_domain_description: Owns users and projects created by octavia
-octavia_stack_user_domain_name: octavia
-octavia_max_nested_stack_depth: 5
-
-octavia_deferred_auth_method: trusts
-octavia_trusts_delegated_roles: []
-
-## Cinder backups
-octavia_cinder_backups_enabled: false
-
 ## Auth
 octavia_service_region: RegionOne
 octavia_service_project_name: "service"
@@ -117,15 +97,6 @@ octavia_service_user_domain_id: default
 octavia_keystone_auth_plugin: "{{ octavia_keystone_auth_type }}"
 octavia_keystone_auth_type: password
 octavia_ansible_endpoint_type: "internal" # endpoint for ansible
-
-## Trustee Auth
-octavia_service_trustee_project_name: "service"
-octavia_service_trustee_user_name: "octavia"
-octavia_service_trustee_password: "{{ octavia_service_password }}"
-octavia_service_trustee_project_domain_id: "default"
-octavia_service_trustee_user_domain_id: "default"
-octavia_keystone_trustee_auth_plugin: "{{ octavia_keystone_trustee_auth_type }}"
-octavia_keystone_trustee_auth_type: password
 
 ## octavia api service type and data
 octavia_service_name: octavia
@@ -148,8 +119,6 @@ octavia_service_in_ldap: false
 ## RPC
 octavia_rpc_thread_pool_size: 64
 octavia_rpc_conn_pool_size: 30
-octavia_rpc_response_timeout: 60
-octavia_rpc_workers: 2
 
 ## Plugin dirs
 octavia_plugin_dirs:
@@ -213,8 +182,6 @@ octavia_services:
 # Required secrets for the role
 octavia_required_secrets:
   - keystone_auth_admin_password
-  - octavia_stack_domain_admin_password
-  - octavia_auth_encryption_key
   - octavia_container_mysql_password
   - octavia_rabbitmq_password
   - octavia_service_password
