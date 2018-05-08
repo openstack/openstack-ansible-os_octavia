@@ -1,0 +1,67 @@
+---
+# Copyright 2018, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Ensure python OpenSSL dependencies are installed.
+  pip:
+    name: pyOpenSSL
+    state: present
+
+- name: Generate Cert Dirs
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+    owner: "{{ octavia_cert_user }}"
+  with_items:
+    - { path: "{{ octavia_cert_dir }}", mode: '0750' }
+    - { path: "{{ octavia_cert_dir }}/newcerts", mode: '0750'}
+    - { path: "{{ octavia_cert_dir }}/private", mode: '0750'}
+
+# These are run at the very first installation of Octavia
+# While Octavia acts as a CA for the server certificates,
+# for the amphora it only needs a client certificate and
+# the (public) certificate authority certificate.
+# Generating the secret key here and storing it
+# on the deploy host allows us to rotate the client
+# certificate without recycling the amphora since
+# we can keep the same CA.
+
+- name: Generate client certificate
+  block:
+    - name: Create the client CAs private key
+      openssl_privatekey:
+        path: "{{ octavia_client_ca_key }}"
+        passphrase: "{{ octavia_cert_password_client }}"
+        cipher: "{{ octavia_cert_cipher_client }}"
+        size: "{{ octavia_cert_key_length_client }}"
+
+    - name: Create client CA CSR
+      openssl_csr:
+        path: "{{ octavia_cert_dir }}/ca_01.csr"
+        common_name: "{{ octavia_cert_client_ca_common_name }}"
+        privatekey_path: "{{ octavia_client_ca_key }}"
+        privatekey_passphrase: "{{ octavia_cert_password_client }}"
+
+    - name: Create client CA certificate
+      openssl_certificate:
+        path: "{{ octavia_client_ca }}"
+        privatekey_path: "{{ octavia_client_ca_key }}"
+        privatekey_passphrase: "{{ octavia_cert_password_client }}"
+        csr_path: "{{ octavia_cert_dir }}/ca_01.csr"
+        provider: selfsigned
+        owner: "{{ octavia_cert_user }}"
+
+  when: octavia_generate_client_cert | bool == True
+

@@ -95,7 +95,7 @@ octavia_amphora_driver: "{% if test_octavia_amphora | bool %}amphora_haproxy_res
 octavia_compute_driver: "{% if test_octavia_amphora | bool %}compute_nova_driver{% else %}compute_noop_driver{% endif %}"
 octavia_network_driver: "{% if test_octavia_amphora | bool %}allowed_address_pairs_driver{% else %}network_noop_driver{% endif %}"
 
-#Neutron mappings
+#Neutron mappings (using OpenStack client came with Rocky)
 neutron_plugin_base:
   - router
   - metering
@@ -132,3 +132,9 @@ neutron_rpc_conn_pool_size: |
   endpoint_type = internalURL
   service_name = neutron
   auth_version = 3
+
+# cert generation
+octavia_cert_dir: /var/tmp/certs
+octavia_cert_password_client: 'changeme'
+octavia_cert_user: zuul
+
