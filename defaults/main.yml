@@ -108,11 +108,8 @@ octavia_service_adminuri_proto: "{{ openstack_service_adminuri_proto | default(o
 octavia_service_internaluri_proto: "{{ openstack_service_internaluri_proto | default(octavia_service_proto) }}"
 octavia_service_type: load-balancer
 octavia_service_publicuri: "{{ octavia_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ octavia_service_port }}"
-octavia_service_publicurl_v2: "{{ octavia_service_publicuri }}/"
 octavia_service_adminuri: "{{ octavia_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ octavia_service_port }}"
-octavia_service_adminurl_v2: "{{ octavia_service_adminuri }}"
 octavia_service_internaluri: "{{ octavia_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ octavia_service_port }}"
-octavia_service_internalurl_v2: "{{ octavia_service_internaluri }}"
 
 octavia_service_in_ldap: false
 

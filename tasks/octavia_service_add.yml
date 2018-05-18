@@ -83,11 +83,11 @@
     service_type: "{{ octavia_service_type }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
     endpoint_list:
-      - url: "{{ octavia_service_publicurl_v2 }}"
+      - url: "{{ octavia_service_publicuri }}"
         interface: "public"
-      - url: "{{ octavia_service_internalurl_v2 }}"
+      - url: "{{ octavia_service_internaluri }}"
         interface: "internal"
-      - url: "{{ octavia_service_adminurl_v2 }}"
+      - url: "{{ octavia_service_adminuri }}"
         interface: "admin"
   register: add_service_v2
   until: add_service_v2|success

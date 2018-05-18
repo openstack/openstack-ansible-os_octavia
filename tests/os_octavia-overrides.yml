@@ -35,9 +35,9 @@ octavia_system_home_folder: "/var/lib/{{ octavia_system_user_name }}"
 octavia_venv_tag: "testing"
 octavia_developer_mode: True
 octavia_git_install_branch: master
-octavia_service_internalurl_v2: "http://{{ test_octavia_api_host }}:9876"
-octavia_service_adminurl_v2: "{{ octavia_service_internalurl_v2 }}"
-octavia_service_publicurl_v2: "{{ octavia_service_internalurl_v2 }}"
+octavia_service_internaluri: "http://{{ test_octavia_api_host }}:9876"
+octavia_service_adminuri: "{{ octavia_service_internaluri }}"
+octavia_service_publicuri: "{{ octavia_service_internaluri }}"
 
 octavia_service_password: "secrete"
 octavia_service_name: octavia
