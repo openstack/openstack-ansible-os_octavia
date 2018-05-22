@@ -135,6 +135,6 @@ neutron_rpc_conn_pool_size: |
 
 # cert generation
 octavia_cert_dir: /var/tmp/certs
-octavia_cert_password_client: 'changeme'
+octavia_cert_client_password: 'changeme'
 octavia_cert_user: zuul
 
