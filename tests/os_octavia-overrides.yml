@@ -100,5 +100,5 @@ octavia_compute_driver: "{% if test_octavia_amphora | bool %}compute_nova_driver
 octavia_network_driver: "{% if test_octavia_amphora | bool %}allowed_address_pairs_driver{% else %}network_noop_driver{% endif %}"
 
 # cert generation
-octavia_cert_password_client: 'changeme'
+octavia_cert_client_password: 'changeme'
 

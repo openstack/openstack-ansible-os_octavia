@@ -43,7 +43,7 @@
     - name: Create the client CAs private key
       openssl_privatekey:
         path: "{{ octavia_client_ca_key }}"
-        passphrase: "{{ octavia_cert_password_client }}"
+        passphrase: "{{ octavia_cert_client_password }}"
         cipher: "{{ octavia_cert_cipher_client }}"
         size: "{{ octavia_cert_key_length_client }}"
 
@@ -52,13 +52,13 @@
         path: "{{ octavia_cert_dir }}/ca_01.csr"
         common_name: "{{ octavia_cert_client_ca_common_name }}"
         privatekey_path: "{{ octavia_client_ca_key }}"
-        privatekey_passphrase: "{{ octavia_cert_password_client }}"
+        privatekey_passphrase: "{{ octavia_cert_client_password }}"
 
     - name: Create client CA certificate
       openssl_certificate:
         path: "{{ octavia_client_ca }}"
         privatekey_path: "{{ octavia_client_ca_key }}"
-        privatekey_passphrase: "{{ octavia_cert_password_client }}"
+        privatekey_passphrase: "{{ octavia_cert_client_password }}"
         csr_path: "{{ octavia_cert_dir }}/ca_01.csr"
         provider: selfsigned
         owner: "{{ lookup('env', 'USER') }}"
