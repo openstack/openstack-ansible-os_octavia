@@ -22,6 +22,10 @@
       pip:
         name: "shade"
         state: "{{ octavia_pip_package_state }}"
+        extra_args: >-
+          {{ octavia_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
+          {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
+          {{ pip_install_options | default('') }}
       register: install_packages
       until: install_packages|success
       retries: 5
