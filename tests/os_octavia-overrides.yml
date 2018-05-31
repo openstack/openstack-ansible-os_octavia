@@ -53,6 +53,7 @@ octavia_service_project_domain_id: default
 octavia_service_user_domain_id: default
 octavia_service_user_name: "octavia"
 octavia_ansible_endpoint_type: "internal"
+octavia_legacy_policy: True
 
 
 octavia_health_hmac_key: secrete
