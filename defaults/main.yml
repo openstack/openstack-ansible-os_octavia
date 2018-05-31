@@ -453,6 +453,16 @@ octavia_ca_private_key_passphrase: "{{ octavia_cert_client_password }}"
 octavia_ca_certificate: "{{ octavia_cert_dir }}/ca_server_01.pem"
 octavia_signing_digest: sha256
 
+# Quotas for the Octavia user - assuming active/passive topology
+octavia_num_instances: 10000 # 5000 LB in active/passive
+octavia_ram: "{{ octavia_num_instances*1024 }}"
+octavia_num_server_groups: "{{ (octavia_num_instances*0.5)|int|abs }}"
+octavia_num_server_group_members: 50
+octavia_num_cores: "{{ octavia_num_instances }}"
+octavia_num_secgroups: "{{ octavia_num_instances*1.5|int|abs}}" # average 3 listener per lb
+octavia_num_ports: "{{ octavia_num_instances*10 }}" # at least instances * 10
+octavia_num_security_group_rules: 100
+
 ## Tunable overrides
 octavia_octavia_conf_overrides: {}
 octavia_api_paste_ini_overrides: {}

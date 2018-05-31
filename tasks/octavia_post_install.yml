@@ -56,6 +56,26 @@
     - src: "{{ octavia_ca_private_key }}"
       dest: "/etc/octavia/certs/ca_key.pem"
 
+- name: Setup the service project quota
+  # OS Quota has a bug that it always requires a configured cinder
+  # to work which we don;t have in our tests
+  # so using command line until os_quota is fixed
+  shell: >-
+    openstack quota set
+    --os-cloud default
+    --cores {{ octavia_num_cores }}
+    --instances {{ octavia_num_instances }}
+    --ram {{ octavia_ram }}
+    --server-groups {{ octavia_num_server_groups }}
+    --server-group-members {{ octavia_num_server_group_members }}
+    --secgroups {{ octavia_num_secgroups }}
+    --ports {{ octavia_num_ports }}
+    --secgroup-rules {{ octavia_num_secgroups }}
+    {{ octavia_service_project_name }}
+  run_once: True
+  tags:
+    - skip_ansible_lint
+
 - name: Copy user provided HAProxy templates
   copy:
     src: "{{ item.src }}"
