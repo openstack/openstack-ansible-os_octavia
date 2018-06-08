@@ -134,6 +134,7 @@ octavia_requires_pip_packages:
 octavia_pip_packages:
   - cryptography
   - keystonemiddleware
+  - osprofiler
   - PyMySQL
   - python-glanceclient
   - python-keystoneclient
@@ -415,4 +416,3 @@ octavia_signing_digest: sha256
 octavia_octavia_conf_overrides: {}
 octavia_api_paste_ini_overrides: {}
 octavia_policy_overrides: {}
-
