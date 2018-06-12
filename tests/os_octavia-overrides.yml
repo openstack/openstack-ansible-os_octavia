@@ -46,12 +46,20 @@ octavia_galera_address: "{{ test_galera_host }}"
 octavia_galera_database: octavia
 octavia_galera_user: octavia
 octavia_container_mysql_password: "secrete"
-octavia_rabbitmq_password: "{{ rabbitmq_password }}"
-octavia_rabbitmq_userid: octavia
-octavia_rabbitmq_vhost: /octavia
-octavia_rabbitmq_servers: "{{ rabbitmq_servers }}"
-octavia_rabbitmq_use_ssl: "{{ rabbitmq_use_ssl }}"
-octavia_rabbitmq_port: "{{ rabbitmq_port }}"
+octavia_oslomsg_rpc_transport: "{{ oslomsg_rpc_transport }}"
+octavia_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"
+octavia_oslomsg_rpc_userid: octavia
+octavia_oslomsg_rpc_vhost: /octavia
+octavia_oslomsg_rpc_servers: "{{ oslomsg_rpc_servers }}"
+octavia_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl }}"
+octavia_oslomsg_rpc_port: "{{ oslomsg_rpc_port }}"
+octavia_oslomsg_notify_transport: "{{ oslomsg_notify_transport }}"
+octavia_oslomsg_notify_password: "{{ oslomsg_notify_password }}"
+octavia_oslomsg_notify_userid: octavia
+octavia_oslomsg_notify_vhost: /octavia
+octavia_oslomsg_notify_servers: "{{ oslomsg_notify_servers }}"
+octavia_oslomsg_notify_ssl: "{{ oslomsg_notify_use_ssl }}"
+octavia_oslomsg_notify_port: "{{ oslomsg_notify_port }}"
 octavia_standalone: False
 octavia_swift_temp_url_secret_key: secrete
 octavia_keystone_auth_plugin: password

@@ -62,23 +62,23 @@ octavia_db_max_overflow: 20
 octavia_db_pool_size: 120
 octavia_db_pool_timeout: 30
 
-## RabbitMQ info
+## Oslo Messaging
 
-## Configuration for RPC communications
-octavia_rabbitmq_userid: octavia
-octavia_rabbitmq_vhost: /octavia
-octavia_rabbitmq_servers: 127.0.0.1
-octavia_rabbitmq_use_ssl: False
-octavia_rabbitmq_port: 5672
+# RPC
+octavia_oslomsg_rpc_transport: rabbit
+octavia_oslomsg_rpc_servers: 127.0.0.1
+octavia_oslomsg_rpc_port: 5672
+octavia_oslomsg_rpc_use_ssl: False
+octavia_oslomsg_rpc_userid: octavia
+octavia_oslomsg_rpc_vhost: /octavia
 
-## Configuration for notifications communication, i.e. [oslo_messaging_notifications]
-octavia_rabbitmq_telemetry_userid: "{{ octavia_rabbitmq_userid }}"
-octavia_rabbitmq_telemetry_password: "{{ octavia_rabbitmq_password }}"
-octavia_rabbitmq_telemetry_vhost: "{{ octavia_rabbitmq_vhost }}"
-octavia_rabbitmq_telemetry_port: "{{ octavia_rabbitmq_port }}"
-octavia_rabbitmq_telemetry_servers: "{{ octavia_rabbitmq_servers }}"
-octavia_rabbitmq_telemetry_use_ssl: "{{ octavia_rabbitmq_use_ssl }}"
-
+# Notify
+octavia_oslomsg_notify_transport: rabbit
+octavia_oslomsg_notify_servers: 127.0.0.1
+octavia_oslomsg_notify_port: 5672
+octavia_oslomsg_notify_use_ssl: False
+octavia_oslomsg_notify_userid: octavia
+octavia_oslomsg_notify_vhost: /octavia
 
 ## octavia User / Group
 octavia_system_user_name: octavia
@@ -180,7 +180,8 @@ octavia_services:
 octavia_required_secrets:
   - keystone_auth_admin_password
   - octavia_container_mysql_password
-  - octavia_rabbitmq_password
+  - octavia_oslomsg_rpc_password
+  - octavia_oslomsg_notify_password
   - octavia_service_password
   - memcached_encryption_key
 
@@ -251,18 +252,19 @@ octavia_sync_provisioning_status: False
 
 # OSA is architected to use vHosts for queues so we need to post events
 # into the Neutron queue for them to be picked up
-neutron_rabbitmq_userid: neutron
-neutron_rabbitmq_vhost: /neutron
-neutron_rabbitmq_port: 5672
-neutron_rabbitmq_servers: 127.0.0.1
-neutron_rabbitmq_use_ssl: False
-neutron_rabbitmq_password: changeme
+neutron_oslomsg_rpc_userid: neutron
+neutron_oslomsg_rpc_vhost: /neutron
+neutron_oslomsg_rpc_transport: rabbit
+neutron_oslomsg_rpc_port: 5672
+neutron_oslomsg_rpc_servers: 127.0.0.1
+neutron_oslomsg_rpc_use_ssl: False
+neutron_oslomsg_rpc_password: changeme
 
 # For additional security use a different user on the Neutron queue
 # for Octavia with restricted access to only the event streamer
 # queues
-octavia_neutron_rabbitmq_userid: "{{ neutron_rabbitmq_userid }}"
-octavia_neutron_rabbitmq_password: "{{ neutron_rabbitmq_password }}"
+octavia_neutron_oslomsg_rpc_userid: "{{ neutron_oslomsg_rpc_userid }}"
+octavia_neutron_oslomsg_rpc_password: "{{ neutron_oslomsg_rpc_password }}"
 
 # this controls if Octavia should add an anti-affinity hint to make sure
 # two amphora are not placed pn the same host (the most common setup of
