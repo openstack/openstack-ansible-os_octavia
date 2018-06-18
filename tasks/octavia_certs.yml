@@ -20,21 +20,16 @@
     cipher: "{{ octavia_cert_cipher_server }}"
     size: "{{ octavia_cert_key_length_server }}"
 
-- name: Create server CA CSR
-  openssl_csr:
-    path: "{{ octavia_cert_dir }}/ca_server_01.csr"
-    common_name: "{{ octavia_cert_server_ca_common_name }}"
-    privatekey_path: "{{ octavia_ca_private_key }}"
-    privatekey_passphrase: "{{ octavia_ca_private_key_passphrase }}"
-
 - name: Create server CA certificate
-  openssl_certificate:
-    path: "{{ octavia_ca_certificate }}"
-    privatekey_path: "{{ octavia_ca_private_key }}"
-    privatekey_passphrase: "{{ octavia_ca_private_key_passphrase }}"
-    csr_path: "{{ octavia_cert_dir }}/ca_server_01.csr"
-    provider: selfsigned
-    owner: "{{ lookup('env', 'USER') }}"
+  command: >
+    openssl req -x509 -passin pass:'{{ octavia_ca_private_key_passphrase }}' -new -nodes -key {{ octavia_ca_private_key }}  \
+    -config {{ octavia_cert_dir }}/openssl.cnf \
+    -subj "{{ octavia_cert_server_ca_subject }}" \
+    -days {{ octavia_cert_validity_days }} \
+    -out {{ octavia_ca_certificate }}
+  args:
+    chdir: "{{ octavia_cert_dir }}"
+    creates: "{{ octavia_ca_certificate }}"
 
 - name: Generate Octavia client certificate
   block:
@@ -47,16 +42,19 @@
       openssl_csr:
         path: "{{ octavia_cert_dir }}/client.csr"
         common_name: "{{ octavia_cert_client_req_common_name }}"
+        country_name: "{{ octavia_cert_client_req_country_name }}"
+        state_or_province_name: "{{ octavia_cert_client_req_state_or_province_name }}"
+        locality_name: "{{ octavia_cert_client_req_locality_name }}"
+        organization_name: "{{ octavia_cert_client_req_organization_name }}"
         privatekey_path: "{{ octavia_cert_dir }}/client.key"
 
     - name: Create client certificate
-      openssl_certificate:
-        path: "{{ octavia_cert_dir }}/client-.pem"
-        privatekey_path: "{{ octavia_ca_private_key }}"
-        privatekey_passphrase: "{{ octavia_ca_private_key_passphrase }}"
-        csr_path: "{{ octavia_cert_dir }}/client.csr"
-        provider: selfsigned
-        owner: "{{ lookup('env', 'USER') }}"
+      command: >
+        openssl ca -passin pass:'{{ octavia_ca_private_key_passphrase }}' -config {{ octavia_cert_dir }}/openssl.cnf \
+        -in client.csr -days {{ octavia_cert_validity_days }} -out client-.pem -batch
+      args:
+        chdir: "{{ octavia_cert_dir }}"
+        creates: "{{ octavia_cert_dir }}/client-.pem"
 
     # use cat to avoid mangling the certs
     - name: Generate single pem client.pem
