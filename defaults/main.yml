@@ -234,7 +234,7 @@ octavia_health_manager_port: 5555
 octavia_amp_flavor_name: "m1.amphora"
 octavia_amp_ram: 1024
 octavia_amp_vcpu: 1
-octavia_amp_disk: 2
+octavia_amp_disk: 20
 
 # spare pool - increase to speed up load balancer creation and fail over
 octavia_spare_amphora_pool_size: 1
