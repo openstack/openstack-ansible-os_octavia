@@ -16,7 +16,7 @@
 ## gate cloud provides reliabley. To cut down on gate errors this will
 ## disbale the tests which spin up an amphora
 ## As of 4/6/18 zuul runs out of memory testing with this enabled
-test_octavia_amphora: False
+test_octavia_amphora: True
 
 # Test Octavia standalone
 octavia_v2: True

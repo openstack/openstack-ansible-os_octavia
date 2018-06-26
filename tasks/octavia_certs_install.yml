@@ -33,6 +33,28 @@
     - { path: "{{ octavia_cert_dir }}/newcerts", mode: '0750'}
     - { path: "{{ octavia_cert_dir }}/private", mode: '0750'}
 
+# ansible's openssl_certificate can't create X509 extensions
+# but you need CA: true in Basic Constrainst to have a CA cert
+
+# set up openssl for use
+- name: Touch index.txt
+  file:
+    path: "{{ octavia_cert_dir }}/index.txt"
+    state: touch
+    mode: 0755
+
+- name: Init serial
+  copy:
+    content: "01"
+    dest: "{{ octavia_cert_dir }}/serial"
+    force: no
+
+- name: Generate openssl.conf
+  template:
+    src: "templates/openssl.conf.j2"
+    dest:  "{{ octavia_cert_dir }}/openssl.cnf"
+    mode: 0440
+
 # These are run at the very first installation of Octavia
 # While Octavia acts as a CA for the server certificates,
 # for the amphora it only needs a client certificate and
@@ -51,21 +73,16 @@
         cipher: "{{ octavia_cert_cipher_client }}"
         size: "{{ octavia_cert_key_length_client }}"
 
-    - name: Create client CA CSR
-      openssl_csr:
-        path: "{{ octavia_cert_dir }}/ca_01.csr"
-        common_name: "{{ octavia_cert_client_ca_common_name }}"
-        privatekey_path: "{{ octavia_client_ca_key }}"
-        privatekey_passphrase: "{{ octavia_cert_client_password }}"
-
     - name: Create client CA certificate
-      openssl_certificate:
-        path: "{{ octavia_client_ca }}"
-        privatekey_path: "{{ octavia_client_ca_key }}"
-        privatekey_passphrase: "{{ octavia_cert_client_password }}"
-        csr_path: "{{ octavia_cert_dir }}/ca_01.csr"
-        provider: selfsigned
-        owner: "{{ lookup('env', 'USER') }}"
+      command: >
+        openssl req -x509 -passin pass:'{{ octavia_cert_client_password }}' -new -nodes -key {{ octavia_client_ca_key }}  \
+        -config {{ octavia_cert_dir }}/openssl.cnf \
+        -subj "{{ octavia_cert_client_ca_subject }}" \
+        -days {{ octavia_cert_validity_days }} \
+        -out {{ octavia_client_ca }}
+      args:
+        chdir: "{{ octavia_cert_dir }}"
+        creates: "{{ octavia_client_ca }}"
 
   when: octavia_generate_client_cert | bool == True
 
