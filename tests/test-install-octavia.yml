@@ -23,9 +23,6 @@
       notify_vhost: "{{ octavia_oslomsg_notify_vhost }}"
       notify_user: "{{ octavia_oslomsg_notify_userid }}"
       notify_password: "{{ octavia_oslomsg_notify_password }}"
-    - include: common/create-grant-db.yml
-      db_name: "{{ octavia_galera_database }}"
-      db_password: "{{ octavia_container_mysql_password }}"
   roles:
     - role: "{{ octavia_rolename | default('os_octavia') }}"
   vars_files:
