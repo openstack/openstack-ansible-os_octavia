@@ -16,6 +16,11 @@
 ## Verbosity Options
 debug: False
 
+# Set the host which will execute the shade modules
+# for the service setup. The host must already have
+# clouds.yaml properly configured.
+octavia_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
+
 ## Octavia standalone (v2) experimental
 octavia_v2: True
 
