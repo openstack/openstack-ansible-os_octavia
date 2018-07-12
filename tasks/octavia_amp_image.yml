@@ -39,7 +39,7 @@
     - octavia_amp_image_upload_enabled
     - octavia_image_downloader == "deployment-host"
   register: octavia_amp_image_copy_result
-  until: octavia_amp_image_copy_result | success
+  until: octavia_amp_image_copy_result is success
   retries: 6
   delay: 5
 

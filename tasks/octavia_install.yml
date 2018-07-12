@@ -20,7 +20,7 @@
     update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
     cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   register: install_packages
-  until: install_packages|success
+  until: install_packages is success
   retries: 5
   delay: 2
 
@@ -42,7 +42,7 @@
       {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
       {{ pip_install_options | default('') }}
   register: install_packages
-  until: install_packages|success
+  until: install_packages is success
   retries: 5
   delay: 2
 
@@ -65,7 +65,7 @@
   file:
     path: "{{ octavia_bin | dirname }}"
     state: absent
-  when: octavia_get_venv | changed
+  when: octavia_get_venv is changed
 
 - name: Create octavia venv dir
   file:
@@ -81,7 +81,7 @@
     copy: "no"
   when:
     - not octavia_developer_mode | bool
-    - octavia_get_venv | changed or octavia_venv_dir | changed
+    - octavia_get_venv is changed or octavia_venv_dir is changed
   notify: Restart octavia services
 
 - name: Install pip packages
@@ -95,7 +95,7 @@
       {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
       {{ pip_install_options | default('') }}
   register: install_packages
-  until: install_packages|success
+  until: install_packages is success
   retries: 5
   delay: 2
   when: octavia_developer_mode | bool
@@ -108,7 +108,7 @@
   when:
     - ansible_pkg_mgr == 'yum'
     - not octavia_developer_mode | bool
-    - octavia_get_venv | changed or octavia_venv_dir | changed
+    - octavia_get_venv is changed or octavia_venv_dir is changed
 
 # NOTE(odyssey4me):
 # We reinitialize the venv to ensure that the right
@@ -128,7 +128,7 @@
         --no-wheel
   when:
     - not octavia_developer_mode | bool
-    - octavia_get_venv | changed or octavia_venv_dir | changed
+    - octavia_get_venv is changed or octavia_venv_dir is changed
   tags:
     - skip_ansible_lint
 
