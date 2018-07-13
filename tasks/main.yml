@@ -32,15 +32,9 @@
   tags:
     - always
 
-- include: octavia_certs_install.yml
-  when: octavia_generate_certs | bool
-  delegate_to: localhost
-  tags:
-    - octavia-install
-
 - include: octavia_certs.yml
+  static: no
   when: octavia_generate_certs | bool
-  delegate_to: localhost
   tags:
     - octavia-config
 
