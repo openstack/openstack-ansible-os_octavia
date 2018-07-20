@@ -22,4 +22,5 @@ Release notes for the project can be found at:
 The project source code repository is located at:
 `<https://git.openstack.org/cgit/openstack/openstack-ansible-os_octavia>`_
 
-The project home is at: `<https://launchpad.net/openstack-ansible>`_
+The project home is at:
+`<https://launchpad.net/openstack-ansible>`_
