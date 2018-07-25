@@ -42,7 +42,7 @@
           {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
           {{ pip_install_options | default('') }}
       register: install_packages
-      until: install_packages|success
+      until: install_packages is success
       retries: 5
       delay: 2
       with_items:
@@ -143,7 +143,7 @@
         openstack loadbalancer show test-lb
       environment: "{{ env }}"
       when:
-        - debug|bool == true
+        - debug | bool
       tags:
         - skip_ansible_lint
 
@@ -161,13 +161,13 @@
       uri:
         url: "http://{{ vip }}"
         status_code: 503
-      when: test_octavia_amphora|bool == true
+      when: test_octavia_amphora | bool
     - name: Delete LoadBalancer
       shell: >
         openstack loadbalancer delete --cascade test-lb
       environment: "{{ env }}"
       register: lb_deleted
-      until: lb_deleted|success
+      until: lb_deleted is success
       retries: 10
       delay: 15
       tags:
