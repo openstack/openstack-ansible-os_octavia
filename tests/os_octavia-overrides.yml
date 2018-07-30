@@ -11,56 +11,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-## Octavia rewuires currently nested virtualization (VT-X) which only one jenkins
-## gate cloud provides reliabley. To cut down on gate errors this will
-## disbale the tests which spin up an amphora
-## As of 4/6/18 zuul runs out of memory testing with this enabled
 test_octavia_amphora: True
-
-# Test Octavia standalone
 octavia_v2: True
 octavia_v1: False
+octavia_legacy_policy: True
 
 # Infra hosts don't have enough disk for the 20 GB
 # introduced by Change # I94f5af2055d1b6b41a9a170ca9b4daf57363c972
 octavia_amp_disk: 3
 
-test_octavia_api_host: "{{ hostvars['octavia1']['ansible_host'] }}"
+# The defaults refer to the load balancer address, so
+# we must provide them here.
+external_lb_vip_address: "{{ hostvars['octavia1']['ansible_host'] }}"
+internal_lb_vip_address: "{{ external_lb_vip_address }}"
 
-## octavia User / Group
-octavia_system_user_name: octavia
-octavia_system_group_name: octavia
-octavia_system_shell: /bin/false
-octavia_system_comment: octavia system user
-octavia_system_home_folder: "/var/lib/{{ octavia_system_user_name }}"
-
-# Octavia specific settings
-octavia_venv_tag: "testing"
 octavia_developer_mode: True
-octavia_git_install_branch: master
-octavia_service_internaluri: "http://{{ test_octavia_api_host }}:9876"
-octavia_service_adminuri: "{{ octavia_service_internaluri }}"
-octavia_service_publicuri: "{{ octavia_service_internaluri }}"
+
+octavia_galera_address: "{{ test_galera_host }}"
 
 octavia_service_password: "secrete"
-octavia_service_name: octavia
-octavia_service_project_name: "service"
-octavia_galera_address: "{{ test_galera_host }}"
-octavia_galera_database: octavia
-octavia_galera_user: octavia
 octavia_container_mysql_password: "secrete"
 octavia_oslomsg_rpc_password: "{{ oslomsg_rpc_password }}"
-octavia_standalone: False
 octavia_swift_temp_url_secret_key: secrete
-octavia_keystone_auth_plugin: password
-octavia_service_project_domain_id: default
-octavia_service_user_domain_id: default
-octavia_service_user_name: "octavia"
-octavia_ansible_endpoint_type: "internal"
-octavia_legacy_policy: True
-
-
 octavia_health_hmac_key: secrete
 
 test_swift_storage_network: "eth3"
@@ -88,7 +60,6 @@ neutron_l3: True
 neutron_metadata: True
 
 octavia_pip_package_state: latest
-octavia_package_state: latest
 octavia_neutron_management_network_name: lbaas-mgmt
 octavia_management_net_subnet_cidr: 10.1.7.0/24
 
@@ -100,4 +71,3 @@ octavia_network_driver: "{% if test_octavia_amphora | bool %}allowed_address_pai
 
 # cert generation
 octavia_cert_client_password: 'changeme'
-
