@@ -18,6 +18,11 @@
   user: root
   gather_facts: false
   vars:
+    octavia_service_user_name: octavia
+    octavia_service_project_name: service
+    octavia_service_user_domain_id: default
+    octavia_service_project_domain_id: default
+    octavia_ansible_endpoint_type: internal
     env:
       OS_ENDPOINT_TYPE: internalURL
       OS_INTERFACE: internalURL
