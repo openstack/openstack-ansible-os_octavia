@@ -161,7 +161,7 @@ octavia_health_manager_init_overrides: {}
 ## Service Name-Group Mapping
 octavia_services:
   octavia-api:
-    group: octavia_api
+    group: octavia-api
     service_name: octavia-api
     init_config_overrides: "{{ octavia_api_init_overrides }}"
     wsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
@@ -172,15 +172,15 @@ octavia_services:
     uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
     program_override: "{{ octavia_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
   octavia-worker:
-    group: octavia_worker
+    group: octavia-worker
     service_name: octavia-worker
     init_config_overrides: "{{ octavia_worker_init_overrides }}"
   octavia-housekeeping:
-    group: octavia_housekeeping
+    group: octavia-housekeeping
     service_name: octavia-housekeeping
     init_config_overrides: "{{ octavia_housekeeping_init_overrides }}"
   octavia-health-manager:
-    group: octavia_health_manager
+    group: octavia-health_manager
     service_name: octavia-health-manager
     init_config_overrides: "{{ octavia_health_manager_init_overrides }}"
 
