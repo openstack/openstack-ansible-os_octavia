@@ -112,7 +112,6 @@ octavia_service_project_domain_id: default
 octavia_service_user_domain_id: default
 octavia_keystone_auth_plugin: "{{ octavia_keystone_auth_type }}"
 octavia_keystone_auth_type: password
-octavia_ansible_endpoint_type: "internal" # endpoint for ansible
 
 ## octavia api service type and data
 octavia_service_name: octavia
@@ -137,14 +136,6 @@ octavia_rpc_conn_pool_size: 30
 octavia_plugin_dirs:
   - /usr/lib/octavia
   - /usr/local/lib/octavia
-
-# octavia packages that must be installed before anything else
-octavia_requires_pip_packages:
-  - httplib2
-  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
-  - shade
-  - virtualenv
-  - python-openstackclient
 
 # Common pip packages
 octavia_pip_packages:
