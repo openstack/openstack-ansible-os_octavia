@@ -93,3 +93,16 @@
           url: "{{ octavia_service_adminuri }}"
       when: octavia_v2 | bool
 
+    - name: Create service roles
+      os_keystone_role:
+        cloud: default
+        state: present
+        name: "{{ item }}"
+        endpoint_type: admin
+        verify: "{{ not keystone_service_adminuri_insecure }}"
+      with_items:
+        - load-balancer_observer
+        - load-balancer_global_observer
+        - load-balancer_member
+        - load-balancer_admin
+        - load-balancer_quota_admin
