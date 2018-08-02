@@ -72,6 +72,7 @@
     - octavia-install
 
 - include: octavia_flavor_create.yml
+  run_once: true
   when:
     - octavia_nova_flavor_uuid is not defined
   tags:
