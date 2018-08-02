@@ -21,4 +21,3 @@ octavia_distro_packages:
   - iptables-persistent
   - libxml2-dev
   - netfilter-persistent
-  - python-pip
