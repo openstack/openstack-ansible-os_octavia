@@ -69,6 +69,7 @@
     - octavia-config
 
 - include: octavia_security_group.yml
+  run_once: true
   tags:
     - octavia-install
 
