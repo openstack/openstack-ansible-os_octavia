@@ -113,6 +113,7 @@
     - octavia-config
 
 - include: octavia_amp_image.yml
+  run_once: true
   tags:
     - octavia-config
 

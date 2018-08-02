@@ -10,3 +10,9 @@ features:
     .. code-block:: yaml
 
       octavia_service_setup_host: "{{ groups['utility_all'][0] }}"
+
+deprecations:
+  - |
+    The variable ``octavia_image_downloader`` has been removed. The image
+    download now uses the same host designated by the
+    ``octavia_service_setup_host`` for the image download.

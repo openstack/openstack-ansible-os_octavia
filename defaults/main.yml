@@ -219,15 +219,13 @@ octavia_amp_image_id:
 # download the image from an artefact server
 # Note: The default is the Octavia test image so don't use that in prod
 octavia_download_artefact: True
-# The host to download images to if enabled
-# Options are ['deployment-host', 'target-host']
-octavia_image_downloader: "deployment-host"
-# The URL to downlaod from
+# The URL to download from
 octavia_artefact_url: http://tarballs.openstack.org/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-xenial.qcow2
-# the directory to store the downloaded file to
-octavia_amp_image_path: "~/"
-# add here the file name of the image if it should be uploaded automatically
-octavia_amp_image_file_name:
+# Set the directory where the downloaded image will be stored
+# on the octavia_service_setup_host host. If the host is localhost,
+# then the user running the playbook must have access to it.
+octavia_amp_image_path: "{{ lookup('env', 'HOME') }}/openstack-ansible/octavia"
+octavia_amp_image_path_owner: "{{ lookup('env', 'USER') }}"
 # enable uploading image to glance automatically
 octavia_amp_image_upload_enabled: "{{ octavia_download_artefact }}"
 

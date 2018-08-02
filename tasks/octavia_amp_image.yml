@@ -1,105 +1,81 @@
 ---
-  # Copyright 2018, Rackspace US, Inc.
-  #
-  # Licensed under the Apache License, Version 2.0 (the "License");
-  # you may not use this file except in compliance with the License.
-  # You may obtain a copy of the License at
-  #
-  #     http://www.apache.org/licenses/LICENSE-2.0
-  #
-  # Unless required by applicable law or agreed to in writing, software
-  # distributed under the License is distributed on an "AS IS" BASIS,
-  # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  # See the License for the specific language governing permissions and
-  # limitations under the License.
+# Copyright 2018, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-- name: Download image from artefact server
-  get_url:
-    url: "{{ octavia_artefact_url }}"
-    dest: "{{ octavia_amp_image_path }}"
-  retries: 10
-  delay: 10
-  register: octavia_download_result
-  when:
-    - octavia_download_artefact|bool
-  delegate_to: "{{ (octavia_image_downloader == 'deployment-host') | ternary('localhost', inventory_hostname) }}"
+# We set the python interpreter to the ansible runtime venv if
+# the delegation is to localhost so that we get access to the
+# appropriate python libraries in that venv. If the delegation
+# is to another host, we assume that it is accessible by the
+# system python instead.
+- name: Setup the amphora image
+  delegate_to: "{{ octavia_service_setup_host }}"
+  vars:
+    ansible_python_interpreter: >-
+      {{ (octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable']) }}
+  block:
+    - name: Create image download directory
+      file:
+        path: "{{ octavia_amp_image_path }}"
+        state: directory
+        mode: "0750"
+        owner: "{{ octavia_amp_image_path_owner }}"
+      when:
+        - octavia_download_artefact | bool
 
-- name: Set the filename fact
-  set_fact:
-    octavia_amp_image_file_name: "{{ octavia_download_result.dest }}"
-  when:
-    - octavia_image_downloader == "deployment-host"
-    - octavia_download_artefact|bool
+    - name: Download image from artefact server
+      get_url:
+        url: "{{ octavia_artefact_url }}"
+        dest: "{{ octavia_amp_image_path }}"
+      retries: 10
+      delay: 10
+      register: octavia_download_result
+      when:
+        - octavia_download_artefact | bool
 
-- name: Copy download images from deployment-host to target-host(s)
-  copy:
-    src: "{{ octavia_amp_image_file_name }}"
-    dest: "~/{{ octavia_amp_image_file_name|basename }}"
-  when:
-    - octavia_amp_image_upload_enabled
-    - octavia_image_downloader == "deployment-host"
-  register: octavia_amp_image_copy_result
-  until: octavia_amp_image_copy_result is success
-  retries: 6
-  delay: 5
+    - name: Get current image id
+      os_image_facts:
+        cloud: default
+        region_name: "{{ octavia_service_region }}"
+        image: amphora-x64-haproxy
+        endpoint_type: admin
+        verify: "{{ not keystone_service_adminuri_insecure }}"
+      when:
+         - octavia_download_result | changed
 
-- name: Set if we need to upload an image
-  set_fact:
-    octavia_amp_image_needs_upload: "{{ (octavia_image_downloader != 'deployment-host')|ternary(octavia_download_result|changed, octavia_amp_image_copy_result|changed) }}"
-    octavia_dst_amp_image_path: "{{ ((octavia_image_downloader == 'deployment-host') and (octavia_download_artefact|bool))|ternary(octavia_amp_image_copy_result.dest, octavia_download_result.dest) }}"
-  when:
-    - octavia_amp_image_upload_enabled
+    # This uses command since os_image doesn't support tags.
+    # TODO(odyssey4me):
+    # Add tag capability to os_image module and replace this.
+    - name: Upload new image to glance
+      command: >-
+        openstack image create
+        --os-cloud default
+        --file {{ octavia_download_result.dest }}
+        --disk-format qcow2
+        --tag {{ octavia_glance_image_tag }}
+        --private
+        --project service
+        amphora-x64-haproxy
+      when:
+        - octavia_download_result | changed
 
-- name: Get curremt image id
-  os_image_facts:
-    auth:
-      auth_url: "{{ keystone_service_adminurl }}"
-      username: "{{ octavia_service_user_name }}"
-      password: "{{ octavia_service_password }}"
-      project_name: "{{ octavia_service_project_name }}"
-      user_domain_name: "{{ octavia_service_user_domain_id }}"
-      project_domain_name: "{{ octavia_service_project_domain_id }}"
-    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
-    region_name: "{{ octavia_service_region }}"
-    validate_certs: "{{ keystone_service_adminuri_insecure }}"
-    auth_type: "{{ octavia_keystone_auth_plugin }}"
-    image: amphora-x64-haproxy
-  when:
-     - octavia_amp_image_needs_upload|default(False)
-
-# use shell since os_image doesn't support tags
-- name: Upload new image to glance
-  shell: |
-    . {{ ansible_env.HOME }}/openrc
-    openstack image create --file  {{ octavia_dst_amp_image_path }} --disk-format qcow2 \
-    --tag {{ octavia_glance_image_tag }}  --private --project service amphora-x64-haproxy
-  when:
-    - octavia_amp_image_needs_upload|default(False)
-  run_once: True
-  tags:
-    - skip_ansible_lint
-
-- name: Delete old image from glance
-  os_image:
-    auth:
-      auth_url: "{{ keystone_service_adminurl }}"
-      username: "{{ octavia_service_user_name }}"
-      password: "{{ octavia_service_password }}"
-      project_name: "{{ octavia_service_project_name }}"
-      user_domain_name: "{{ octavia_service_user_domain_id }}"
-      project_domain_name: "{{ octavia_service_project_domain_id }}"
-    endpoint_type: "{{ octavia_ansible_endpoint_type }}"
-    region_name: "{{ octavia_service_region }}"
-    validate_certs: "{{ keystone_service_adminuri_insecure }}"
-    auth_type: "{{ octavia_keystone_auth_plugin }}"
-    id: "{{ openstack.id }}"
-    state: absent
-  when:
-   - openstack is defined # result from os_image_facts
-
-
-
-
-
-
-
+    - name: Delete old image from glance
+      os_image:
+        cloud: default
+        state: absent
+        region_name: "{{ octavia_service_region }}"
+        id: "{{ openstack.id }}"
+        endpoint_type: admin
+        verify: "{{ not keystone_service_adminuri_insecure }}"
+      when:
+       - openstack is defined # result from os_image_facts
