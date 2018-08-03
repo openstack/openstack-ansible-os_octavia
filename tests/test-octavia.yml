@@ -91,7 +91,7 @@
       shell: >
           cat /dev/zero | ssh-keygen -q -N ""
       args:
-        creates: /root/.ssh/id_rsa.pub
+        creates: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa"
       tags:
         - skip_ansible_lint
     - name: Upload key to nova
@@ -106,7 +106,7 @@
         endpoint_type: "{{ octavia_ansible_endpoint_type }}"
         state: present
         name: "octavia_key"
-        public_key_file: "/root/.ssh/id_rsa.pub"
+        public_key_file: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
       run_once: true
 
     - name: Create a loadbalancer
