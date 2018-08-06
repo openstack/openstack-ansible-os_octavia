@@ -100,6 +100,10 @@
         name: "{{ item }}"
         endpoint_type: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_roles
+      until: add_roles is success
+      retries: 5
+      delay: 10
       with_items:
         - load-balancer_observer
         - load-balancer_global_observer
