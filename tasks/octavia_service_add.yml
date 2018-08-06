@@ -31,7 +31,7 @@
         name: "{{ octavia_service_name }}"
         service_type: "{{ octavia_service_type }}"
         description: "{{ octavia_service_description }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_service
       until: add_service is success
@@ -46,7 +46,7 @@
         password: "{{ octavia_service_password }}"
         domain: default
         default_project: "{{ octavia_service_project_name }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_service
       when: not octavia_service_in_ldap | bool
@@ -62,7 +62,7 @@
         user: "{{ octavia_service_user_name }}"
         role: "{{ octavia_service_role_name }}"
         project: "{{ octavia_service_project_name }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_service
       when: not octavia_service_in_ldap | bool
@@ -78,7 +78,7 @@
         endpoint_interface: "{{ item.interface }}"
         url: "{{ item.url }}"
         region: "{{ octavia_service_region }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_service
       until: add_service is success
@@ -98,7 +98,7 @@
         cloud: default
         state: present
         name: "{{ item }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_roles
       until: add_roles is success

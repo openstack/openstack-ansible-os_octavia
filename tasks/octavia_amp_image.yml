@@ -48,7 +48,7 @@
         cloud: default
         region_name: "{{ octavia_service_region }}"
         image: amphora-x64-haproxy
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       when:
          - octavia_download_result | changed
@@ -75,7 +75,7 @@
         state: absent
         region_name: "{{ octavia_service_region }}"
         id: "{{ openstack.id }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       when:
        - openstack is defined # result from os_image_facts

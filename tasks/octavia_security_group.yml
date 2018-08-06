@@ -36,7 +36,7 @@
         state: present
         name: "{{ octavia_security_group_name }}"
         description: "security group for octavia amphora"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
 
     - name: Create security group rule for agent
@@ -54,7 +54,7 @@
         port_range_max: "{{ octavia_agent_port }}"
         remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
         security_group: "{{ octavia_security_group_name }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
 
     - name: Create security group rule for ssh
@@ -72,7 +72,7 @@
         port_range_min: 22
         port_range_max: 22
         remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       when:
         - octavia_ssh_enabled | bool
@@ -90,7 +90,7 @@
         security_group: "{{ octavia_security_group_name }}"
         protocol: icmp
         remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       when:
         - debug | bool

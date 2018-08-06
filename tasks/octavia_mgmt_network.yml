@@ -79,7 +79,7 @@
         cloud: default
         region_name: "{{ octavia_service_region }}"
         name: "{{ octavia_neutron_management_network_name }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: get_net_facts
       until: get_net_facts is success
