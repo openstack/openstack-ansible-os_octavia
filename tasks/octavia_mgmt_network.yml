@@ -26,21 +26,37 @@
   block:
     - name: Create mgmt network
       os_network:
-        cloud: default
+        auth:
+          auth_url: "{{ keystone_service_adminurl }}"
+          username: "{{ octavia_service_user_name }}"
+          password: "{{ octavia_service_password }}"
+          project_name: "{{ octavia_service_project_name }}"
+          user_domain_name: "{{ octavia_service_user_domain_id }}"
+          project_domain_name: "{{ octavia_service_project_domain_id }}"
         state: present
         region_name: "{{ octavia_service_region }}"
         name: "{{ octavia_neutron_management_network_name }}"
         provider_network_type: "{{ octavia_provider_network_type }}"
         provider_physical_network: "{{ octavia_provider_network_name }}"
         provider_segmentation_id: "{{ octavia_provider_segmentation_id | default(omit) }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_network
+      until: add_network is success
+      retries: 5
+      delay: 10
       when:
         - octavia_service_net_setup | bool
 
     - name: Ensure mgmt subnet exists
       os_subnet:
-        cloud: default
+        auth:
+          auth_url: "{{ keystone_service_adminurl }}"
+          username: "{{ octavia_service_user_name }}"
+          password: "{{ octavia_service_password }}"
+          project_name: "{{ octavia_service_project_name }}"
+          user_domain_name: "{{ octavia_service_user_domain_id }}"
+          project_domain_name: "{{ octavia_service_project_domain_id }}"
         state: present
         region_name: "{{ octavia_service_region }}"
         network_name: "{{ octavia_neutron_management_network_name }}"
@@ -49,8 +65,12 @@
         enable_dhcp: "{{ octavia_management_net_dhcp }}"
         allocation_pool_start: "{{ octavia_management_net_subnet_allocation_pools.split('-')[0] | default(omit) }}"
         allocation_pool_end: "{{ octavia_management_net_subnet_allocation_pools.split('-')[1] | default(omit) }}"
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_subnet
+      until: add_subnet is success
+      retries: 5
+      delay: 10
       when:
         - octavia_service_net_setup | bool
 
@@ -61,6 +81,10 @@
         name: "{{ octavia_neutron_management_network_name }}"
         endpoint_type: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: get_net_facts
+      until: get_net_facts is success
+      retries: 5
+      delay: 10
 
     - name: Set provisioning UUID fact
       set_fact:
