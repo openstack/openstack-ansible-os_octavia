@@ -26,25 +26,26 @@
   block:
     - name: Create Octavia Flavor
       os_nova_flavor:
-        cloud: default
+        auth:
+          auth_url: "{{ keystone_service_adminurl }}"
+          username: "{{ octavia_service_user_name }}"
+          password: "{{ octavia_service_password }}"
+          project_name: "{{ octavia_service_project_name }}"
+          user_domain_name: "{{ octavia_service_user_domain_id }}"
+          project_domain_name: "{{ octavia_service_project_domain_id }}"
         state: present
         name: "{{ octavia_amp_flavor_name}}"
         ram: "{{ octavia_amp_ram }}"
         vcpus: "{{ octavia_amp_vcpu }}"
         disk: "{{ octavia_amp_disk }}"
         is_public: False
-        endpoint_type: admin
+        interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
-
-    - name: Gather Octavia Flavor Id
-      os_flavor_facts:
-        cloud: default
-        name: "{{ octavia_amp_flavor_name}}"
-        endpoint_type: admin
-        verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_flavor
+      until: add_flavor is success
+      retries: 5
+      delay: 10
 
     - name: Set Octavia Flavor UUID fact 1
       set_fact:
-         octavia_nova_flavor_uuid: "{{ openstack_flavors[0].id }}"
-      when:
-        - openstack_flavors | length > 0
+         octavia_nova_flavor_uuid: "{{ add_flavor.flavor.id }}"
