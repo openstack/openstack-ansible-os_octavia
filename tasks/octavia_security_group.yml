@@ -38,6 +38,10 @@
         description: "security group for octavia amphora"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_security_group
+      until: add_security_group is success
+      retries: 5
+      delay: 10
 
     - name: Create security group rule for agent
       os_security_group_rule:
@@ -56,6 +60,10 @@
         security_group: "{{ octavia_security_group_name }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_security_group_rule
+      until: add_security_group_rule is success
+      retries: 5
+      delay: 10
 
     - name: Create security group rule for ssh
       os_security_group_rule:
@@ -74,6 +82,10 @@
         remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_security_group_rule
+      until: add_security_group_rule is success
+      retries: 5
+      delay: 10
       when:
         - octavia_ssh_enabled | bool
 
@@ -92,5 +104,9 @@
         remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_security_group_rule
+      until: add_security_group_rule is success
+      retries: 5
+      delay: 10
       when:
         - debug | bool

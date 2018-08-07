@@ -50,6 +50,10 @@
         image: amphora-x64-haproxy
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: get_image_facts
+      until: get_image_facts is success
+      retries: 5
+      delay: 10
       when:
          - octavia_download_result | changed
 
@@ -77,5 +81,9 @@
         id: "{{ openstack.id }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: remove_old_image
+      until: remove_old_image is success
+      retries: 5
+      delay: 10
       when:
        - openstack is defined # result from os_image_facts
