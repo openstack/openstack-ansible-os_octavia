@@ -92,6 +92,10 @@ octavia_oslomsg_notify_userid: "{{ octavia_oslomsg_rpc_userid }}"
 octavia_oslomsg_notify_password: "{{ octavia_oslomsg_rpc_password }}"
 octavia_oslomsg_notify_vhost: "{{ octavia_oslomsg_rpc_vhost }}"
 
+## (Qdrouterd) integration
+# TODO(ansmith): Change structure when more backends will be supported
+octavia_oslomsg_amqp1_enabled: "{{ octavia_oslomsg_rpc_transport == 'amqp' }}"
+
 ## octavia User / Group
 octavia_system_user_name: octavia
 octavia_system_group_name: octavia
@@ -157,6 +161,9 @@ octavia_pip_packages:
   - python-octaviaclient
   - octavia
   - uwsgi
+
+octavia_optional_oslomsg_amqp1_pip_packages:
+  - oslo.messaging[amqp1]
 
 octavia_api_init_overrides: {}
 octavia_worker_init_overrides: {}
