@@ -132,6 +132,9 @@ octavia_service_in_ldap: false
 octavia_rpc_thread_pool_size: 64
 octavia_rpc_conn_pool_size: 30
 
+## Timeouts
+octavia_amp_active_retries: 10
+
 ## Plugin dirs
 octavia_plugin_dirs:
   - /usr/lib/octavia
