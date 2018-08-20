@@ -16,6 +16,8 @@ octavia_v2: True
 octavia_v1: False
 octavia_legacy_policy: True
 
+octavia_amp_active_retries: 20
+
 # Infra hosts don't have enough disk for the 20 GB
 # introduced by Change # I94f5af2055d1b6b41a9a170ca9b4daf57363c972
 octavia_amp_disk: 3
