@@ -24,6 +24,26 @@
     ansible_python_interpreter: >-
       {{ (octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable']) }}
   block:
+    - name: Setup the service project quota
+      # The os_quota module has a bug that it always requires a
+      # configured cinder service to work, so we use the CLI instead.
+      # TODO(_xgerman):
+      # Use the os_quota module once the issue is resolved.
+      shell: >-
+        openstack quota set
+        --os-cloud default
+        --cores {{ octavia_num_cores }}
+        --instances {{ octavia_num_instances }}
+        --ram {{ octavia_ram }}
+        --server-groups {{ octavia_num_server_groups }}
+        --server-group-members {{ octavia_num_server_group_members }}
+        --secgroups {{ octavia_num_secgroups }}
+        --ports {{ octavia_num_ports }}
+        --secgroup-rules {{ octavia_num_secgroups }}
+        {{ octavia_service_project_name }}
+      tags:
+        - skip_ansible_lint
+
     - name: Create Octavia security group
       os_security_group:
         auth:
