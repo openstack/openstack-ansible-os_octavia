@@ -153,19 +153,22 @@ Here is a script to perform all those tasks at once:
             --container-format bare --tags octavia-amphora-image </var/lib/octavia/amphora-x64-haproxy.qcow2
 
 .. note::
-    If you have trouble installing dib-utils from pipy consider installing it directly from source
-    ` pip install git+https://github.com/openstack/dib-utils.git`
+    If you have trouble installing dib-utils from pipy consider
+    installing it directly from source
+    `pip install git+https://github.com/openstack/dib-utils.git`
 
 Creating the cryptographic certificates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. note::
-    For production installation make sure that you review this very carefully with your
-    own security requirements and potantially use your own CA to sign the certificates.
+    For production installation make sure that you review this very
+    carefully with your own security requirements and potantially use
+    your own CA to sign the certificates.
 
-The system will automatically generate and use self-signed certificates with different
-Certificate Authorities for control plane and amphora. Make sure to store a copy in
-a safe place for potential disaster recovery.
+The system will automatically generate and use self-signed
+certificates with different Certificate Authorities for control plane
+and amphora. Make sure to store a copy in a safe place for potential
+disaster recovery.
 
 Optional: Configuring Octavia with ssh access to the amphora
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
