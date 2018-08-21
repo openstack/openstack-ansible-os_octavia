@@ -14,29 +14,29 @@
 # limitations under the License.
 
 # Setup the host
-- include: common/test-setup-host.yml
+- import_playbook: common/test-setup-host.yml
 
 # Install RabbitMQ/MariaDB
-- include: common/test-install-infra.yml
+- import_playbook: common/test-install-infra.yml
 
 # Install Keystone
-- include: common/test-install-keystone.yml
+- import_playbook: common/test-install-keystone.yml
 
 # Install Swift
-- include: common/test-install-swift.yml
+- import_playbook: common/test-install-swift.yml
 
 # Install Glance
-- include: common/test-install-glance.yml
+- import_playbook: common/test-install-glance.yml
 
 # Install Neutron
-- include: common/test-install-neutron.yml
+- import_playbook: common/test-install-neutron.yml
 
 # Install Nova
-- include: common/test-install-nova.yml
+- import_playbook: common/test-install-nova.yml
 
 # Install Octavia
-- include: test-install-octavia.yml
+- import_playbook: test-install-octavia.yml
 
 # Test
-- include: test-octavia.yml
+- import_playbook: test-octavia.yml
 
