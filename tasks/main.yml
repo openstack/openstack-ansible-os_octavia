@@ -32,34 +32,33 @@
   tags:
     - always
 
-- include: octavia_certs.yml
-  static: no
+- include_tasks: octavia_certs.yml
   when: octavia_generate_certs | bool
   tags:
     - octavia-config
 
-- include: octavia_pre_install.yml
+- include_tasks: octavia_pre_install.yml
   tags:
     - octavia-install
 
-- include: octavia_install.yml
+- include_tasks: octavia_install.yml
   tags:
     - octavia-install
 
-- include: octavia_uwsgi.yml
+- include_tasks: octavia_uwsgi.yml
   tags:
     - octavia-config
 
-- include: octavia_init_common.yml
+- include_tasks: octavia_init_common.yml
   tags:
     - octavia-install
 
-- include: octavia_service_add.yml
+- include_tasks: octavia_service_add.yml
   run_once: true
   tags:
     - octavia-install
 
-- include: octavia_mgmt_network.yml
+- include_tasks: octavia_mgmt_network.yml
   run_once: true
   when:
     - octavia_neutron_management_network_uuid is not defined
@@ -68,12 +67,12 @@
     - octavia-install
     - octavia-config
 
-- include: octavia_security_group.yml
+- include_tasks: octavia_security_group.yml
   run_once: true
   tags:
     - octavia-install
 
-- include: octavia_flavor_create.yml
+- include_tasks: octavia_flavor_create.yml
   run_once: true
   when:
     - octavia_nova_flavor_uuid is not defined
@@ -81,7 +80,7 @@
     - octavia-install
     - octavia-config
 
-- include: octavia_post_install.yml
+- include_tasks: octavia_post_install.yml
   tags:
     - octavia-install
     - octavia-config
@@ -104,22 +103,21 @@
     - common-mq
     - octavia-config
 
-- include: octavia_db_setup.yml
+- include_tasks: octavia_db_setup.yml
   when:
     - inventory_hostname == groups['octavia_all'][0]
   tags:
     - octavia-install
 
-- include: octavia_policy.yml
+- include_tasks: octavia_policy.yml
   tags:
     - octavia-install
     - octavia-config
 
-- include: octavia_amp_image.yml
+- include_tasks: octavia_amp_image.yml
   run_once: true
   tags:
     - octavia-config
-
 
 - name: Flush handlers
   meta: flush_handlers
