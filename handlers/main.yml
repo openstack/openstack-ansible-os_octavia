@@ -24,6 +24,8 @@
     name: "{{ item.value.service_name }}"
     state: "restarted"
   with_dict: "{{ octavia_services }}"
+  listen:
+    - "venv changed"
 
 - name: Start octavia services
   service:
