@@ -22,7 +22,6 @@
         - openstack-ansible-linters
         - openstack-ansible-functional-ubuntu-xenial
         - openstack-ansible-functional-ubuntu-bionic
-        - openstack-ansible-octavia-ssl-nv
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio
