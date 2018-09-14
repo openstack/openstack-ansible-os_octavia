@@ -1,3 +1,4 @@
+---
 - name: Install octavia server
   hosts: octavia_all
   user: root
