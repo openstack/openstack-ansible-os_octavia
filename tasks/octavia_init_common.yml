@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: octavia_init_systemd.yml
+- include_tasks: octavia_init_systemd.yml
   when:
     - ansible_service_mgr == 'systemd'
 
