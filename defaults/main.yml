@@ -251,9 +251,9 @@ octavia_security_group_name: octavia_sec_grp
 # Restrict access to only authorized hosts
 octavia_security_group_rule_cidr:
 # ssh enabled - switch to True if you need ssh access to the amphora
-# and make sure to uplaod a key with the name below
 octavia_ssh_enabled: False
 octavia_ssh_key_name: octavia_key
+octavia_keypair_setup_host: "{{ openstack_keypair_setup_host | default('localhost') }}"
 # port the agent listens on
 octavia_agent_port: "9443"
 octavia_health_manager_port: 5555
