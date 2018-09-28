@@ -33,6 +33,7 @@
     - always
 
 - include_tasks: octavia_certs.yml
+  run_once: true
   when: octavia_generate_certs | bool
   tags:
     - octavia-config
