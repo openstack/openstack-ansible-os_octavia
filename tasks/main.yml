@@ -60,7 +60,6 @@
     - octavia-install
 
 - include_tasks: octavia_mgmt_network.yml
-  run_once: true
   when:
     - octavia_neutron_management_network_uuid is not defined
     - octavia_neutron_management_network_name is defined
@@ -74,7 +73,6 @@
     - octavia-install
 
 - include_tasks: octavia_flavor_create.yml
-  run_once: true
   when:
     - octavia_nova_flavor_uuid is not defined
   tags:
