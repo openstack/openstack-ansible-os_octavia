@@ -181,10 +181,12 @@ octavia_services:
   octavia-api:
     group: octavia-api
     service_name: octavia-api
+    start_order: 4
     init_config_overrides: "{{ octavia_api_init_overrides }}"
+    execstarts: "{{ octavia_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
+    execreloads: "{{ octavia_bin }}/uwsgi --reload /var/run/octavia-api/octavia-api.pid"
     wsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
     wsgi_app: True
-    log_string: "--logto "
     wsgi_name: octavia-wsgi
     uwsgi_port: "{{ octavia_service_port }}"
     uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
@@ -192,15 +194,24 @@ octavia_services:
   octavia-worker:
     group: octavia-worker
     service_name: octavia-worker
+    start_order: 1
     init_config_overrides: "{{ octavia_worker_init_overrides }}"
+    execstarts: "{{ octavia_bin }}/octavia-worker"
+    execreloads: "/bin/kill -HUP $MAINPID"
   octavia-housekeeping:
     group: octavia-housekeeping
     service_name: octavia-housekeeping
+    start_order: 3
     init_config_overrides: "{{ octavia_housekeeping_init_overrides }}"
+    execstarts: "{{ octavia_bin }}/octavia-housekeeping"
+    execreloads: "/bin/kill -HUP $MAINPID"
   octavia-health-manager:
     group: octavia-health_manager
     service_name: octavia-health-manager
+    start_order: 2
     init_config_overrides: "{{ octavia_health_manager_init_overrides }}"
+    execstarts: "{{ octavia_bin }}/octavia-health-manager"
+    execreloads: "/bin/kill -HUP $MAINPID"
 
 # Required secrets for the role
 octavia_required_secrets:

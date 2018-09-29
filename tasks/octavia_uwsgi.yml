@@ -22,11 +22,11 @@
 - name: Apply uWSGI configuration
   config_template:
     src: "octavia-uwsgi.ini.j2"
-    dest: "/etc/uwsgi/{{ item.value.service_name }}.ini"
+    dest: "/etc/uwsgi/{{ item.service_name }}.ini"
     mode: "0744"
-    config_overrides: "{{ item.value.wsgi_overrides }}"
+    config_overrides: "{{ item.wsgi_overrides }}"
     config_type: ini
-  with_dict: "{{ octavia_services }}"
-  when: item.value.wsgi_app | default(False)
+  with_items: "{{ filtered_octavia_services }}"
+  when: item.wsgi_app | default(False)
   notify:
     - Restart octavia services
