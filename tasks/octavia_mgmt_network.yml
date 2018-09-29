@@ -25,6 +25,7 @@
       {{ (octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable']) }}
   block:
     - name: Create mgmt network
+      run_once: true
       os_network:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
@@ -49,6 +50,7 @@
         - octavia_service_net_setup | bool
 
     - name: Ensure mgmt subnet exists
+      run_once: true
       os_subnet:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
@@ -75,6 +77,7 @@
         - octavia_service_net_setup | bool
 
     - name: Get neutron network
+      run_once: true
       os_networks_facts:
         cloud: default
         region_name: "{{ octavia_service_region }}"

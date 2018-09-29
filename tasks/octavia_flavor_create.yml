@@ -25,6 +25,7 @@
       {{ (octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable']) }}
   block:
     - name: Create Octavia Flavor
+      run_once: true
       os_nova_flavor:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
@@ -34,7 +35,7 @@
           user_domain_name: "{{ octavia_service_user_domain_id }}"
           project_domain_name: "{{ octavia_service_project_domain_id }}"
         state: present
-        name: "{{ octavia_amp_flavor_name}}"
+        name: "{{ octavia_amp_flavor_name }}"
         ram: "{{ octavia_amp_ram }}"
         vcpus: "{{ octavia_amp_vcpu }}"
         disk: "{{ octavia_amp_disk }}"
