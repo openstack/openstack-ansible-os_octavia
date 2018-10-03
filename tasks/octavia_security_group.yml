@@ -39,7 +39,7 @@
         --server-group-members {{ octavia_num_server_group_members }}
         --secgroups {{ octavia_num_secgroups }}
         --ports {{ octavia_num_ports }}
-        --secgroup-rules {{ octavia_num_secgroups }}
+        --secgroup-rules {{ octavia_num_security_group_rules }}
         {{ octavia_service_project_name }}
       tags:
         - skip_ansible_lint
