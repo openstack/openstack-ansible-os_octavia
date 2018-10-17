@@ -46,7 +46,3 @@
       until: add_flavor is success
       retries: 5
       delay: 10
-
-    - name: Set Octavia Flavor UUID fact 1
-      set_fact:
-         octavia_nova_flavor_uuid: "{{ add_flavor.flavor.id }}"

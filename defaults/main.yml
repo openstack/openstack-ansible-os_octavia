@@ -151,6 +151,7 @@ octavia_pip_packages:
   - python-openstackclient
   - python-octaviaclient
   - octavia
+  - shade
   - uwsgi
 
 octavia_optional_oslomsg_amqp1_pip_packages:
