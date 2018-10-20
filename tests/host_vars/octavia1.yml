@@ -16,6 +16,7 @@
 ansible_host: 10.1.1.104
 ansible_become: True
 ansible_user: root
+container_name: octavia1
 lbaas_address: 10.1.7.104
 container_networks:
   management_address:
