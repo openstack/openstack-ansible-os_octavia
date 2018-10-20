@@ -322,8 +322,9 @@ octavia_management_net_dhcp: "True"
 octavia_service_net_setup: True
 # This sets it to the container managment network based on how you setup
 # the provider net
-octavia_container_network_name: "{{ octavia_provider_network_name }}_address"
 octavia_provider_network: "{{ provider_networks|map(attribute='network')|selectattr('net_name','defined')|selectattr('net_name', 'equalto', octavia_provider_network_name)|list|first }}"
+# The name of the network address pool
+octavia_container_network_name: "{{ octavia_provider_network['ip_from_q'] }}_address"
 octavia_hm_group: "octavia-health-manager"
 # Note: We use some heuritsics here but if you do anyhting special make sure to use the
 # ip addresses on the right network. This will use the container newtorking to figure out the ip
