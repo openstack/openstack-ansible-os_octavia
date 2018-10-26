@@ -39,17 +39,8 @@
     - "%"
   no_log: True
 
-# Update is offline
-- name: Stop octavia services
-  service:
-    name: "{{ item.value.service_name }}"
-    state: "stopped"
-  with_dict: "{{ octavia_services }}"
-
 - name: Perform a octavia DB sync
   command: "{{ octavia_bin }}/octavia-db-manage upgrade head"
   become: yes
   become_user: "{{ octavia_system_user_name }}"
   changed_when: false
-  notify: Start octavia services
-
