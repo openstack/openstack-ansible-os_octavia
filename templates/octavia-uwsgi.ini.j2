@@ -3,8 +3,8 @@ uid = {{ octavia_system_user_name }}
 gid = {{ octavia_system_group_name }}
 
 virtualenv = /openstack/venvs/octavia-{{ octavia_venv_tag }}
-wsgi-file = {{ octavia_bin }}/{{ item.value.wsgi_name }}
-http-socket = {{ item.value.uwsgi_bind_address }}:{{ item.value.uwsgi_port }}
+wsgi-file = {{ octavia_bin }}/{{ item.wsgi_name }}
+http-socket = {{ item.uwsgi_bind_address }}:{{ item.uwsgi_port }}
 
 master = true
 enable-threads = true
@@ -17,6 +17,7 @@ add-header = Connection: close
 buffer-size = {{ octavia_wsgi_buffer_size }}
 thunder-lock = true
 logfile-chmod = 644
+pidfile = /var/run/{{ item.service_name }}/{{ item.service_name }}.pid
 
 # Avoid filling up the logs with health check requests from haproxy.
 route-user-agent = ^osa-haproxy-healthcheck$ donotlog:

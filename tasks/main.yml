@@ -50,9 +50,34 @@
   tags:
     - octavia-config
 
-- include_tasks: octavia_init_common.yml
+- name: Run the systemd service role
+  include_role:
+    name: systemd_service
+    private: true
+  vars:
+    systemd_after_targets: "{{ service_var.after_targets | default(['syslog.target', 'network.target']) }}"
+    systemd_user_name: "{{ octavia_system_user_name }}"
+    systemd_group_name: "{{ octavia_system_group_name }}"
+    systemd_tempd_prefix: openstack
+    systemd_slice_name: nova
+    systemd_lock_path: /var/lock/octavia
+    systemd_CPUAccounting: true
+    systemd_BlockIOAccounting: true
+    systemd_MemoryAccounting: true
+    systemd_TasksAccounting: true
+    systemd_services:
+      - service_name: "{{ service_var.service_name }}"
+        enabled: yes
+        state: started
+        execstarts: "{{ service_var.execstarts }}"
+        execreloads: "{{ service_var.execreloads | default([]) }}"
+        config_overrides: "{{ service_var.init_config_overrides }}"
+  with_items: "{{ filtered_octavia_services }}"
+  loop_control:
+    loop_var: service_var
   tags:
-    - octavia-install
+    - nova-config
+    - systemd-service
 
 - include_tasks: octavia_service_add.yml
   run_once: true

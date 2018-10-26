@@ -13,28 +13,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Reload systemd daemon
-  systemd:
-    daemon_reload: yes
-  notify:
-    - Restart octavia services
-
 - name: Restart octavia services
   service:
-    name: "{{ item.value.service_name }}"
+    name: "{{ item.service_name }}"
     state: "restarted"
-  with_dict: "{{ octavia_services }}"
+  with_items: "{{ filtered_octavia_services }}"
   listen:
     - "venv changed"
 
 - name: Start octavia services
   service:
-    name: "{{ item.value.service_name }}"
+    name: "{{ item.service_name }}"
     state: "started"
-  with_dict: "{{ octavia_services }}"
+  with_items: "{{ filtered_octavia_services }}"
 
 - name: Stop octavia services
   service:
-    name: "{{ item.value.service_name }}"
+    name: "{{ item.service_name }}"
     state: "stopped"
-  with_dict: "{{ octavia_services }}"
+  with_items: "{{ filtered_octavia_services }}"
