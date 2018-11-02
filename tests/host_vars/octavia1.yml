@@ -31,3 +31,4 @@ container_networks:
     interface: "eth14"
     netmask: "255.255.255.0"
     type: "veth"
+octavia_container_network_name: "lbaas_address"
