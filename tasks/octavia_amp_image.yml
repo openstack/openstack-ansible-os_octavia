@@ -45,7 +45,7 @@
 
     - name: Replace existing image with new one
       when:
-        - octavia_download_result | changed
+        - octavia_download_result is changed
       block:
         - name: Get current image id
           os_image_facts:
