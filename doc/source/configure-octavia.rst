@@ -2,11 +2,6 @@
 Configuring the Octavia Load Balancing service (optional)
 =========================================================
 
-.. note::
-
-   This feature is experimental at this time and it has not been fully
-   production tested yet.
-
 Octavia is an OpenStack project which provides operator-grade Load Balancing
 (as opposed to the namespace driver) by deploying each individual load
 balancer to its own virtual machine and leveraging haproxy to perform the

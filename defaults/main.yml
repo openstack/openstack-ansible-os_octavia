@@ -22,10 +22,10 @@ debug: False
 octavia_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
 octavia_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
 
-## Octavia standalone (v2) experimental
+## Octavia standalone (v2)
 octavia_v2: True
 
-## Activate Octavia V1 API
+## Activate Octavia V1 API (deprecated)
 octavia_v1: False
 
 ## Allow TLS listener
