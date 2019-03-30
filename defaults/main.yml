@@ -45,26 +45,16 @@ octavia_pip_package_state: "latest"
 
 octavia_git_repo: https://git.openstack.org/openstack/octavia
 octavia_git_install_branch: master
-octavia_developer_mode: false
-octavia_developer_constraints:
+octavia_upper_constraints_url: "{{ requirements_git_url | default('https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=' ~ requirements_git_install_branch | default('master')) }}"
+octavia_git_constraints:
   - "git+{{ octavia_git_repo }}@{{ octavia_git_install_branch }}#egg=octavia"
+  - "--constraint {{ octavia_upper_constraints_url }}"
 
-# TODO(odyssey4me):
-# This can be simplified once all the roles are using
-# python_venv_build. We can then switch to using a
-# set of constraints in pip.conf inside the venv,
-# perhaps prepared by giving a giving a list of
-# constraints to the role.
-octavia_pip_install_args: >-
-  {{ octavia_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
-  {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''), '') }}
-  {{ pip_install_options | default('') }}
+octavia_pip_install_args: "{{ pip_install_options | default('') }}"
 
 # Name of the virtual env to deploy into
 octavia_venv_tag: "{{ venv_tag | default('untagged') }}"
 octavia_bin: "/openstack/venvs/octavia-{{ octavia_venv_tag }}/bin"
-
-octavia_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/octavia.tgz
 
 octavia_clients_endpoint: internalURL
 
@@ -168,6 +158,9 @@ octavia_pip_packages:
   - octavia
   - shade
   - uwsgi
+
+# Specific pip packages provided by the user
+octavia_user_pip_packages: []
 
 octavia_optional_oslomsg_amqp1_pip_packages:
   - oslo.messaging[amqp1]
