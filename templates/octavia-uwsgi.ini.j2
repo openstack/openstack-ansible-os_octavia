@@ -2,7 +2,9 @@
 uid = {{ octavia_system_user_name }}
 gid = {{ octavia_system_group_name }}
 
+{% if octavia_install_method == 'source' %}
 virtualenv = /openstack/venvs/octavia-{{ octavia_venv_tag }}
+{% endif %}
 wsgi-file = {{ octavia_bin }}/{{ item.wsgi_name }}
 http-socket = {{ item.uwsgi_bind_address }}:{{ item.uwsgi_port }}
 

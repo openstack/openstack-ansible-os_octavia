@@ -21,3 +21,15 @@ octavia_distro_packages:
   - iptables-persistent
   - libxml2-dev
   - netfilter-persistent
+
+octavia_service_distro_packages:
+  - octavia-common
+  - octavia-api
+  - octavia-health-manager
+  - octavia-housekeeping
+  - octavia-worker
+  - python-pymysql
+  - uwsgi
+  - uwsgi-plugin-python
+
+octavia_uwsgi_bin: '/usr/bin'
