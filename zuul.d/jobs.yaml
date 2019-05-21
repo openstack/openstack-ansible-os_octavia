@@ -13,38 +13,6 @@
 # limitations under the License.
 
 - job:
-    name: openstack-ansible-deploy-aio_metal_octavia-centos-7
-    parent: openstack-ansible-deploy-aio
-    nodeset: centos-7
-    vars:
-      action: deploy
-      scenario: aio_metal_octavia
-
-- job:
-    name: openstack-ansible-deploy-aio_metal_octavia-opensuse-150
-    parent: openstack-ansible-deploy-aio
-    nodeset: opensuse-150
-    vars:
-      action: deploy
-      scenario: aio_metal_octavia
-
-- job:
-    name: openstack-ansible-deploy-aio_metal_octavia-ubuntu-bionic
-    parent: openstack-ansible-deploy-aio
-    nodeset: ubuntu-bionic
-    vars:
-      action: deploy
-      scenario: aio_metal_octavia
-
-- job:
-    name: openstack-ansible-deploy-aio_metal_octavia-debian-stable
-    parent: openstack-ansible-deploy-aio
-    nodeset: debian-stable
-    vars:
-      action: deploy
-      scenario: aio_metal_octavia
-
-- job:
     name: openstack-ansible-deploy-aio_distro_metal_octaviav2-centos-7
     parent: openstack-ansible-deploy-aio
     nodeset: centos-7

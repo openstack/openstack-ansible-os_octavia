@@ -16,13 +16,14 @@
     templates:
       - check-requirements
       - openstack-ansible-linters
+      - openstack-ansible-deploy-aio_metal-jobs
+      # Need to add support of distro installs before
+      # adding the next job template
+      # - openstack-ansible-deploy-aio_distro_metal-jobs
       - publish-openstack-docs-pti
       - release-notes-jobs-python3
     check:
       jobs:
-        - openstack-ansible-deploy-aio_metal_octavia-centos-7
-        - openstack-ansible-deploy-aio_metal_octavia-debian-stable
-        - openstack-ansible-deploy-aio_metal_octavia-ubuntu-bionic
         - openstack-ansible-deploy-aio_distro_metal_octaviav2-centos-7
 
     experimental:
@@ -30,7 +31,4 @@
         - openstack-ansible-deploy-aio_metal_octavia-opensuse-150
     gate:
       jobs:
-        - openstack-ansible-deploy-aio_metal_octavia-centos-7
-        - openstack-ansible-deploy-aio_metal_octavia-debian-stable
-        - openstack-ansible-deploy-aio_metal_octavia-ubuntu-bionic
         - openstack-ansible-deploy-aio_distro_metal_octaviav2-centos-7
