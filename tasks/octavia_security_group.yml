@@ -27,6 +27,7 @@
     - name: Setup the service project quota
       os_quota:
         cloud: default
+        interface: admin
         name: "{{ octavia_service_project_name }}"
         cores: "{{ octavia_num_cores }}"
         instances: "{{ octavia_num_instances }}"
