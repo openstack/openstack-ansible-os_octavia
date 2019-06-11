@@ -32,6 +32,7 @@
       shell: >-
         openstack quota set
         --os-cloud default
+        --os-interface admin
         --cores {{ octavia_num_cores }}
         --instances {{ octavia_num_instances }}
         --ram {{ octavia_ram }}
