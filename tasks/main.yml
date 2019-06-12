@@ -32,6 +32,38 @@
   tags:
     - always
 
+- import_tasks: db_setup.yml
+  when:
+    - inventory_hostname == groups['octavia_all'][0]
+  vars:
+    _oslodb_setup_host: "{{ octavia_db_setup_host }}"
+    _oslodb_databases:
+      - name: "{{ octavia_galera_database }}"
+        users:
+          - username: "{{ octavia_galera_user }}"
+            password: "{{ octavia_container_mysql_password }}"
+  tags:
+    - common-db
+    - octavia-config
+
+- import_tasks: mq_setup.yml
+  when:
+    - inventory_hostname == groups['octavia_all'][0]
+  vars:
+    _oslomsg_rpc_setup_host: "{{ octavia_oslomsg_rpc_setup_host }}"
+    _oslomsg_rpc_userid: "{{ octavia_oslomsg_rpc_userid }}"
+    _oslomsg_rpc_password: "{{ octavia_oslomsg_rpc_password }}"
+    _oslomsg_rpc_vhost: "{{ octavia_oslomsg_rpc_vhost }}"
+    _oslomsg_rpc_transport: "{{ octavia_oslomsg_rpc_transport }}"
+    _oslomsg_notify_setup_host: "{{ octavia_oslomsg_notify_setup_host }}"
+    _oslomsg_notify_userid: "{{ octavia_oslomsg_notify_userid }}"
+    _oslomsg_notify_password: "{{ octavia_oslomsg_notify_password }}"
+    _oslomsg_notify_vhost: "{{ octavia_oslomsg_notify_vhost }}"
+    _oslomsg_notify_transport: "{{ octavia_oslomsg_notify_transport }}"
+  tags:
+    - common-mq
+    - octavia-config
+
 - include_tasks: octavia_certs.yml
   run_once: true
   when: octavia_generate_certs | bool
@@ -122,25 +154,7 @@
     - octavia-install
     - octavia-config
 
-- import_tasks: mq_setup.yml
-  when:
-    - inventory_hostname == groups['octavia_all'][0]
-  vars:
-    _oslomsg_rpc_setup_host: "{{ octavia_oslomsg_rpc_setup_host }}"
-    _oslomsg_rpc_userid: "{{ octavia_oslomsg_rpc_userid }}"
-    _oslomsg_rpc_password: "{{ octavia_oslomsg_rpc_password }}"
-    _oslomsg_rpc_vhost: "{{ octavia_oslomsg_rpc_vhost }}"
-    _oslomsg_rpc_transport: "{{ octavia_oslomsg_rpc_transport }}"
-    _oslomsg_notify_setup_host: "{{ octavia_oslomsg_notify_setup_host }}"
-    _oslomsg_notify_userid: "{{ octavia_oslomsg_notify_userid }}"
-    _oslomsg_notify_password: "{{ octavia_oslomsg_notify_password }}"
-    _oslomsg_notify_vhost: "{{ octavia_oslomsg_notify_vhost }}"
-    _oslomsg_notify_transport: "{{ octavia_oslomsg_notify_transport }}"
-  tags:
-    - common-mq
-    - octavia-config
-
-- include_tasks: octavia_db_setup.yml
+- include_tasks: octavia_db_sync.yml
   when:
     - inventory_hostname == groups['octavia_all'][0]
   tags:
