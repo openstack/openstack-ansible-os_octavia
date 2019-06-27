@@ -72,6 +72,7 @@
           command: >-
             openstack image create
             --os-cloud default
+            --os-interface admin
             --file {{ octavia_download_result.dest }}
             --disk-format qcow2
             --tag {{ octavia_glance_image_tag }}
