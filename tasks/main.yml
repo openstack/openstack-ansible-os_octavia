@@ -100,7 +100,6 @@
 - name: Run the systemd service role
   include_role:
     name: systemd_service
-    private: true
   vars:
     systemd_after_targets: "{{ service_var.after_targets | default(['syslog.target', 'network.target']) }}"
     systemd_user_name: "{{ octavia_system_user_name }}"
