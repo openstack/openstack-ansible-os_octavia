@@ -22,6 +22,9 @@ debug: False
 octavia_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
 octavia_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
 
+# Set installation method.
+octavia_install_method: "source"
+
 ## Octavia standalone (v2)
 octavia_v2: True
 
@@ -54,7 +57,7 @@ octavia_pip_install_args: "{{ pip_install_options | default('') }}"
 
 # Name of the virtual env to deploy into
 octavia_venv_tag: "{{ venv_tag | default('untagged') }}"
-octavia_bin: "/openstack/venvs/octavia-{{ octavia_venv_tag }}/bin"
+octavia_bin: "{{ _octavia_bin }}"
 
 octavia_clients_endpoint: internalURL
 
@@ -177,14 +180,14 @@ octavia_services:
     service_name: octavia-api
     start_order: 4
     init_config_overrides: "{{ octavia_api_init_overrides }}"
-    execstarts: "{{ octavia_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
-    execreloads: "{{ octavia_bin }}/uwsgi --reload /var/run/octavia-api/octavia-api.pid"
+    execstarts: "{{ octavia_uwsgi_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
+    execreloads: "{{ octavia_uwsgi_bin }}/uwsgi --reload /var/run/octavia-api/octavia-api.pid"
     wsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
     wsgi_app: True
     wsgi_name: octavia-wsgi
     uwsgi_port: "{{ octavia_service_port }}"
     uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
-    program_override: "{{ octavia_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
+    program_override: "{{ octavia_uwsgi_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
   octavia-worker:
     group: octavia-worker
     service_name: octavia-worker

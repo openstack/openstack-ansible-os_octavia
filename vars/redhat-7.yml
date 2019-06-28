@@ -18,3 +18,23 @@ octavia_distro_packages:
   - iptables-services
   - libxml2-devel
   - git
+
+octavia_service_distro_packages:
+  - openstack-octavia-common
+  - openstack-octavia-api
+  - openstack-octavia-health-manager
+  - openstack-octavia-housekeeping
+  - openstack-octavia-worker
+  - uwsgi
+  - uwsgi-plugin-python
+
+octavia_distro_openstack_clients_packages:
+  - python-shade
+  - python-keystoneclient
+  - python-neutronclient
+  - python-novaclient
+  - python-cinderclient
+  - python-octaviaclient
+  - python-openstackclient
+
+octavia_uwsgi_bin: '/usr/sbin'
