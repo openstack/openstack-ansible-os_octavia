@@ -23,10 +23,10 @@
 # This is totally odd: If you run the commands via run-parts (as the script
 # in the distro does) they return 1; but do their job. If you run them
 # directly they work. Ignoring errors for now --
-- name: save iptables rules (Ubuntu 16.04)
+- name: save iptables rules (Debian/Ubuntu)
   command: netfilter-persistent save
   ignore_errors: yes
-  when: ansible_distribution == 'Ubuntu' and ansible_distribution_version == '16.04'
+  when: ansible_os_family == 'Debian'
 
 - name: save iptables rules (CentOS & RHEL)
   command: service iptables save
