@@ -241,7 +241,7 @@ octavia_amp_image_id:
 # Note: The default is the Octavia test image so don't use that in prod
 octavia_download_artefact: True
 # The URL to download from
-octavia_artefact_url: http://tarballs.openstack.org/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-xenial.qcow2
+octavia_artefact_url: http://tarballs.openstack.org/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-bionic.qcow2
 # Set the directory where the downloaded image will be stored
 # on the octavia_service_setup_host host. If the host is localhost,
 # then the user running the playbook must have access to it.
