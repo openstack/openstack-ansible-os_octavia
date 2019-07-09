@@ -28,11 +28,10 @@
   ignore_errors: yes
   when: ansible_os_family == 'Debian'
 
-- name: save iptables rules (CentOS & RHEL)
-  command: service iptables save
-  args:
-    warn: False # since we use save service module doesn't apply
-  when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+- name: save iptables rules (CentOS)
+  shell: iptables-save > /etc/sysconfig/iptables
+  when:
+    - ansible_distribution == 'CentOS'
 
 - name: Create certs directory
   file: path=/etc/octavia/certs/ state=directory
