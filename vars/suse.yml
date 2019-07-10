@@ -1,5 +1,5 @@
 ---
-# Copyright 2014, Rackspace US, Inc.
+# Copyright 2019, SUSE Linux GmbH
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,30 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-galaxy_info:
-  author: rcbops
-  description: Installation and setup of octavia
-  company: Rackspace
-  license: Apache2
-  min_ansible_version: 2.2
-  platforms:
-    - name: Debian
-      versions:
-        - stretch
-    - name: Ubuntu
-      versions:
-        - xenial
-        - bionic
-    - name: opensuse
-      versions:
-        - 15
-  categories:
-    - cloud
-    - development
-    - octavia
-    - openstack
-    - python
-dependencies:
-  - role: apt_package_pinning
-    when:
-      - ansible_pkg_mgr == 'apt'
+octavia_distro_packages:
+  - iptables
+  - libxml2-devel
+  - git-core
