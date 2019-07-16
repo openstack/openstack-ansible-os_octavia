@@ -1,7 +1,7 @@
 [DEFAULT]
 # Print debugging output (set logging level to DEBUG instead of default WARNING level).
 debug = {{ debug }}
-log_dir = /var/log/octavia
+use_journal = True
 
 {% if not octavia_v2|bool %}
 bind_host = 0.0.0.0

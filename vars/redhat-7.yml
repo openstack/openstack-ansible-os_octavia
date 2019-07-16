@@ -19,12 +19,16 @@ octavia_distro_packages:
   - libxml2-devel
   - git
 
+octavia_devel_distro_packages:
+  - systemd-devel
+
 octavia_service_distro_packages:
   - openstack-octavia-common
   - openstack-octavia-api
   - openstack-octavia-health-manager
   - openstack-octavia-housekeeping
   - openstack-octavia-worker
+  - systemd-python
   - uwsgi
   - uwsgi-plugin-python
 

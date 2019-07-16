@@ -160,6 +160,7 @@ octavia_pip_packages:
   - python-octaviaclient
   - octavia
   - shade
+  - systemd-python
   - uwsgi
 
 # Specific pip packages provided by the user

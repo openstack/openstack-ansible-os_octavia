@@ -22,6 +22,9 @@ octavia_distro_packages:
   - libxml2-dev
   - netfilter-persistent
 
+octavia_devel_distro_packages:
+  - libsystemd-dev
+
 octavia_service_distro_packages:
   - octavia-common
   - octavia-api
@@ -29,6 +32,7 @@ octavia_service_distro_packages:
   - octavia-housekeeping
   - octavia-worker
   - python-pymysql
+  - python-systemd
   - uwsgi
   - uwsgi-plugin-python
 
