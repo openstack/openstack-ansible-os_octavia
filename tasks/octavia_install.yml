@@ -28,6 +28,7 @@
     name: "python_venv_build"
   vars:
     venv_build_constraints: "{{ octavia_git_constraints }}"
+    venv_build_distro_package_list: "{{ octavia_devel_distro_packages }}"
     venv_install_destination_path: "{{ octavia_bin | dirname }}"
     venv_install_distro_package_list: "{{ octavia_distro_packages }}"
     venv_pip_install_args: "{{ octavia_pip_install_args }}"

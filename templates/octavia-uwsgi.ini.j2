@@ -18,7 +18,7 @@ lazy-apps = true
 add-header = Connection: close
 buffer-size = {{ octavia_wsgi_buffer_size }}
 thunder-lock = true
-logfile-chmod = 644
+disable-logging = true
 pidfile = /var/run/{{ item.service_name }}/{{ item.service_name }}.pid
 
 # Avoid filling up the logs with health check requests from haproxy.
