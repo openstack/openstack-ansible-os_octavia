@@ -200,7 +200,7 @@ octavia_services:
     execstarts: "{{ octavia_bin }}/octavia-housekeeping"
     execreloads: "/bin/kill -HUP $MAINPID"
   octavia-health-manager:
-    group: octavia-health_manager
+    group: octavia-health-manager
     service_name: octavia-health-manager
     start_order: 2
     init_config_overrides: "{{ octavia_health_manager_init_overrides }}"
