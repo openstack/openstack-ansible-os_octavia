@@ -22,8 +22,6 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import pbr.version
-
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -70,17 +68,6 @@ title = 'OpenStack-Ansible Documentation: ' + role_name + 'role'
 oslosphinx_cgit_link = (
     "https://git.openstack.org/cgit/openstack/{}".format(target_name)
 )
-
-# The version info for the project you're documenting, acts as replacement for
-# |version| and |release|, also used in various other places throughout the
-# built documents.
-#
-# The short X.Y version.
-version_info = pbr.version.VersionInfo(target_name)
-# The full version, including alpha/beta/rc tags.
-release = version_info.version_string_with_vcs()
-# The short X.Y version.
-version = version_info.canonical_version_string()
 
 # openstackdocstheme options
 repository_name = 'openstack/' + target_name
@@ -172,10 +159,6 @@ html_static_path = ['_static']
 # directly to the root of the documentation.
 # html_extra_path = []
 
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
-
 # If true, SmartyPants will be used to convert quotes and dashes to
 # typographically correct entities.
 # html_use_smartypants = True
@@ -231,20 +214,6 @@ html_last_updated_fmt = '%Y-%m-%d %H:%M'
 htmlhelp_basename = target_name + '-docs'
 
 # -- Options for LaTeX output ---------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    # 'papersize': 'letterpaper',
-
-    # The font size ('10pt', '11pt' or '12pt').
-    # 'pointsize': '10pt',
-
-    # Additional stuff for the LaTeX preamble.
-    # 'preamble': '',
-
-    # Latex figure (float) alignment
-    # 'figure_align': 'htbp',
-}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
