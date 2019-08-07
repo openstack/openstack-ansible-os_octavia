@@ -116,8 +116,38 @@
     - nova-config
     - systemd-service
 
-- import_tasks: octavia_service_add.yml
-  run_once: true
+- import_tasks: service_setup.yml
+  vars:
+    _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
+    _service_in_ldap: "{{ octavia_service_in_ldap }}"
+    _service_setup_host: "{{ octavia_service_setup_host }}"
+    _service_setup_host_python_interpreter: "{{ octavia_service_setup_host_python_interpreter }}"
+    _service_project_name: "{{ octavia_service_project_name }}"
+    _service_region: "{{ octavia_service_region }}"
+    _service_users:
+      - name: "{{ octavia_service_user_name }}"
+        password: "{{ octavia_service_password }}"
+        role: "{{ octavia_service_role_name }}"
+      - role: load-balancer_observer
+      - role: load-balancer_global_observer
+      - role: load-balancer_member
+      - role: load-balancer_admin
+      - role: load-balancer_quota_admin
+    _service_endpoints:
+      - service: "{{ octavia_service_name }}"
+        interface: "public"
+        url: "{{ octavia_service_publicuri }}"
+      - service: "{{ octavia_service_name }}"
+        interface: "internal"
+        url: "{{ octavia_service_internaluri }}"
+      - service: "{{ octavia_service_name }}"
+        interface: "admin"
+        url: "{{ octavia_service_adminuri }}"
+    _service_catalog:
+      - name: "{{ octavia_service_name }}"
+        type: "{{ octavia_service_type }}"
+        description: "{{ octavia_service_description }}"
+  when: inventory_hostname == groups['octavia_all'][0]
   tags:
     - octavia-install
 
