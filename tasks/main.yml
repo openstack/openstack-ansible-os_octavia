@@ -74,7 +74,7 @@
     - common-mq
     - octavia-config
 
-- include_tasks: octavia_certs.yml
+- import_tasks: octavia_certs.yml
   run_once: true
   when: octavia_generate_certs | bool
   tags:
@@ -85,20 +85,20 @@
   tags:
     - always
 
-- include_tasks: octavia_pre_install.yml
+- import_tasks: octavia_pre_install.yml
   tags:
     - octavia-install
 
-- include_tasks: octavia_install.yml
+- import_tasks: octavia_install.yml
   tags:
     - octavia-install
 
-- include_tasks: octavia_uwsgi.yml
+- import_tasks: octavia_uwsgi.yml
   tags:
     - octavia-config
 
 - name: Run the systemd service role
-  include_role:
+  import_role:
     name: systemd_service
   vars:
     systemd_after_targets: "{{ service_var.after_targets | default(['syslog.target', 'network.target']) }}"
@@ -111,26 +111,17 @@
     systemd_BlockIOAccounting: true
     systemd_MemoryAccounting: true
     systemd_TasksAccounting: true
-    systemd_services:
-      - service_name: "{{ service_var.service_name }}"
-        enabled: yes
-        state: started
-        execstarts: "{{ service_var.execstarts }}"
-        execreloads: "{{ service_var.execreloads | default([]) }}"
-        config_overrides: "{{ service_var.init_config_overrides }}"
-  with_items: "{{ filtered_octavia_services }}"
-  loop_control:
-    loop_var: service_var
+    systemd_services: "{{ filtered_octavia_services }}"
   tags:
     - nova-config
     - systemd-service
 
-- include_tasks: octavia_service_add.yml
+- import_tasks: octavia_service_add.yml
   run_once: true
   tags:
     - octavia-install
 
-- include_tasks: octavia_mgmt_network.yml
+- import_tasks: octavia_mgmt_network.yml
   when:
     - octavia_neutron_management_network_uuid is not defined
     - octavia_neutron_management_network_name is defined
@@ -138,35 +129,35 @@
     - octavia-install
     - octavia-config
 
-- include_tasks: octavia_security_group.yml
+- import_tasks: octavia_security_group.yml
   run_once: true
   tags:
     - octavia-install
 
-- include_tasks: octavia_flavor_create.yml
+- import_tasks: octavia_flavor_create.yml
   when:
     - octavia_nova_flavor_uuid is not defined
   tags:
     - octavia-install
     - octavia-config
 
-- include_tasks: octavia_post_install.yml
+- import_tasks: octavia_post_install.yml
   tags:
     - octavia-install
     - octavia-config
 
-- include_tasks: octavia_db_sync.yml
+- import_tasks: octavia_db_sync.yml
   when:
     - inventory_hostname == groups['octavia_all'][0]
   tags:
     - octavia-install
 
-- include_tasks: octavia_policy.yml
+- import_tasks: octavia_policy.yml
   tags:
     - octavia-install
     - octavia-config
 
-- include_tasks: octavia_amp_image.yml
+- import_tasks: octavia_amp_image.yml
   run_once: true
   tags:
     - octavia-config
