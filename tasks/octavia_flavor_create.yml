@@ -39,6 +39,7 @@
         ram: "{{ octavia_amp_ram }}"
         vcpus: "{{ octavia_amp_vcpu }}"
         disk: "{{ octavia_amp_disk }}"
+        extra_specs: "{{ octavia_amp_extra_specs | default(omit) }}"
         is_public: False
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"

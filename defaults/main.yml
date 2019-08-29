@@ -264,6 +264,7 @@ octavia_amp_flavor_name: "m1.amphora"
 octavia_amp_ram: 1024
 octavia_amp_vcpu: 1
 octavia_amp_disk: 20
+#octavia_amp_extra_specs:
 
 # spare pool - increase to speed up load balancer creation and fail over
 octavia_spare_amphora_pool_size: 1
