@@ -93,6 +93,11 @@
   tags:
     - octavia-install
 
+- include_tasks: octavia_certs_distribute.yml
+  when: octavia_generate_certs | bool
+  tags:
+    - octavia-config
+
 - name: Import uwsgi role
   import_role:
     name: uwsgi

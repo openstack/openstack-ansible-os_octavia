@@ -57,6 +57,43 @@
         dest:  "{{ octavia_cert_dir }}/openssl.cnf"
         mode: 0440
 
+    - name: Create the server CA private key
+      openssl_privatekey:
+        path: "{{ octavia_ca_private_key }}"
+        passphrase: "{{ octavia_ca_private_key_passphrase }}"
+        cipher: "{{ octavia_cert_cipher_server }}"
+        size: "{{ octavia_cert_key_length_server }}"
+
+    - name: Create server CA certificate
+      command: >
+        openssl req -x509 -passin pass:'{{ octavia_ca_private_key_passphrase }}' -new -nodes -key {{ octavia_ca_private_key }}  \
+        -config {{ octavia_cert_dir }}/openssl.cnf \
+        -subj "{{ octavia_cert_server_ca_subject }}" \
+        -days {{ octavia_cert_validity_days }} \
+        -out {{ octavia_ca_certificate }}
+      args:
+        chdir: "{{ octavia_cert_dir }}"
+        creates: "{{ octavia_ca_certificate }}"
+
+    - name: Store octavia ca private key
+      slurp:
+        src: "{{ octavia_ca_private_key }}"
+      register: _octavia_ca_private_key
+      changed_when: false
+
+    - name: Store octavia ca cert
+      slurp:
+        src: "{{ octavia_ca_certificate }}"
+      register: _octavia_ca_certificate
+      changed_when: false
+
+    # same as octavia ca cert
+    - name: Store octavia server ca
+      slurp:
+        src: "{{ octavia_server_ca }}"
+      register: _octavia_server_ca
+      changed_when: false
+
 # These are run at the very first installation of Octavia
 # While Octavia acts as a CA for the server certificates,
 # for the amphora it only needs a client certificate and
@@ -91,24 +128,6 @@
         chdir: "{{ octavia_cert_dir }}"
         creates: "{{ octavia_client_ca }}"
 
-    - name: Create the server CA private key
-      openssl_privatekey:
-        path: "{{ octavia_ca_private_key }}"
-        passphrase: "{{ octavia_ca_private_key_passphrase }}"
-        cipher: "{{ octavia_cert_cipher_server }}"
-        size: "{{ octavia_cert_key_length_server }}"
-
-    - name: Create server CA certificate
-      command: >
-        openssl req -x509 -passin pass:'{{ octavia_ca_private_key_passphrase }}' -new -nodes -key {{ octavia_ca_private_key }}  \
-        -config {{ octavia_cert_dir }}/openssl.cnf \
-        -subj "{{ octavia_cert_server_ca_subject }}" \
-        -days {{ octavia_cert_validity_days }} \
-        -out {{ octavia_ca_certificate }}
-      args:
-        chdir: "{{ octavia_cert_dir }}"
-        creates: "{{ octavia_ca_certificate }}"
-
     - name: Create the client cert private key
       openssl_privatekey:
         path: "{{ octavia_cert_dir }}/client.key"
@@ -140,3 +159,15 @@
         creates: "{{ octavia_client_cert }}"
       tags:
           - skip_ansible_lint
+
+    - name: Store octavia client ca
+      slurp:
+        src: "{{ octavia_client_ca }}"
+      register: _octavia_client_ca
+      changed_when: false
+
+    - name: Store octavia client cert
+      slurp:
+        src: "{{ octavia_client_cert }}"
+      register: _octavia_client_cert
+      changed_when: false
