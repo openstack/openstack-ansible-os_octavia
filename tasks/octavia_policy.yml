@@ -24,4 +24,5 @@
     config_type: "json"
   notify:
     - Restart octavia services
+    - Restart uwsgi services
   when: octavia_legacy_policy

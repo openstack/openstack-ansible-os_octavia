@@ -161,7 +161,6 @@ octavia_pip_packages:
   - octavia
   - shade
   - systemd-python
-  - uwsgi
 
 # Specific pip packages provided by the user
 octavia_user_pip_packages: []
@@ -181,14 +180,11 @@ octavia_services:
     service_name: octavia-api
     start_order: 4
     init_config_overrides: "{{ octavia_api_init_overrides }}"
-    execstarts: "{{ octavia_uwsgi_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
-    execreloads: "{{ octavia_uwsgi_bin }}/uwsgi --reload /var/run/octavia-api/octavia-api.pid"
-    wsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
     wsgi_app: True
     wsgi_name: octavia-wsgi
+    uwsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
     uwsgi_port: "{{ octavia_service_port }}"
     uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
-    program_override: "{{ octavia_uwsgi_bin }}/uwsgi --ini /etc/uwsgi/octavia-api.ini"
   octavia-worker:
     group: octavia-worker
     service_name: octavia-worker
@@ -416,7 +412,6 @@ octavia_iptables_rules:
 octavia_wsgi_processes_max: 16
 octavia_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
 octavia_wsgi_threads: 1
-octavia_wsgi_buffer_size: 65535
 octavia_uwsgi_bind_address: "0.0.0.0"
 octavia_api_uwsgi_ini_overrides: {}
 
