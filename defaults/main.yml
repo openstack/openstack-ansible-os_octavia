@@ -24,6 +24,7 @@ octavia_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_
 
 # Set installation method.
 octavia_install_method: "source"
+octavia_venv_python_executable: "{{ openstack_venv_python_executable | default('python2') }}"
 
 ## Octavia standalone (v2)
 octavia_v2: True
