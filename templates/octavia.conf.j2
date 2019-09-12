@@ -220,6 +220,15 @@ compute_driver = {{ octavia_compute_driver }}
 #
 network_driver = {{ octavia_network_driver }}
 #
+# Cinder Volume driver options are volume_noop_driver
+#                                  volume_cinder_driver
+#
+{% if octavia_cinder_enabled %}
+volume_driver = volume_cinder_driver
+{% else %}
+volume_driver = volume_noop_driver
+{% endif %}
+#
 # Certificate Generator options are local_cert_generator
 #                                   barbican_cert_generator
 #                                   anchor_cert_generator
@@ -353,6 +362,19 @@ endpoint_type = {{ octavia_clients_endpoint }}
 enable_anti_affinity = {{ octavia_enable_anti_affinity }}
 
 {% if octavia_amp_availability_zone is defined %}availability_zone={{ octavia_amp_availability_zone }}{%endif%}
+
+{% if octavia_cinder_enabled %}
+[cinder]
+service_name = {{ cinder_service_v3_name | default('cinderv3') }}
+region_name = {{ keystone_service_region }}
+endpoint_type = {{ octavia_clients_endpoint }}
+availability_zone = nova
+volume_size = 16
+volume_type = "volumes-hdd"
+volume_create_retry_interval = 5
+volume_create_timeout = 50
+volume_create_max_retries = 2
+{% endif %}
 
 [glance]
 # The name of the glance service in the keystone catalog
