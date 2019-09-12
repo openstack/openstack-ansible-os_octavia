@@ -67,6 +67,7 @@
         enable_dhcp: "{{ octavia_management_net_dhcp }}"
         allocation_pool_start: "{{ octavia_management_net_subnet_allocation_pools.split('-')[0] | default(omit) }}"
         allocation_pool_end: "{{ octavia_management_net_subnet_allocation_pools.split('-')[1] | default(omit) }}"
+        gateway_ip: "{{ octavia_management_net_subnet_gateway | default(omit) }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_subnet
