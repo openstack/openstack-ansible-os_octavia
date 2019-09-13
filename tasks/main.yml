@@ -93,9 +93,15 @@
   tags:
     - octavia-install
 
-- import_tasks: octavia_uwsgi.yml
+- name: Import uwsgi role
+  import_role:
+    name: uwsgi
+  vars:
+    uwsgi_services: "{{ uwsgi_octavia_services }}"
+    uwsgi_install_method: "{{ octavia_install_method }}"
   tags:
     - octavia-config
+    - uwsgi
 
 - name: Run the systemd service role
   import_role:

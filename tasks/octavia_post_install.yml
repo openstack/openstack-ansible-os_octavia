@@ -136,3 +136,4 @@
       config_type: "ini"
   notify:
     - Restart octavia services
+    - Restart uwsgi services

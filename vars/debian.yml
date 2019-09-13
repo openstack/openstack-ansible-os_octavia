@@ -33,7 +33,3 @@ octavia_service_distro_packages:
   - octavia-worker
   - python-pymysql
   - python-systemd
-  - uwsgi
-  - uwsgi-plugin-python
-
-octavia_uwsgi_bin: '/usr/bin'

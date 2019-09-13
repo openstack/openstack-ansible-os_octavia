@@ -29,8 +29,6 @@ octavia_service_distro_packages:
   - openstack-octavia-housekeeping
   - openstack-octavia-worker
   - systemd-python
-  - uwsgi
-  - uwsgi-plugin-python
 
 octavia_distro_openstack_clients_packages:
   - python-shade
@@ -40,5 +38,3 @@ octavia_distro_openstack_clients_packages:
   - python-cinderclient
   - python-octaviaclient
   - python-openstackclient
-
-octavia_uwsgi_bin: '/usr/sbin'
