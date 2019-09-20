@@ -63,6 +63,9 @@ octavia_clients_endpoint: internalURL
 
 octavia_auth_strategy: keystone
 
+## Cinder Volume
+octavia_cinder_enabled: False
+
 ## Database info
 octavia_db_setup_host: "{{ ('galera_all' in groups) | ternary(groups['galera_all'][0], 'localhost') }}"
 octavia_galera_address: "{{ galera_address | default('127.0.0.1') }}"
