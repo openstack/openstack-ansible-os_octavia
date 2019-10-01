@@ -27,6 +27,7 @@
   import_role:
     name: "python_venv_build"
   vars:
+    venv_python_executable: "{{ octavia_venv_python_executable }}"
     venv_build_constraints: "{{ octavia_git_constraints }}"
     venv_build_distro_package_list: "{{ octavia_devel_distro_packages }}"
     venv_install_destination_path: "{{ octavia_bin | dirname }}"
