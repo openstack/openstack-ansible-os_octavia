@@ -100,8 +100,8 @@ For this process, use one of the physical hosts within the environment.
 
    .. code-block:: bash
 
-     git clone https://github.com/openstack/octavia.git
-     git clone https://git.openstack.org/openstack/diskimage-builder.git
+     git clone https://opendev.org/openstack/octavia.git
+     git clone https://opendev.org/openstack/diskimage-builder.git
 
 
 #. Run Octavia's diskimage script
@@ -125,7 +125,7 @@ For this process, use one of the physical hosts within the environment.
         ansible with an appropriate tag.
 
 You can find more information abpout the diskimage script and the process at
-https://github.com/openstack/octavia/tree/master/diskimage-create
+https://opendev.org/openstack/octavia/tree/master/diskimage-create
 
 Here is a script to perform all those tasks at once:
 
@@ -136,8 +136,8 @@ Here is a script to perform all those tasks at once:
           pip -v >/dev/null || {apt-get install python-pip}
           pip install argparse Babel>=1.3 dib-utils PyYAML
           pushd /tmp
-          git clone https://github.com/openstack/octavia.git
-          git clone https://git.openstack.org/openstack/diskimage-builder.git
+          git clone https://opendev.org/openstack/octavia.git
+          git clone https://opendev.org/openstack/diskimage-builder.git
           pushd  octavia/diskimage-create
           ./diskimage-create.sh
           mv amphora-x64-haproxy.qcow2 /tmp
@@ -150,7 +150,7 @@ Here is a script to perform all those tasks at once:
 .. note::
     If you have trouble installing dib-utils from pipy consider
     installing it directly from source
-    `pip install git+https://github.com/openstack/dib-utils.git`
+    `pip install git+https://opendev.org/openstack/dib-utils.git`
 
 Creating the cryptographic certificates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
