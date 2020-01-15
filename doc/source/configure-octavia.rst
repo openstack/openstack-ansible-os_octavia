@@ -178,7 +178,7 @@ enable access.
 
       ssh-keygen
 
-#. Upoad the key into nova as the *octavia* user:
+#. Upload the key into nova as the *octavia* user:
 
    .. code-block:: bash
 
