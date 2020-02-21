@@ -84,25 +84,24 @@ Building Octavia images
 Images using the ``diskimage-builder`` must be built outside of a container.
 For this process, use one of the physical hosts within the environment.
 
-#. Install the necessary packages:
+#. Install the necessary packages and configure a Python virtual environment
 
    .. code-block:: bash
 
       apt-get install qemu uuid-runtime curl kpartx git jq python-pip
+      pip install virtualenv
 
-#. Install the necessary pip packages:
+      virtualenv /opt/octavia-image-build
+      source /opt/octavia-image-build/bin/activate
 
-   .. code-block:: bash
-
-     pip install argparse Babel>=1.3 dib-utils PyYAML
-
-#. Clone the necessary repositories
+#. Clone the necessary repositories and dependencies
 
    .. code-block:: bash
 
      git clone https://opendev.org/openstack/octavia.git
-     git clone https://opendev.org/openstack/diskimage-builder.git
 
+     /opt/octavia-image-build/bin/pip install --isolated \
+       git+https://git.openstack.org/openstack/diskimage-builder.git
 
 #. Run Octavia's diskimage script
 
@@ -112,13 +111,20 @@ For this process, use one of the physical hosts within the environment.
 
      ./diskimage-create.sh
 
+   Disable ``octavia-image-build`` venv:
+
+   .. code-block:: bash
+
+      deactivate
+
 
 #. Upload the created user images into the Image (glance) Service:
 
    .. code-block:: bash
 
-      glance image-create --name amphora-x64-haproxy --visibility private --disk-format qcow2 \
-         --container-format bare --tags octavia-amphora-image </var/lib/octavia/amphora-x64-haproxy.qcow2
+      openstack image create --disk-format qcow2 \
+         --container-format bare --tag octavia-amphora-image --file amphora-x64-haproxy.qcow2 \
+         --private --project service amphora-x64-haproxy
 
    .. note::
         Alternatively you can specify the new image in the appropriate settings and rerun the
@@ -132,20 +138,31 @@ Here is a script to perform all those tasks at once:
    .. code-block:: bash
 
           #/bin/sh
+
           apt-get install qemu uuid-runtime curl kpartx git jq
           pip -v >/dev/null || {apt-get install python-pip}
-          pip install argparse Babel>=1.3 dib-utils PyYAML
+          pip install virtualenv
+          virtualenv /opt/octavia-image-build || exit 1
+          source /opt/octavia-image-build/bin/activate
+
           pushd /tmp
           git clone https://opendev.org/openstack/octavia.git
-          git clone https://opendev.org/openstack/diskimage-builder.git
-          pushd  octavia/diskimage-create
+          /opt/octavia-image-build/bin/pip install --isolated \
+           git+https://git.openstack.org/openstack/diskimage-builder.git
+
+          pushd octavia/diskimage-create
           ./diskimage-create.sh
           mv amphora-x64-haproxy.qcow2 /tmp
+          deactivate
+
           popd
           popd
-          #upload image
-          glance image-create --name amphora-x64-haproxy --visibility private --disk-format qcow2 \
-            --container-format bare --tags octavia-amphora-image </var/lib/octavia/amphora-x64-haproxy.qcow2
+
+          # upload image
+          openstack image delete amphora-x64-haproxy
+          openstack image create --disk-format qcow2 \
+            --container-format bare --tag octavia-amphora-image --file /tmp/amphora-x64-haproxy.qcow2 \
+            --private --project service amphora-x64-haproxy
 
 .. note::
     If you have trouble installing dib-utils from pipy consider
