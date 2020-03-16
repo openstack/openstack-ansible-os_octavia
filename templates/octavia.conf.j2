@@ -93,7 +93,7 @@ password = {{ octavia_service_password }}
 region_name = {{ keystone_service_region }}
 auth_type = password
 endpoint_type = {{ octavia_clients_endpoint }}
-memcached_servers = {{ memcached_servers }}
+memcached_servers = {{ octavia_memcached_servers }}
 
 token_cache_time = 300
 
@@ -314,7 +314,7 @@ username = {{ octavia_service_user_name }}
 password = {{ octavia_service_password }}
 region_name = {{ keystone_service_region }}
 auth_type = password
-memcached_servers = {{ memcached_servers }}
+memcached_servers = {{ octavia_memcached_servers }}
 endpoint_type = {{ octavia_clients_endpoint }}
 token_cache_time = 300
 

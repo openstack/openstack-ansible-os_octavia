@@ -155,6 +155,7 @@ octavia_pip_packages:
   - keystonemiddleware
   - osprofiler
   - PyMySQL
+  - pymemcache
   - python-glanceclient
   - python-keystoneclient
   - python-memcached
@@ -165,6 +166,9 @@ octavia_pip_packages:
   - octavia
   - shade
   - systemd-python
+
+# Memcached override
+octavia_memcached_servers: "{{ memcached_servers }}"
 
 # Specific pip packages provided by the user
 octavia_user_pip_packages: []
