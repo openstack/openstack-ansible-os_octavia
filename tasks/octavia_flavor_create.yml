@@ -25,7 +25,7 @@
   block:
     - name: Create Octavia Flavor
       run_once: true
-      os_nova_flavor:
+      openstack.cloud.os_nova_flavor:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
