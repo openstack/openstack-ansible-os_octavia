@@ -25,7 +25,7 @@
   block:
     - name: Create mgmt network
       run_once: true
-      os_network:
+      openstack.cloud.os_network:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
@@ -50,7 +50,7 @@
 
     - name: Ensure mgmt subnet exists
       run_once: true
-      os_subnet:
+      openstack.cloud.os_subnet:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"

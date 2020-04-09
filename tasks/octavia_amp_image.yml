@@ -47,7 +47,7 @@
         - octavia_download_result is changed
       block:
         - name: Get current image id
-          os_image_info:
+          openstack.cloud.os_image_info:
             auth:
               auth_url: "{{ keystone_service_adminurl }}"
               username: "{{ octavia_service_user_name }}"
@@ -80,7 +80,7 @@
             amphora-x64-haproxy
 
         - name: Delete old image from glance
-          os_image:
+          openstack.cloud.os_image:
             auth:
               auth_url: "{{ keystone_service_adminurl }}"
               username: "{{ octavia_service_user_name }}"
