@@ -47,7 +47,7 @@
     - octavia_nova_flavor_uuid is not defined
   block:
     - name: Get Octavia flavor details
-      os_flavor_facts:
+      os_flavor_info:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
@@ -59,15 +59,15 @@
         name: "{{ octavia_amp_flavor_name }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
-      register: get_flavor_facts
-      until: get_flavor_facts is success
+      register: get_flavor_info
+      until: get_flavor_info is success
       retries: 5
       vars:
         ansible_python_interpreter: "{{ octavia_bin }}/python"
 
     - name: Set Octavia flavor UUID fact
       set_fact:
-        octavia_nova_flavor_uuid: "{{ openstack_flavors[0].id }}"
+        octavia_nova_flavor_uuid: "{{ get_flavor_info.openstack_flavors[0].id }}"
 
 - name: Set octavia_neutron_management_network_uuid if it is not already set
   when:
@@ -75,7 +75,7 @@
     - octavia_neutron_management_network_name is defined
   block:
     - name: Get octavia management network details
-      os_networks_facts:
+      os_networks_info:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
@@ -87,8 +87,8 @@
         name: "{{ octavia_neutron_management_network_name }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
-      register: get_net_facts
-      until: get_net_facts is success
+      register: get_net_info
+      until: get_net_info is success
       retries: 5
       delay: 10
       vars:
@@ -96,7 +96,7 @@
 
     - name: Set Octavia management network UUID fact
       set_fact:
-        octavia_neutron_management_network_uuid: "{{ openstack_networks[0].id }}"
+        octavia_neutron_management_network_uuid: "{{ get_net_info.openstack_networks[0].id }}"
 
 - name: Drop octavia Config(s)
   config_template:

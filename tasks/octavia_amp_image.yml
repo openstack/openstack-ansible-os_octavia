@@ -47,7 +47,7 @@
         - octavia_download_result is changed
       block:
         - name: Get current image id
-          os_image_facts:
+          os_image_info:
             auth:
               auth_url: "{{ keystone_service_adminurl }}"
               username: "{{ octavia_service_user_name }}"
@@ -59,8 +59,8 @@
             image: amphora-x64-haproxy
             interface: admin
             verify: "{{ not keystone_service_adminuri_insecure }}"
-          register: get_image_facts
-          until: get_image_facts is success
+          register: get_image_info
+          until: get_image_info is success
           retries: 5
           delay: 10
 
@@ -90,7 +90,7 @@
               project_domain_name: "{{ octavia_service_project_domain_id }}"
             state: absent
             region_name: "{{ octavia_service_region }}"
-            name: "{{ openstack_image.id }}"
+            name: "{{ get_image_info.openstack_image.id }}"
             interface: admin
             verify: "{{ not keystone_service_adminuri_insecure }}"
           register: remove_old_image
