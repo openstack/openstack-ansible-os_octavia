@@ -20,7 +20,6 @@
   vars_files:
     - common/test-vars.yml
   vars:
-    ansible_python_interpreter: "{{ ansible_playbook_python }}"
     octavia_service_user_name: octavia
     octavia_service_project_name: service
     octavia_service_user_domain_id: default
