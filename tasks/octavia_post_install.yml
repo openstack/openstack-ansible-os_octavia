@@ -47,7 +47,7 @@
     - octavia_nova_flavor_uuid is not defined
   block:
     - name: Get Octavia flavor details
-      os_flavor_info:
+      openstack.cloud.os_flavor_info:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
@@ -75,7 +75,7 @@
     - octavia_neutron_management_network_name is defined
   block:
     - name: Get octavia management network details
-      os_networks_info:
+      openstack.cloud.os_networks_info:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
