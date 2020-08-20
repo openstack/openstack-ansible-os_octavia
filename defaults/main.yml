@@ -68,7 +68,8 @@ octavia_auth_strategy: keystone
 octavia_cinder_enabled: False
 
 ## Database info
-octavia_db_setup_host: "{{ ('galera_all' in groups) | ternary(groups['galera_all'][0], 'localhost') }}"
+octavia_db_setup_host: "{{ openstack_db_setup_host | default('localhost') }}"
+octavia_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter | default((octavia_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
 octavia_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 octavia_galera_user: octavia
 octavia_galera_database: octavia
@@ -77,6 +78,7 @@ octavia_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('/etc/ssl/certs/gal
 octavia_db_max_overflow: 20
 octavia_db_pool_size: 120
 octavia_db_pool_timeout: 30
+octavia_galera_port: 3306
 
 ## Oslo Messaging
 
