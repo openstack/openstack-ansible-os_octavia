@@ -44,7 +44,7 @@
 
 - import_tasks: db_setup.yml
   when:
-    - inventory_hostname == groups['octavia_all'][0]
+    - _octavia_is_first_play_host
   vars:
     _oslodb_setup_host: "{{ octavia_db_setup_host }}"
     _oslodb_ansible_python_interpreter: "{{ octavia_db_setup_python_interpreter }}"
@@ -61,7 +61,7 @@
 
 - import_tasks: mq_setup.yml
   when:
-    - inventory_hostname == groups['octavia_all'][0]
+    - _octavia_is_first_play_host
   vars:
     _oslomsg_rpc_setup_host: "{{ octavia_oslomsg_rpc_setup_host }}"
     _oslomsg_rpc_userid: "{{ octavia_oslomsg_rpc_userid }}"
@@ -161,7 +161,7 @@
       - name: "{{ octavia_service_name }}"
         type: "{{ octavia_service_type }}"
         description: "{{ octavia_service_description }}"
-  when: inventory_hostname == groups['octavia_all'][0]
+  when: _octavia_is_first_play_host
   tags:
     - octavia-install
 
@@ -192,7 +192,7 @@
 
 - import_tasks: octavia_db_sync.yml
   when:
-    - inventory_hostname == groups['octavia_all'][0]
+    - _octavia_is_first_play_host
   tags:
     - octavia-install
 
