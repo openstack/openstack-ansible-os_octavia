@@ -18,7 +18,7 @@
 - name: iptables rules
   iptables: "{{ item }}"
   with_items: "{{ octavia_iptables_rules }}"
-  when: octavia_ip_tables_fw|bool == true
+  when: octavia_ip_tables_fw | bool
 
 # This is totally odd: If you run the commands via run-parts (as the script
 # in the distro does) they return 1; but do their job. If you run them
