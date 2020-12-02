@@ -101,6 +101,8 @@ octavia_oslomsg_notify_vhost: "{{ octavia_oslomsg_rpc_vhost }}"
 # TODO(ansmith): Change structure when more backends will be supported
 octavia_oslomsg_amqp1_enabled: "{{ octavia_oslomsg_rpc_transport == 'amqp' }}"
 
+octavia_ceilometer_enabled: False
+
 ## octavia User / Group
 octavia_system_user_name: octavia
 octavia_system_group_name: octavia
@@ -269,10 +271,6 @@ octavia_spare_amphora_pool_size: 1
 # only increase when it's a really busy system since this is by deployed host,
 # e.g. 3 hosts, 5 workers (this param) per host, results in 15 worker total
 octavia_task_flow_max_workers: 5
-
-# event_streamer - set to True if you are using neutron lbaas with Octavia
-# (Octavia will stream events to the neutron DB)
-octavia_event_streamer: False
 
 # Enable provisioning status sync with neutron db
 octavia_sync_provisioning_status: False
