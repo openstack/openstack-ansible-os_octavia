@@ -212,36 +212,6 @@ enable access.
    /etc/openstack-deploy
 
 
-Optional: Enable Octavia V1 API
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Beginning with the Queens release, neutron lbaas has started it's
-deprecation cycle and therefore Octavia stand alone is the default
-configuration beginning Rocky. If the neutron lbaas endpoint is still
-needed consider deploying the neutron lbaas proxy plugin.
-
-If for legacy reasons neutron lbaas still needs the internal Octavia V1
-API endpoint add the following parameters to ``openstack_user_config.yml``:
-
-.. code-block:: yaml
-
-  # Enable Octavia support in Neutron
-  neutron_lbaas_octavia: True
-  # Enable LBaaS V2
-  neutron_lbaasv2: True
-  # Disable Octavia V2 API/standalone
-  octavia_v2: False
-  # Enable Octavia V1 API
-  octavia_v1: True
-  # event_streamer - set to True if you are using neutron lbaas with Octavia
-  # (Octavia will stream events to the neutron DB)
-  octavia_event_streamer: True
-  # Enable provisioning status sync with neutron db
-  octavia_sync_provisioning_status: True
-
-Please note that in some settings the LBaaS plugin is directly enabled in the
-``neutron_plugin_base`` so adjust this as necessary.
-
 Optional: Tuning Octavia for production use
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -258,4 +228,3 @@ The variable ``octavia_spare_amphora_pool_size`` controls
 the size of the pool. The system will try
 to prebuild this number so using too big a number will
 consumes a lot of unnecessary resources.
-

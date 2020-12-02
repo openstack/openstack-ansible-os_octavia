@@ -3,15 +3,6 @@
 debug = {{ debug }}
 use_journal = True
 
-{% if not octavia_v2|bool %}
-bind_host = 0.0.0.0
-bind_port = {{ octavia_service_port }}
-# api_handler = queue_producer
-#
-# How should authentication be handled (keystone, noauth)
-auth_strategy = {{ octavia_auth_strategy }}
-#
-{% endif %}
 # Plugin options are hot_plug_plugin (Hot-pluggable controller plugin)
 #
 # octavia_plugins = hot_plug_plugin
@@ -39,9 +30,7 @@ bind_port = {{ octavia_service_port }}
 # How should authentication be handled (keystone, noauth)
 # Note: remove "noauth" once LP bug is fixed
 auth_strategy = {{ octavia_auth_strategy }}
-#
-api_v1_enabled = {{ octavia_v1 }}
-api_v2_enabled = {{ octavia_v2 }}
+
 # Allow users to create TLS Terminated listeners?
 allow_tls_terminated_listeners = {{ octavia_tls_listener_enabled }}
 
