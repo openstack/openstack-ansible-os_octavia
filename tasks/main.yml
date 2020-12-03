@@ -169,17 +169,20 @@
   when:
     - octavia_neutron_management_network_uuid is not defined
     - octavia_neutron_management_network_name is defined
+    - _octavia_is_first_play_host
   tags:
     - octavia-install
     - octavia-config
 
 - import_tasks: octavia_security_group.yml
-  run_once: true
+  when:
+    - _octavia_is_first_play_host
   tags:
     - octavia-install
 
 - import_tasks: octavia_flavor_create.yml
   when:
+    - _octavia_is_first_play_host
     - octavia_nova_flavor_uuid is not defined
   tags:
     - octavia-install
@@ -202,7 +205,8 @@
     - octavia-config
 
 - import_tasks: octavia_amp_image.yml
-  run_once: true
+  when:
+    - _octavia_is_first_play_host
   tags:
     - octavia-config
 
