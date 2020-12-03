@@ -24,7 +24,7 @@
     ansible_python_interpreter: "{{ octavia_service_setup_host_python_interpreter }}"
   block:
     - name: Setup the service project quota
-      openstack.cloud.os_quota:
+      openstack.cloud.quota:
         cloud: default
         interface: admin
         name: "{{ octavia_service_project_name }}"
@@ -38,7 +38,7 @@
         port: "{{ octavia_num_ports }}"
 
     - name: Create Octavia security group
-      openstack.cloud.os_security_group:
+      openstack.cloud.security_group:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
@@ -57,7 +57,7 @@
       delay: 10
 
     - name: Create security group rule for agent
-      openstack.cloud.os_security_group_rule:
+      openstack.cloud.security_group_rule:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
@@ -79,7 +79,7 @@
       delay: 10
 
     - name: Create security group rule for ssh
-      openstack.cloud.os_security_group_rule:
+      openstack.cloud.security_group_rule:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
@@ -103,7 +103,7 @@
         - octavia_ssh_enabled | bool
 
     - name: Create security group rule for icmp
-      openstack.cloud.os_security_group_rule:
+      openstack.cloud.security_group_rule:
         auth:
           auth_url: "{{ keystone_service_adminurl }}"
           username: "{{ octavia_service_user_name }}"
