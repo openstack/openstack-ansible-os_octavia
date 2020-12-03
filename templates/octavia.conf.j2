@@ -114,9 +114,6 @@ loadbalancer_topology = {{ octavia_loadbalancer_topology }}
 # engine = serial
 max_workers = {{ octavia_task_flow_max_workers }}
 
-[house_keeping]
-spare_amphora_pool_size = {{ octavia_spare_amphora_pool_size }}
-
 
 [service_auth]
 insecure = {{ keystone_service_internaluri_insecure | bool }}

@@ -221,10 +221,3 @@ by adding ``octavia_loadbalancer_topology: ACTIVE_STANDBY`` and
 ``octavia_enable_anti_affinity=True`` to ensure that the active and passive
 amphora are (depending on the anti-affinity filter deployed in nova)  on two
 different hosts to the user file in /etc/openstack-deploy
-
-To speed up the creation of load balancers or in a SINGLE topolgy
-to speed up the failover a spare pool can be used.
-The variable ``octavia_spare_amphora_pool_size`` controls
-the size of the pool. The system will try
-to prebuild this number so using too big a number will
-consumes a lot of unnecessary resources.

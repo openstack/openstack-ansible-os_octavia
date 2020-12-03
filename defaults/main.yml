@@ -265,9 +265,6 @@ octavia_amp_vcpu: 1
 octavia_amp_disk: 20
 #octavia_amp_extra_specs:
 
-# spare pool - increase to speed up load balancer creation and fail over
-octavia_spare_amphora_pool_size: 1
-
 # only increase when it's a really busy system since this is by deployed host,
 # e.g. 3 hosts, 5 workers (this param) per host, results in 15 worker total
 octavia_task_flow_max_workers: 5
