@@ -406,7 +406,7 @@ octavia_iptables_rules:
 
 # uWSGI Settings
 octavia_wsgi_processes_max: 16
-octavia_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
+octavia_wsgi_processes: "{{ [[(ansible_processor_vcpus//ansible_processor_threads_per_core)|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
 octavia_wsgi_threads: 1
 octavia_uwsgi_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
 octavia_api_uwsgi_ini_overrides: {}
