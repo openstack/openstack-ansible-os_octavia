@@ -180,6 +180,12 @@
   tags:
     - octavia-install
 
+- include_tasks: octavia_keypair.yml
+  when:
+    - _octavia_is_first_play_host
+  tags:
+    - octavia-config
+
 - import_tasks: octavia_flavor_create.yml
   when:
     - _octavia_is_first_play_host

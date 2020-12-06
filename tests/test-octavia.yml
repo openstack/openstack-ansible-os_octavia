@@ -70,20 +70,6 @@
         name: "public-subnet"
         cidr: "10.1.3.0/24"
 
-    - name: Upload key to nova
-      os_keypair:
-        auth:
-          auth_url: "{{ keystone_service_adminurl }}"
-          username: "{{ octavia_service_user_name }}"
-          password: "{{ octavia_service_password }}"
-          project_name: "{{ octavia_service_project_name }}"
-          user_domain_name: "{{ octavia_service_user_domain_id }}"
-          project_domain_name: "{{ octavia_service_project_domain_id }}"
-        interface: admin
-        state: present
-        name: "octavia_key"
-        public_key_file: "{{ lookup('env', 'HOME') }}/.ssh/id_rsa.pub"
-
     - name: Create a loadbalancer
       shell: >
          openstack --debug loadbalancer create  --name test-lb --vip-subnet-id public-subnet
