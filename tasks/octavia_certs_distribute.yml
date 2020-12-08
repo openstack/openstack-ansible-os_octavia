@@ -41,3 +41,6 @@
       dest: "/etc/octavia/certs/client_ca.pem"
     - content: "{{ octavia_client_cert_fact }}"
       dest: "/etc/octavia/certs/client.pem"
+  notify:
+    - Restart octavia services
+    - Restart uwsgi services
