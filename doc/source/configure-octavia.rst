@@ -12,21 +12,81 @@ Octavia is scalable and has built-in high availability through active-passive.
 OpenStack-Ansible deployment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#. Create the openstack-ansible container(s) for Octavia
+#. Create ``br-lbaas`` bridge on the controllers. Creating br-lbaas is done during
+   the deployers host preparation and is out of scope of openstack-ansible.
+   Some explanation of how br-lbaas is used is given below.
+#. Create the openstack-ansible container(s) for Octavia. To do that you need
+   to define hosts for ``octavia-infra_hosts`` group in
+   ``openstack_user_config.yml``. Once you do this, run the following playbook:
+
+   .. code-block:: yaml
+
+      openstack-ansible playbooks/containers-lxc-create.yml --limit lxc_hosts,octavia_all
+
+#. Define required overrides of the variables in defaults/main.yml of the
+   openstack-ansible octavia role.
 #. Run the os-octavia playbook
-#. Eventually the os-neutron playbook needs to be rerun.
+
+   .. code-block:: yaml
+
+      openstack-ansible playbooks/os-octavia-install.yml
+
+#. Run the haproxy-install.yml playbook to add the new octavia API endpoints
+   to the load balancer.
 
 Setup a neutron network for use by octavia
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Octavia needs connectivity between the control plane and the
 load balancing VMs. For this purpose a provider network should be
-created which bridges the octavia containers (if the control plane is installed
-in a container) or hosts with VMs. Refer to the appropriate documentation
-and consult the tests in this project. In a general case, neutron networking
-can be a simple flat network. However in a complex case, this can be whatever
-you need and want. Ensure you adjust the deployment accordingly. An example
-entry into ``openstack_user_config.yml`` is shown below:
+created which gives L2 connectivity between the octavia services
+on the controllers (either containerised or deployed on metal)
+and the octavia amphora VMs. Refer to the appropriate documentation
+for the octavia service and consult the tests in this project
+for a working example.
+
+Special attention needs to be applied to the provider network
+``--allocation-pool`` not to have ip addresses which overlap with
+those assigned to hosts, lxc containers or other infrastructure such
+as routers or firewalls which may be in use.
+
+An example which gives 172.29.232.0-9/22 to the OSA dynamic inventory
+and the remainder of the addresses to the neutron allocation pool
+without overlap is as follows:
+
+In ``openstack_user_config.yml`` the following:
+
+.. code-block:: yaml
+
+   #the address range for the whole lbaas network
+   cidr_networks:
+      lbaas: 172.29.232.0/22
+
+   #the range of ip addresses excluded from the dynamic inventory
+   used_ips:
+      - "172.29.232.10,172.29.235.200"
+
+And define in ``user_variables.yml``:
+
+.. code-block:: yaml
+
+   #the range of addresses which neutron can allocate for amphora VM
+   octavia_management_net_subnet_allocation_pools: "172.29.232.10-172.29.235.200"
+
+.. note::
+    The system will deploy an iptables firewall if ``octavia_ip_tables_fw`` is set
+    to ``True`` (the default). This adds additional protection to the control plane
+    in the rare instance a load balancing vm is compromised. Please review carefully
+    the rules and adjust them for your installation. Please be aware that logging
+    of dropped packages is not enabled and you will need to add those rules manually.
+
+FLAT networking scenario
+------------------------
+
+In a general case, neutron networking can be a simple flat network. However in
+a complex case, this can be whatever you need and want. Ensure you adjust the
+deployment accordingly. An example entry into ``openstack_user_config.yml`` is
+shown below:
 
 .. code-block:: yaml
 
@@ -34,7 +94,7 @@ entry into ``openstack_user_config.yml`` is shown below:
         container_bridge: "br-lbaas"
         container_type: "veth"
         container_interface: "eth14"
-        host_bind_override: "eth14"
+        host_bind_override: "bond0"  # Defines neutron physical network mapping
         ip_from_q: "octavia"
         type: "flat"
         net_name: "octavia"
@@ -44,7 +104,6 @@ entry into ``openstack_user_config.yml`` is shown below:
           - octavia-housekeeping
           - octavia-health-manager
 
-Make sure to modify the other entries in this file as well.
 
 There are a couple of variables which need to be adjusted if you don't use
 ``lbaas`` for the provider network name and ``lbaas-mgmt`` for the neutron
@@ -52,21 +111,47 @@ name. Furthermore, the system tries to infer certain values based on the
 inventory which might not always work and hence might need to be explicitly
 declared. Review the file ``defaults/main.yml`` for more information.
 
-Octavia can create the required neutron networks itself. Please review the
-corresponding settings - especially ``octavia_management_net_subnet_cidr``
-needs to be adjusted. Alternatively, they can be created elsewhere and
-consumed by Octavia.
+The octavia ansible role can create the required neutron networks itself.
+Please review the corresponding settings - especially
+``octavia_management_net_subnet_cidr`` should be adjusted to suit your
+environment. Alternatively, the neutron network  can be pre-created elsewhere
+and consumed by Octavia.
 
-Special attention needs to be applied to the ``--allocation-pool`` to not have
-ips which overlap with ips assigned to hosts or containers (see the
-``used_ips`` variable in ``openstack_user_config.yml``)
 
-.. note::
-    The system will deploy an iptables firewall if ``octavia_ip_tables_fw`` is set
-    to ``True`` (the default). This adds additional protection to the control plane
-    in the rare instance a load balancing vm is compromised. Please review carefully
-    the rules and adjust them for your installation. Please be aware that logging
-    of dropped packages is not enabled and you will need to add those rules manually.
+VLAN networking scenario
+------------------------
+
+In case you want to leverage standard vlan networking for the Octavia
+management network the definition in ``openstack_user_config.yml`` may
+look like this:
+
+.. code-block:: yaml
+
+    - network:
+        container_bridge: "br-lbaas"
+        container_type: "veth"
+        container_interface: "eth14"
+        ip_from_q: "lbaas"
+        type: "raw"
+        group_binds:
+          - neutron_linuxbridge_agent
+          - octavia-worker
+          - octavia-housekeeping
+          - octavia-health-manager
+
+Add extend ``user_variables.yml`` with following overrides:
+
+.. code-block:: yaml
+
+   octavia_provider_network_name: vlan
+   octavia_provider_network_type: vlan
+   octavia_provider_segmentation_id: 400
+   octavia_container_network_name: lbaas_address
+
+In addition to this, you will need to ensure that you have an interface that
+links neutron-managed br-vlan with br-lbaas on the controller nodes (for the case
+when br-vlan already exists on the controllers when they also host the neutron
+L3 agent). Making veth pairs or macvlans for this might be suitable.
 
 Building Octavia images
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -189,28 +274,16 @@ In rare cases it might be beneficial to gain ssh access to the
 amphora for additional trouble shooting. Follow these steps to
 enable access.
 
-#. Create an ssh key
-
-   .. code-block:: bash
-
-      ssh-keygen
-
-#. Upload the key into nova as the *octavia* user:
-
-   .. code-block:: bash
-
-     openstack keypair create --public-key <public key file> octavia_key
-
-   .. note::
-      To find the octavia user's username and credentials review
-      the octavia-config file
-      on any octavia container in /etc/octavia.
-
 #. Configure Octavia accordingly
 
    Add a ``octavia_ssh_enabled: True`` to the user file in
    /etc/openstack-deploy
 
+#. Run ``os_octavia`` role. SSH key will be generated and uploaded
+
+.. note::
+    SSH key will be stored on the ``octavia_keypair_setup_host`` (which
+    by default is ``localhost``) in ``~/.ssh/{{ octavia_ssh_key_name }}``
 
 Optional: Tuning Octavia for production use
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,3 +294,6 @@ by adding ``octavia_loadbalancer_topology: ACTIVE_STANDBY`` and
 ``octavia_enable_anti_affinity=True`` to ensure that the active and passive
 amphora are (depending on the anti-affinity filter deployed in nova)  on two
 different hosts to the user file in /etc/openstack-deploy
+
+Also we suggest setting more specific ``octavia_cert_dir`` to prevent
+accidental certificate rotation.
