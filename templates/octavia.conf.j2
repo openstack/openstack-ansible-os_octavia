@@ -89,12 +89,12 @@ server_ca = /etc/octavia/certs/server_ca.pem
 
 [controller_worker]
 amp_active_retries = {{ octavia_amp_active_retries }}
-amp_image_id = {{ octavia_amp_image_id }}
 amp_image_tag = {{ octavia_glance_image_tag }}
 amp_image_owner_id = {{ octavia_amp_image_owner_id }}
 amp_flavor_id = {{ octavia_nova_flavor_uuid }}
+{% if octavia_ssh_enabled %}
 amp_ssh_key_name = {{ octavia_ssh_key_name }}
-amp_ssh_access_allowed = {{ octavia_ssh_enabled }}
+{% endif %}
 amp_boot_network_list = {{ octavia_neutron_management_network_uuid }}
 amp_secgroup_list = {{ octavia_security_group_name }}
 client_ca = /etc/octavia/certs/client_ca.pem
