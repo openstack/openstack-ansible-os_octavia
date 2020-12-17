@@ -232,8 +232,6 @@ octavia_loadbalancer_topology: SINGLE
 octavia_glance_image_tag: octavia-amphora-image
 # add here the id of the image owner to avoid faked images being used
 octavia_amp_image_owner_id:
-# add here the glance image id if tagging is not used (not recommended for prod)
-octavia_amp_image_id:
 # download the image from an artefact server
 # Note: The default is the Octavia test image so don't use that in prod
 octavia_download_artefact: True
