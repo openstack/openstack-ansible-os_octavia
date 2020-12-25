@@ -66,14 +66,15 @@ memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcached_encryption_key }}
 
 [certificates]
-# cert_generator = local_cert_generator
-
-# For local certificate signing (development only):
 ca_certificate = /etc/octavia/certs/ca.pem
 ca_private_key = /etc/octavia/certs/ca_key.pem
 ca_private_key_passphrase = {{ octavia_ca_private_key_passphrase }}
 signing_digest = {{ octavia_signing_digest }}
+{% if octavia_barbican_enabled %}
+cert_manager = barbican_cert_manager
 endpoint_type = {{ octavia_clients_endpoint }}
+region_name = {{ keystone_service_region }}
+{% endif %}
 
 [haproxy_amphora]
 {% if octavia_haproxy_amphora_template is defined %}
