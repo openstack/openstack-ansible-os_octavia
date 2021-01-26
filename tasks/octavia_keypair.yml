@@ -16,8 +16,7 @@
 - name: Create keypair for Octavia
   delegate_to: "{{ octavia_keypair_setup_host }}"
   vars:
-    ansible_python_interpreter: >-
-      {{ (octavia_keypair_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable']) }}
+    ansible_python_interpreter: "{{ octavia_keypair_setup_host_python_interpreter }}"
   block:
     - name: Create keypair
       register: _octavia_keypair

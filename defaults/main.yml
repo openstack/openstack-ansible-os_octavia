@@ -253,7 +253,8 @@ octavia_security_group_rule_cidr:
 # ssh enabled - switch to True if you need ssh access to the amphora
 octavia_ssh_enabled: False
 octavia_ssh_key_name: octavia_key
-octavia_keypair_setup_host: "{{ openstack_keypair_setup_host | default('localhost') }}"
+octavia_keypair_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
+octavia_keypair_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_keypair_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
 # port the agent listens on
 octavia_agent_port: "9443"
 octavia_health_manager_port: 5555
