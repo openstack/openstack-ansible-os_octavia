@@ -57,6 +57,9 @@ octavia_clients_endpoint: internalURL
 
 octavia_auth_strategy: keystone
 
+## Barbican certificates
+octavia_barbican_enabled: false
+
 ## Cinder Volume
 octavia_cinder_enabled: False
 
