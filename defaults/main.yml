@@ -44,7 +44,6 @@ octavia_git_repo: https://opendev.org/openstack/octavia
 octavia_git_install_branch: master
 octavia_upper_constraints_url: "{{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}"
 octavia_git_constraints:
-  - "git+{{ octavia_git_repo }}@{{ octavia_git_install_branch }}#egg=octavia"
   - "--constraint {{ octavia_upper_constraints_url }}"
 
 octavia_pip_install_args: "{{ pip_install_options | default('') }}"
@@ -163,7 +162,7 @@ octavia_pip_packages:
   - python-novaclient
   - python-openstackclient
   - python-octaviaclient
-  - octavia
+  - "git+{{ octavia_git_repo }}@{{ octavia_git_install_branch }}#egg=octavia"
   - shade
   - systemd-python
 
