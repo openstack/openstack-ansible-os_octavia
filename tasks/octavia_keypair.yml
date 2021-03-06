@@ -43,7 +43,7 @@
 
     - name: Remove private key from deploy host after use
       file:
-        path: "{{ looup('env', 'HOME') }}/.ssh/{{ octavia_ssh_key_name }}"
+        path: "{{ lookup('env', 'HOME') }}/.ssh/{{ octavia_ssh_key_name }}"
         state: absent
       when:
         - _octavia_keypair is changed
