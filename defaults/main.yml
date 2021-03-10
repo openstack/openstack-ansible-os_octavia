@@ -24,7 +24,7 @@ octavia_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_
 
 # Set installation method.
 octavia_install_method: "{{ service_install_method | default('source') }}"
-octavia_venv_python_executable: "{{ openstack_venv_python_executable | default('python2') }}"
+octavia_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
 ## Allow TLS listener
 octavia_tls_listener_enabled: True
