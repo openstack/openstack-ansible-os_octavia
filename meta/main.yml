@@ -22,14 +22,11 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - stretch
+        - buster
     - name: Ubuntu
       versions:
-        - xenial
         - bionic
-    - name: opensuse
-      versions:
-        - 15
+        - focal
   categories:
     - cloud
     - development
