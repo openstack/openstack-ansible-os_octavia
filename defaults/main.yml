@@ -20,7 +20,7 @@ debug: False
 # for the service setup. The host must already have
 # clouds.yaml properly configured.
 octavia_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
-octavia_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
+octavia_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
 
 # Set installation method.
 octavia_install_method: "{{ service_install_method | default('source') }}"
@@ -64,7 +64,7 @@ octavia_cinder_enabled: False
 
 ## Database info
 octavia_db_setup_host: "{{ openstack_db_setup_host | default('localhost') }}"
-octavia_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter | default((octavia_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
+octavia_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter | default((octavia_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
 octavia_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 octavia_galera_user: octavia
 octavia_galera_database: octavia
@@ -255,7 +255,7 @@ octavia_security_group_rule_cidr:
 octavia_ssh_enabled: False
 octavia_ssh_key_name: octavia_key
 octavia_keypair_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
-octavia_keypair_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_keypair_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable'])) }}"
+octavia_keypair_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_keypair_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
 # port the agent listens on
 octavia_agent_port: "9443"
 octavia_health_manager_port: 5555
@@ -405,7 +405,7 @@ octavia_iptables_rules:
 
 # uWSGI Settings
 octavia_wsgi_processes_max: 16
-octavia_wsgi_processes: "{{ [[(ansible_processor_vcpus//ansible_processor_threads_per_core)|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
+octavia_wsgi_processes: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['processor_threads_per_core'])|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
 octavia_wsgi_threads: 1
 octavia_uwsgi_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
 octavia_api_uwsgi_ini_overrides: {}

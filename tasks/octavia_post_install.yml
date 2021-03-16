@@ -26,12 +26,12 @@
 - name: save iptables rules (Debian/Ubuntu)
   command: netfilter-persistent save
   ignore_errors: yes
-  when: ansible_os_family == 'Debian'
+  when: ansible_facts['os_family'] == 'Debian'
 
 - name: save iptables rules (CentOS)
   shell: iptables-save > /etc/sysconfig/iptables
   when:
-    - ansible_distribution == 'CentOS'
+    - ansible_facts['distribution'] == 'CentOS'
 
 - name: Copy user provided HAProxy templates
   copy:

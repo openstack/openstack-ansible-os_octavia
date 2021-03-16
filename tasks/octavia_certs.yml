@@ -22,7 +22,7 @@
   delegate_to: "{{ octavia_cert_setup_host }}"
   vars:
     ansible_python_interpreter: >-
-      {{ (octavia_cert_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable']) }}
+      {{ (octavia_cert_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']) }}
   block:
     - name: Create certificate directories
       file:
@@ -107,7 +107,7 @@
   delegate_to: "{{ octavia_cert_setup_host }}"
   vars:
     ansible_python_interpreter: >-
-      {{ (octavia_cert_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_python['executable']) }}
+      {{ (octavia_cert_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']) }}
   when: octavia_generate_client_cert | bool
   block:
     - name: Create the client CAs private key
