@@ -13,16 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Set legacy role policies
+- name: Implement policy.yaml if there are overrides configured
   config_template:
-    src: policy.json.j2
-    dest: /etc/octavia/policy.json
+    dest: /etc/octavia/policy.yaml
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
-    config_overrides: "{{ octavia_policy_overrides }}"
-    config_type: "json"
-  notify:
-    - Restart octavia services
-    - Restart uwsgi services
-  when: octavia_legacy_policy
+    content: "{{ (octavia_legacy_policy | bool) | ternary(_octavia_legacy_policies, {}) | combine(octavia_policy_overrides) }}"
+    config_type: "yaml"
+  when:
+    - (octavia_policy_overrides | length > 0) or (octavia_legacy_policy | bool)
+
+- name: Remove legacy policy.yaml file
+  file:
+    path: "/etc/octavia/policy.yaml"
+    state: absent
+  when:
+    - octavia_policy_overrides | length == 0
+    - not octavia_legacy_policy | bool

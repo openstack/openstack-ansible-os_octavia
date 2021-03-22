@@ -21,6 +21,14 @@
   listen:
     - "venv changed"
 
+# NOTE (noonedeadpunk): Remove this task after Xena release
+- name: Remove obsoleted policy.json
+  file:
+    path: "/etc/octavia/policy.json"
+    state: absent
+  listen:
+    - Restart octavia services
+
 - name: Start octavia services
   service:
     name: "{{ item.service_name }}"
