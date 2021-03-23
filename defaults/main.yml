@@ -163,7 +163,6 @@ octavia_pip_packages:
   - python-openstackclient
   - python-octaviaclient
   - "git+{{ octavia_git_repo }}@{{ octavia_git_install_branch }}#egg=octavia"
-  - shade
   - systemd-python
 
 # Memcached override
