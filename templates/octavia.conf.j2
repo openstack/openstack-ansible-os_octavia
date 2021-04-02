@@ -179,15 +179,15 @@ amp_active_retries = {{ octavia_amp_active_retries }}
 # amp_active_wait_sec = 10
 # Glance parameters to extract image ID to use for amphora. Only one of
 # parameters is needed. Using tags is the recommended way to refer to images.
-amp_image_id = {{ octavia_amp_image_id }}
 amp_image_tag = {{ octavia_glance_image_tag }}
 # Optional owner ID used to restrict glance images to one owner ID.
 # This is a recommended security setting.
 amp_image_owner_id = {{ octavia_amp_image_owner_id }}
 # octavia parameters to use when booting amphora
 amp_flavor_id = {{ octavia_nova_flavor_uuid }}
+{% if octavia_ssh_enabled %}
 amp_ssh_key_name = {{ octavia_ssh_key_name }}
-amp_ssh_access_allowed = {{ octavia_ssh_enabled }}
+{% endif %}
 
 
 # Networks to attach to the Amphorae examples:
