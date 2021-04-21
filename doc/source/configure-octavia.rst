@@ -133,6 +133,7 @@ look like this:
         container_interface: "eth14"
         ip_from_q: "lbaas"
         type: "raw"
+        net_name: lbaas
         group_binds:
           - neutron_linuxbridge_agent
           - octavia-worker
@@ -146,7 +147,7 @@ Add extend ``user_variables.yml`` with following overrides:
    octavia_provider_network_name: vlan
    octavia_provider_network_type: vlan
    octavia_provider_segmentation_id: 400
-   octavia_container_network_name: lbaas_address
+   octavia_provider_inventory_net_name: lbaas
 
 In addition to this, you will need to ensure that you have an interface that
 links neutron-managed br-vlan with br-lbaas on the controller nodes (for the case
