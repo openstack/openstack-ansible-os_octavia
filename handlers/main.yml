@@ -28,15 +28,3 @@
     state: absent
   listen:
     - Restart octavia services
-
-- name: Start octavia services
-  service:
-    name: "{{ item.service_name }}"
-    state: "started"
-  with_items: "{{ filtered_octavia_services }}"
-
-- name: Stop octavia services
-  service:
-    name: "{{ item.service_name }}"
-    state: "stopped"
-  with_items: "{{ filtered_octavia_services }}"
