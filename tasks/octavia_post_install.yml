@@ -100,6 +100,35 @@
       set_fact:
         octavia_neutron_management_network_uuid: "{{ get_net_info.openstack_networks[0].id }}"
 
+- name: Set octavia_amp_image_owner_id if it is not already set
+  delegate_to: "{{ octavia_service_setup_host }}"
+  vars:
+    ansible_python_interpreter: "{{ octavia_service_setup_host_python_interpreter }}"
+  when:
+    - octavia_amp_image_owner_id is not defined
+  block:
+    - name: Get octavia service project details
+      openstack.cloud.project_info:
+        auth:
+          auth_url: "{{ keystone_service_adminurl }}"
+          username: "{{ octavia_service_user_name }}"
+          password: "{{ octavia_service_password }}"
+          project_name: "{{ octavia_service_project_name }}"
+          user_domain_name: "{{ octavia_service_user_domain_id }}"
+          project_domain_name: "{{ octavia_service_project_domain_id }}"
+        name: "{{ octavia_service_project_name }}"
+        interface: admin
+        domain: "{{ octavia_service_project_domain_id }}"
+        verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: get_project_info
+      until: get_project_info is success
+      retries: 5
+      delay: 10
+
+    - name: Set Octavia amp image owner UUID fact
+      set_fact:
+        octavia_amp_image_owner_id: "{{ get_project_info.openstack_projects[0].id }}"
+
 - name: Drop octavia Config(s)
   config_template:
     src: "{{ item.src }}"
