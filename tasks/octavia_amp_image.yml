@@ -29,8 +29,6 @@
         state: directory
         mode: "0750"
         owner: "{{ octavia_amp_image_path_owner }}"
-      when:
-        - octavia_download_artefact | bool
 
     - name: Download image from artefact server
       get_url:
@@ -39,8 +37,6 @@
       retries: 10
       delay: 10
       register: octavia_download_result
-      when:
-        - octavia_download_artefact | bool
 
     - name: Replace existing image with new one
       when:

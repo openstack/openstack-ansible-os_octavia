@@ -77,11 +77,15 @@
     - common-mq
     - octavia-config
 
-- import_tasks: octavia_certs.yml
+- include_tasks: octavia_certs.yml
+  args:
+    apply:
+      tags:
+        - octavia-config
   run_once: true
   when: octavia_generate_certs | bool
   tags:
-    - octavia-config
+    - always
 
 - name: Gather variables for installation method
   include_vars: "{{ octavia_install_method }}_install.yml"
@@ -97,9 +101,13 @@
     - octavia-install
 
 - include_tasks: octavia_certs_distribute.yml
+  args:
+    apply:
+      tags:
+        - octavia-config
   when: octavia_generate_certs | bool
   tags:
-    - octavia-config
+    - always
 
 - name: Import uwsgi role
   import_role:
@@ -165,14 +173,18 @@
   tags:
     - octavia-install
 
-- import_tasks: octavia_mgmt_network.yml
+- include_tasks: octavia_mgmt_network.yml
+  args:
+    apply:
+      tags:
+        - octavia-install
+        - octavia-config
   when:
     - octavia_neutron_management_network_uuid is not defined
     - octavia_neutron_management_network_name is defined
     - _octavia_is_first_play_host
   tags:
-    - octavia-install
-    - octavia-config
+    - always
 
 - import_tasks: octavia_security_group.yml
   when:
@@ -181,18 +193,26 @@
     - octavia-install
 
 - include_tasks: octavia_keypair.yml
+  args:
+    apply:
+      tags:
+        - octavia-config
   when:
     - _octavia_is_first_play_host
   tags:
-    - octavia-config
+    - always
 
-- import_tasks: octavia_flavor_create.yml
+- include_tasks: octavia_flavor_create.yml
+  args:
+    apply:
+      tags:
+        - octavia-install
+        - octavia-config
   when:
     - _octavia_is_first_play_host
     - octavia_nova_flavor_uuid is not defined
   tags:
-    - octavia-install
-    - octavia-config
+    - always
 
 - import_tasks: octavia_post_install.yml
   tags:
@@ -211,11 +231,16 @@
     - octavia-config
     - octavia-policy-override
 
-- import_tasks: octavia_amp_image.yml
+- include_tasks: octavia_amp_image.yml
+  args:
+    apply:
+      tags:
+        - octavia-config
   when:
     - _octavia_is_first_play_host
+    - octavia_download_artefact | bool
   tags:
-    - octavia-config
+    - always
 
 - name: Flush handlers
   meta: flush_handlers
