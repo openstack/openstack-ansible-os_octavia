@@ -72,7 +72,7 @@
             --disk-format qcow2
             --tag {{ octavia_glance_image_tag }}
             --private
-            --project service
+            --project {{ octavia_service_project_name }}
             amphora-x64-haproxy
 
         - name: Delete old image from glance
