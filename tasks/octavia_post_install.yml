@@ -25,7 +25,7 @@
 # directly they work. Ignoring errors for now --
 - name: save iptables rules (Debian/Ubuntu)
   command: netfilter-persistent save
-  ignore_errors: yes
+  failed_when: false
   when: ansible_facts['os_family'] == 'Debian'
 
 - name: save iptables rules (CentOS)
