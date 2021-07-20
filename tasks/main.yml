@@ -82,8 +82,9 @@
     apply:
       tags:
         - octavia-config
-  run_once: true
-  when: octavia_generate_certs | bool
+  when:
+    - octavia_generate_certs | bool
+    - _octavia_is_first_play_host
   tags:
     - always
 
