@@ -20,6 +20,7 @@
 # system python instead.
 - name: Prepare octavia_cert_setup_host for certificate generation
   delegate_to: "{{ octavia_cert_setup_host }}"
+  delegate_facts: true
   vars:
     ansible_python_interpreter: >-
       {{ (octavia_cert_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']) }}
@@ -94,6 +95,12 @@
       register: _octavia_server_ca
       changed_when: false
 
+    - name: Register a fact for the CA cert and key
+      set_fact:
+        octavia_ca_private_key_fact: "{{ _octavia_ca_private_key['content'] | b64decode }}"
+        octavia_ca_certificate_fact: "{{ _octavia_ca_certificate['content'] | b64decode }}"
+        octavia_server_ca_fact: "{{ _octavia_server_ca['content'] | b64decode }}"
+
 # These are run at the very first installation of Octavia
 # While Octavia acts as a CA for the server certificates,
 # for the amphora it only needs a client certificate and
@@ -105,6 +112,7 @@
 
 - name: Generate keys/certificates on octavia_cert_setup_host
   delegate_to: "{{ octavia_cert_setup_host }}"
+  delegate_facts: true
   vars:
     ansible_python_interpreter: >-
       {{ (octavia_cert_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']) }}
@@ -171,3 +179,8 @@
         src: "{{ octavia_client_cert }}"
       register: _octavia_client_cert
       changed_when: false
+
+    - name: Register a fact for the cert and key
+      set_fact:
+        octavia_client_ca_fact: "{{ _octavia_client_ca['content'] | b64decode }}"
+        octavia_client_cert_fact: "{{ _octavia_client_cert['content'] | b64decode }}"
