@@ -117,7 +117,7 @@
       tags:
         - skip_ansible_lint
 
-    - name: Register VIP IP # this is likley changing with a newer version of octaviaclient
+    - name: Register VIP IP # this is likely changing with a newer version of octaviaclient
       shell: >
          openstack loadbalancer show test-lb -c vip_address -f value
       environment: "{{ env }}"
