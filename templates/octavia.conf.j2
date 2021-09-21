@@ -25,7 +25,7 @@ driver = {{ (octavia_ceilometer_enabled | bool) | ternary('messagingv2', 'noop')
 transport_url = {{ octavia_oslomsg_notify_transport }}://{% for host in octavia_oslomsg_notify_servers.split(',') %}{{ octavia_oslomsg_notify_userid }}:{{ octavia_oslomsg_notify_password }}@{{ host }}:{{ octavia_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ octavia_oslomsg_notify_vhost }}{% if octavia_oslomsg_notify_use_ssl | bool %}?ssl=1&ssl_version={{ octavia_oslomsg_notify_ssl_version }}&ssl_ca_file={{ octavia_oslomsg_notify_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
 
 [database]
-connection = mysql+pymysql://{{ octavia_galera_user }}:{{ octavia_container_mysql_password }}@{{ octavia_galera_address }}/{{ octavia_galera_database }}?charset=utf8{% if octavia_galera_use_ssl | bool %}&ssl_ca={{ octavia_galera_ssl_ca_cert }}{% endif %}
+connection = mysql+pymysql://{{ octavia_galera_user }}:{{ octavia_container_mysql_password }}@{{ octavia_galera_address }}/{{ octavia_galera_database }}?charset=utf8{% if octavia_galera_use_ssl | bool %}&ssl_verify_cert=true{% if octavia_galera_ssl_ca_cert | length > 0 %}&ssl_ca={{ octavia_galera_ssl_ca_cert }}{% endif %}{% endif %}
 
 max_overflow = {{ octavia_db_max_overflow }}
 max_pool_size = {{ octavia_db_pool_size }}
