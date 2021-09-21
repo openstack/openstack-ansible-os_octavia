@@ -173,10 +173,10 @@ For this process, use one of the physical hosts within the environment.
 
    .. code-block:: bash
 
-      apt-get install qemu uuid-runtime curl kpartx git jq python-pip
-      pip install virtualenv
+      apt-get install qemu uuid-runtime curl kpartx git jq python3-pip
+      pip3 install virtualenv
 
-      virtualenv /opt/octavia-image-build
+      virtualenv -p /usr/bin/python3 /opt/octavia-image-build
       source /opt/octavia-image-build/bin/activate
 
 #. Clone the necessary repositories and dependencies
@@ -225,9 +225,9 @@ Here is a script to perform all those tasks at once:
           #/bin/sh
 
           apt-get install qemu uuid-runtime curl kpartx git jq
-          pip -v >/dev/null || {apt-get install python-pip}
-          pip install virtualenv
-          virtualenv /opt/octavia-image-build || exit 1
+          pip -v >/dev/null || {apt-get install python3-pip}
+          pip3 install virtualenv
+          virtualenv -p /usr/bin/python3 /opt/octavia-image-build || exit 1
           source /opt/octavia-image-build/bin/activate
 
           pushd /tmp
