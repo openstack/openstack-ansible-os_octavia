@@ -215,7 +215,7 @@ For this process, use one of the physical hosts within the environment.
         Alternatively you can specify the new image in the appropriate settings and rerun the
         ansible with an appropriate tag.
 
-You can find more information abpout the diskimage script and the process at
+You can find more information about the diskimage script and the process at
 https://opendev.org/openstack/octavia/tree/master/diskimage-create
 
 Here is a script to perform all those tasks at once:
@@ -259,7 +259,7 @@ Creating the cryptographic certificates
 
 .. note::
     For production installation make sure that you review this very
-    carefully with your own security requirements and potantially use
+    carefully with your own security requirements and potentially use
     your own CA to sign the certificates.
 
 The system will automatically generate and use self-signed
