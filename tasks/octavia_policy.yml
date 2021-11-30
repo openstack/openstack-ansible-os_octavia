@@ -14,7 +14,7 @@
 # limitations under the License.
 
 - name: Implement policy.yaml if there are overrides configured
-  config_template:
+  openstack.config_template.config_template:
     dest: /etc/octavia/policy.yaml
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"

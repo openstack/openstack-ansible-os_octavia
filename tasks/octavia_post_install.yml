@@ -130,7 +130,7 @@
         octavia_amp_image_owner_id: "{{ get_project_info.openstack_projects[0].id }}"
 
 - name: Drop octavia Config(s)
-  config_template:
+  openstack.config_template.config_template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: "{{ octavia_system_user_name }}"
