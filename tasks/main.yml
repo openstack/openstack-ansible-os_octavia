@@ -128,15 +128,15 @@
     systemd_user_name: "{{ octavia_system_user_name }}"
     systemd_group_name: "{{ octavia_system_group_name }}"
     systemd_tempd_prefix: openstack
-    systemd_slice_name: nova
-    systemd_lock_path: /var/lock/octavia
+    systemd_slice_name: "{{ octavia_system_slice_name }}"
+    systemd_lock_dir: "{{ octavia_lock_dir }}"
     systemd_CPUAccounting: true
     systemd_BlockIOAccounting: true
     systemd_MemoryAccounting: true
     systemd_TasksAccounting: true
     systemd_services: "{{ filtered_octavia_services }}"
   tags:
-    - nova-config
+    - octavia-config
     - systemd-service
 
 - import_tasks: service_setup.yml

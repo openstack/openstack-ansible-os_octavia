@@ -114,6 +114,8 @@ octavia_system_group_name: octavia
 octavia_system_shell: /bin/false
 octavia_system_comment: octavia system user
 octavia_system_home_folder: "/var/lib/{{ octavia_system_user_name }}"
+octavia_system_slice_name: octavia
+octavia_lock_dir: "{{ openstack_lock_dir | default('/run/lock') }}"
 
 ## Auth
 octavia_service_region: "{{ service_region | default('RegionOne') }}"
