@@ -47,7 +47,12 @@
   tags:
     - always
 
-- import_tasks: db_setup.yml
+- include_role:
+    name: openstack.osa.db_setup
+    apply:
+      tags:
+        - common-db
+        - octavia-config
   when:
     - _octavia_is_first_play_host
   vars:
@@ -61,10 +66,14 @@
           - username: "{{ octavia_galera_user }}"
             password: "{{ octavia_container_mysql_password }}"
   tags:
-    - common-db
-    - octavia-config
+    - always
 
-- import_tasks: mq_setup.yml
+- include_role:
+    name: openstack.osa.mq_setup
+    apply:
+      tags:
+        - common-mq
+        - octavia-config
   when:
     - _octavia_is_first_play_host
   vars:
@@ -79,8 +88,7 @@
     _oslomsg_notify_vhost: "{{ octavia_oslomsg_notify_vhost }}"
     _oslomsg_notify_transport: "{{ octavia_oslomsg_notify_transport }}"
   tags:
-    - common-mq
-    - octavia-config
+    - always
 
 - include_tasks: octavia_certs.yml
   args:
@@ -144,7 +152,12 @@
     - octavia-config
     - systemd-service
 
-- import_tasks: service_setup.yml
+- include_role:
+    name: openstack.osa.service_setup
+    apply:
+      tags:
+        - common-service
+        - octavia-config
   vars:
     _service_adminuri_insecure: "{{ keystone_service_adminuri_insecure }}"
     _service_in_ldap: "{{ octavia_service_in_ldap }}"
@@ -177,7 +190,7 @@
         description: "{{ octavia_service_description }}"
   when: _octavia_is_first_play_host
   tags:
-    - octavia-install
+    - always
 
 - include_tasks: octavia_mgmt_network.yml
   args:
