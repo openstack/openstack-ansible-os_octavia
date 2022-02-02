@@ -20,11 +20,3 @@
   with_items: "{{ filtered_octavia_services }}"
   listen:
     - "venv changed"
-
-# NOTE (noonedeadpunk): Remove this task after Xena release
-- name: Remove obsoleted policy.json
-  file:
-    path: "/etc/octavia/policy.json"
-    state: absent
-  listen:
-    - Restart octavia services
