@@ -95,17 +95,6 @@
   tags:
     - always
 
-- include_tasks: octavia_certs.yml
-  args:
-    apply:
-      tags:
-        - octavia-config
-  when:
-    - octavia_generate_certs | bool
-    - _octavia_is_first_play_host
-  tags:
-    - always
-
 - name: Gather variables for installation method
   include_vars: "{{ octavia_install_method }}_install.yml"
   tags:
@@ -115,18 +104,42 @@
   tags:
     - octavia-install
 
+- name: Create and install SSL certificates
+  include_role:
+    name: pki
+  vars:
+    pki_setup_host: "{{ octavia_cert_setup_host }}"
+    pki_dir: "{{ octavia_cert_dir }}"
+    pki_create_ca: "{{ octavia_generate_ca }}"
+    pki_regen_ca: "{{ octavia_regenerate_ca }}"
+    pki_authorities: "{{ octavia_cert_authorities }}"
+    pki_create_certificates: "{{ octavia_generate_client_cert }}"
+    pki_regen_cert: "{{ octavia_regenerate_client_cert }}"
+    pki_certificates: "{{ octavia_cert_certificates }}"
+    pki_install_certificates: "{{ octavia_cert_install_certificates }}"
+  when:
+    - octavia_generate_certs | bool
+  tags:
+    - always
+
+- name: Assemble SSL certificates
+  assemble:
+    src: /etc/octavia/certs/
+    dest: /etc/octavia/certs/client.pem
+    regexp: '(client\.pem\.crt|client\.pem\.key)$'
+  notify:
+    - Restart octavia services
+    - Restart uwsgi services
+  when:
+    - octavia_generate_certs | bool
+  tags:
+    - octavia-config
+    - octavia-install
+
+
 - import_tasks: octavia_install.yml
   tags:
     - octavia-install
-
-- include_tasks: octavia_certs_distribute.yml
-  args:
-    apply:
-      tags:
-        - octavia-config
-  when: octavia_generate_certs | bool
-  tags:
-    - always
 
 - name: Import uwsgi role
   import_role:

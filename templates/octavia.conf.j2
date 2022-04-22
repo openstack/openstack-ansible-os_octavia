@@ -66,10 +66,10 @@ memcache_security_strategy = ENCRYPT
 memcache_secret_key = {{ memcached_encryption_key }}
 
 [certificates]
-ca_certificate = /etc/octavia/certs/ca.pem
+ca_certificate = /etc/octavia/certs/server_ca.pem
 ca_private_key = /etc/octavia/certs/ca_key.pem
 ca_private_key_passphrase = {{ octavia_ca_private_key_passphrase }}
-signing_digest = {{ octavia_signing_digest }}
+signing_digest = sha256
 {% if octavia_barbican_enabled %}
 cert_manager = barbican_cert_manager
 endpoint_type = {{ octavia_clients_endpoint }}

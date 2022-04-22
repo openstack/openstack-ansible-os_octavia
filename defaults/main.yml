@@ -430,40 +430,116 @@ octavia_network_driver: allowed_address_pairs_driver
 # Set the host which will execute the openssl_* modules
 # for the certificate generation. The host must already
 # have access to pyOpenSSL.
-octavia_cert_setup_host: "{{ openstack_cert_setup_host | default('localhost') }}"
+octavia_cert_setup_host: "{{ openstack_pki_setup_host | default('localhost') }}"
 
 # Set the directory where the certificates will be stored
 # on the above host. If the host is localhost, then the user
 # running the playbook must have access to it.
-octavia_cert_dir: "{{ lookup('env', 'HOME') }}/openstack-ansible/octavia"
+octavia_cert_dir: "{{ openstack_pki_dir | default(lookup('env', 'HOME') ~ '/openstack-ansible') }}"
+octavia_cert_keys_dir: "{{ octavia_cert_dir }}/certs/private/"
+octavia_cert_certs_dir: "{{ octavia_cert_dir }}/certs/certs/"
 octavia_cert_dir_owner: "{{ lookup('env', 'USER') }}"
 
-octavia_cert_key_length_server: '4096' # key length
-octavia_cert_cipher_server: 'auto'
-octavia_cert_cipher_client: 'auto'
-octavia_cert_key_length_client: '4096' # key length
-octavia_cert_server_ca_subject: '/C=US/ST=Denial/L=Nowhere/O=Dis/CN=www.example.com' # change this to something more real
-octavia_cert_client_ca_subject: '/C=US/ST=Denial/L=Nowhere/O=Dis/CN=www.example.com' # change this to something more real
 octavia_cert_client_req_common_name: 'www.example.com' # change this to something more real
 octavia_cert_client_req_country_name: 'US'
 octavia_cert_client_req_state_or_province_name: 'Denial'
 octavia_cert_client_req_locality_name: 'Nowhere'
 octavia_cert_client_req_organization_name: 'Dis'
 octavia_cert_validity_days: 1825 # 5 years
-octavia_generate_client_cert: True # generate self signed client certs
-octavia_generate_certs: True
+octavia_generate_certs: True # generate self signed client certs
+octavia_generate_client_cert: True
+octavia_generate_ca: True
+octavia_regenerate_client_cert: ''
+octavia_regenerate_ca: ''
 
-# client certs
-octavia_client_ca_key: "{{ octavia_cert_dir }}/ca_01.key"
-octavia_client_ca: "{{ octavia_cert_dir }}/ca_01.pem"
-octavia_client_cert: "{{ octavia_cert_dir }}/client.pem"
-# server
-octavia_server_ca: "{{ octavia_ca_certificate }}"
-# ca certs
-octavia_ca_private_key: "{{ octavia_cert_dir }}/private/cakey.pem"
+octavia_cert_authorities:
+  - name: "OctaviaServerRoot"
+    country: "{{ octavia_cert_client_req_country_name }}"
+    state_or_province_name: "{{ octavia_cert_client_req_state_or_province_name }}"
+    organization_name: "{{ octavia_cert_client_req_organization_name }}"
+    locality_name: "{{ octavia_cert_client_req_locality_name }}"
+    cn: "Octavia Server CA"
+    provider: selfsigned
+    basic_constraints: "CA:TRUE"
+    key_passphrase: "{{ octavia_ca_private_key_passphrase }}"
+    key_usage:
+      - digitalSignature
+      - cRLSign
+      - keyCertSign
+    not_after: "+{{ octavia_cert_validity_days }}d"
+  - name: "OctaviaClientRoot"
+    country: "{{ octavia_cert_client_req_country_name }}"
+    state_or_province_name: "{{ octavia_cert_client_req_state_or_province_name }}"
+    organization_name: "{{ octavia_cert_client_req_organization_name }}"
+    locality_name: "{{ octavia_cert_client_req_locality_name }}"
+    cn: "Octavia Client CA"
+    provider: selfsigned
+    basic_constraints: "CA:TRUE"
+    key_passphrase: "{{ octavia_cert_client_password }}"
+    key_usage:
+      - digitalSignature
+      - cRLSign
+      - keyCertSign
+    not_after: "+{{ octavia_cert_validity_days }}d"
+
+octavia_cert_certificates:
+  - name: "octavia_client"
+    provider: ownca
+    cn: "{{ octavia_cert_client_req_common_name }}"
+    signed_by: "OctaviaClientRoot"
+    ownca_key_passphrase: "{{ octavia_cert_client_password }}"
+    key_usage:
+      - nonRepudiation
+      - digitalSignature
+      - keyEncipherment
+    extended_key_usage:
+      - clientAuth
+      - emailProtection
+
+# Installation details for SSL certificates
+octavia_cert_install_certificates:
+  # Server CA
+  - src: "{{ octavia_ca_certificate | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/certs/OctaviaServerRoot.crt') }}"
+    dest: "/etc/octavia/certs/server_ca.pem"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+  - src: "{{ octavia_ca_private_key | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/private/OctaviaServerRoot.key.pem') }}"
+    dest: "/etc/octavia/certs/ca_key.pem"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+  # Client CA
+  - src: "{{ octavia_client_ca | default(octavia_cert_dir ~ '/roots/OctaviaClientRoot/certs/OctaviaClientRoot.crt') }}"
+    dest: "/etc/octavia/certs/client_ca.pem"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+  # Client certificate
+  - src: "{{ octavia_client_cert | default(octavia_cert_certs_dir ~ '/octavia_client.crt') }}"
+    dest: "/etc/octavia/certs/client.pem.crt"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+  - src: "{{ octavia_client_key | default(octavia_cert_keys_dir ~ '/octavia_client.key.pem') }}"
+    dest: "/etc/octavia/certs/client.pem.key"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+
+
+# Custom client CA
+#octavia_client_ca: "{{ octavia_cert_dir }}/ca_01.pem"
+## Custom client certs
+#octavia_client_cert: "{{ octavia_cert_dir }}/client.pem"
+#octavia_client_key: "{{ octavia_cert_dir }}/client.key.pem"
+## server
+#octavia_server_ca: "{{ octavia_ca_certificate }}"
+## ca certs
+#octavia_ca_private_key: "{{ octavia_cert_dir }}/private/cakey.pem"
 octavia_ca_private_key_passphrase: "{{ octavia_cert_client_password }}"
-octavia_ca_certificate: "{{ octavia_cert_dir }}/ca_server_01.pem"
-octavia_signing_digest: sha256
+#octavia_ca_certificate: "{{ octavia_cert_dir }}/ca_server_01.pem"
+
 
 # Quotas for the Octavia user - assuming active/passive topology
 octavia_num_instances: 10000 # 5000 LB in active/passive
