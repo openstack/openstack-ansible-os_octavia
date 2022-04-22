@@ -31,5 +31,5 @@ octavia_service_distro_packages:
   - octavia-health-manager
   - octavia-housekeeping
   - octavia-worker
-  - python-pymysql
-  - python-systemd
+  - python3-pymysql
+  - python3-systemd
