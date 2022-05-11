@@ -322,7 +322,7 @@ octavia_user_haproxy_templates: {}
 
 # Name of the Octavia management network in Neutron
 octavia_neutron_management_network_name: lbaas-mgmt
-# Name of the provider net in the system
+# Name of the Neutron provider net in the system (flat, vlan, ...)
 octavia_provider_network_name: lbaas
 # Network type
 octavia_provider_network_type: flat
@@ -337,9 +337,10 @@ octavia_management_net_subnet_allocation_pools: ""
 octavia_management_net_dhcp: "True"
 # Should Octavia set up the network and subnet?
 octavia_service_net_setup: True
-# This sets it to the container management network based on how you setup
-# the provider net
-octavia_provider_network: "{{ provider_networks|map(attribute='network')|selectattr('net_name','defined')|selectattr('net_name', 'equalto', octavia_provider_network_name)|list|first }}"
+# This should match net_name from provider_networks structure in openstack_user_config
+octavia_provider_inventory_net_name: "{{ octavia_provider_network_name }}"
+# This gets container managment network structure based on octavia_provider_inventory_net_name
+octavia_provider_network: "{{ provider_networks|map(attribute='network')|selectattr('net_name','defined')|selectattr('net_name', 'equalto', octavia_provider_inventory_net_name)|list|first }}"
 # The name of the network address pool
 octavia_container_network_name: "{{ octavia_provider_network['ip_from_q'] }}_address"
 octavia_hm_group: "octavia-health-manager"
