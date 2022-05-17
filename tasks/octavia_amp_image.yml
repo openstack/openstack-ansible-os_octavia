@@ -94,4 +94,4 @@
           retries: 5
           delay: 10
           when:
-            - openstack_image.id is defined
+            - get_image_info.openstack_image.id is defined
