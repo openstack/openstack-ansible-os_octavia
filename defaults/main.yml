@@ -61,6 +61,9 @@ octavia_barbican_enabled: false
 
 ## Cinder Volume
 octavia_cinder_enabled: False
+cinder_default_availability_zone: "{{ octavia_amp_availability_zone }}"
+octavia_cinder_volume_size: 16
+octavia_cinder_volume_type: "volumes-hdd"
 
 ## Database info
 octavia_db_setup_host: "{{ openstack_db_setup_host | default('localhost') }}"
@@ -306,7 +309,7 @@ octavia_enable_anti_affinity: False
 # Some installations put hardware more suited for load balancing in special
 # availability zones. This allows to target a specific availability zone
 # for amphora creation
-#octavia_amp_availability_zone:
+octavia_amp_availability_zone: nova
 
 # List of haproxy template files to copy from deployment host to octavia hosts
 # octavia_user_haproxy_templates:
