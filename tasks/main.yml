@@ -39,6 +39,11 @@
   tags:
     - always
 
+- name: Gather variables for installation method
+  include_vars: "{{ octavia_install_method }}_install.yml"
+  tags:
+    - always
+
 - name: Fail if our required secrets are not present
   fail:
     msg: "Please set the {{ item }} variable prior to applying this role."
