@@ -18,8 +18,6 @@
       - check-requirements
       - openstack-ansible-linters-jobs
       - openstack-ansible-deploy-aio_metal-jobs
-      # Need to add support of distro installs before
-      # adding the next job template
-      # - openstack-ansible-deploy-aio_distro_metal-jobs
+      - openstack-ansible-deploy-aio_distro_metal-jobs
       - publish-openstack-docs-pti
       - build-release-notes-jobs-python3
