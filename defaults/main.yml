@@ -125,7 +125,12 @@ octavia_lock_dir: "{{ openstack_lock_dir | default('/run/lock') }}"
 octavia_service_region: "{{ service_region | default('RegionOne') }}"
 octavia_service_project_name: "service"
 octavia_service_user_name: "octavia"
-octavia_service_role_name: admin
+octavia_service_role_names:
+  - admin
+  - service
+octavia_service_token_roles:
+  - service
+octavia_service_token_roles_required: "{{ openstack_service_token_roles_required | default(True) }}"
 octavia_service_project_domain_id: default
 octavia_service_user_domain_id: default
 octavia_keystone_auth_plugin: "{{ octavia_keystone_auth_type }}"

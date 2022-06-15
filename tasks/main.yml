@@ -186,7 +186,7 @@
     _service_users:
       - name: "{{ octavia_service_user_name }}"
         password: "{{ octavia_service_password }}"
-        role: "{{ octavia_service_role_name }}"
+        role: "{{ octavia_service_role_names }}"
       - role: load-balancer_observer
       - role: load-balancer_global_observer
       - role: load-balancer_member

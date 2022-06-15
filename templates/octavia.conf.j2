@@ -58,8 +58,9 @@ auth_type = password
 endpoint_type = {{ octavia_clients_endpoint }}
 memcached_servers = {{ octavia_memcached_servers }}
 token_cache_time = 300
-service_token_roles = "{{ octavia_service_role_name }}"
-service_token_roles_required = True
+service_token_roles = "{{ octavia_service_token_roles | join(',') }}"
+service_token_roles_required = {{ octavia_service_token_roles_required | bool }}
+service_type = {{ octavia_service_type }}
 
 # if your memcached server is shared, use these settings to avoid cache poisoning
 memcache_security_strategy = ENCRYPT
