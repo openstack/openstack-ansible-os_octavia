@@ -98,7 +98,7 @@
 
     - name: Set Octavia management network UUID fact
       set_fact:
-        octavia_neutron_management_network_uuid: "{{ get_net_info.openstack_networks[0].id }}"
+        octavia_neutron_management_network_uuid: "{{ get_net_info.networks[0].id }}"
 
 - name: Set octavia_amp_image_owner_id if it is not already set
   delegate_to: "{{ octavia_service_setup_host }}"

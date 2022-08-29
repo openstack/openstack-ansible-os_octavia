@@ -33,7 +33,7 @@
 
 - name: Write private key locally
   copy:
-    content: "{{ _octavia_keypair.key.private_key }}"
+    content: "{{ _octavia_keypair['keypair']['private_key'] }}"
     dest: "{{ lookup('env', 'HOME') }}/.ssh/{{ octavia_ssh_key_name }}"
   delegate_to: localhost
   when:
