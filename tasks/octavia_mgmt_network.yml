@@ -39,6 +39,7 @@
         provider_network_type: "{{ octavia_provider_network_type }}"
         provider_physical_network: "{{ octavia_provider_network_name }}"
         provider_segmentation_id: "{{ octavia_provider_segmentation_id | default(omit) }}"
+        mtu_size: "{{ octavia_provider_network_mtu | default('1500') }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_network
