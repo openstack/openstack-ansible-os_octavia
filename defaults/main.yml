@@ -239,8 +239,7 @@ octavia_required_secrets:
 
 ## Octavia configs
 # Load balancer topology options are SINGLE, ACTIVE_STANDBY
-# ACTIVE_STANDBY is recommended for production settings
-octavia_loadbalancer_topology: SINGLE
+octavia_loadbalancer_topology: ACTIVE_STANDBY
 
 # Image tag for the amphora image in glance
 octavia_glance_image_tag: octavia-amphora-image
@@ -308,8 +307,7 @@ octavia_neutron_oslomsg_rpc_password: "{{ neutron_oslomsg_rpc_password }}"
 # this controls if Octavia should add an anti-affinity hint to make sure
 # two amphora are not placed pn the same host (the most common setup of
 # ant affinity features in Nova).
-# Since AIO only has one compute host this is set to false
-octavia_enable_anti_affinity: False
+octavia_enable_anti_affinity: True
 
 # Some installations put hardware more suited for load balancing in special
 # availability zones. This allows to target a specific availability zone
