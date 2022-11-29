@@ -71,6 +71,7 @@ octavia_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter |
 octavia_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 octavia_galera_user: octavia
 octavia_galera_database: octavia
+octavia_galera_persistence_database: octavia_persistence
 octavia_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"
 octavia_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('') }}"
 octavia_db_max_overflow: "{{ openstack_db_max_overflow | default('50') }}"
@@ -78,6 +79,16 @@ octavia_db_max_pool_size: "{{ openstack_db_max_pool_size |  default('5') }}"
 octavia_db_pool_timeout: "{{ openstack_db_pool_timeout | default('30') }}"
 octavia_db_connection_recycle_time: "{{ openstack_db_connection_recycle_time | default('600') }}"
 octavia_galera_port: "{{ galera_port | default('3306') }}"
+
+## Coordination info
+# NOTE: Only Zookeeper and Redis are supported for Octavia
+octavia_coordination_driver: "{{ coordination_driver | default('zookeeper') }}"
+octavia_coordination_group: "{{ coordination_host_group | default('zookeeper_all') }}"
+octavia_coordination_enable: "{{ octavia_coordination_group in groups and groups[octavia_coordination_group] | length > 0 }}"
+octavia_coordination_namespace: octavia_jobboard
+octavia_coordination_client_ssl: "{{ coordination_client_ssl | default(True) }}"
+octavia_coordination_verify_cert: "{{ coordination_verify_cert | default(True) }}"
+octavia_coordination_port: "{{ coordination_port | default(octavia_coordination_client_ssl | ternary('2281', '2181')) }}"
 
 ## Oslo Messaging
 
@@ -179,6 +190,7 @@ octavia_pip_packages:
   - python-octaviaclient
   - "git+{{ octavia_git_repo }}@{{ octavia_git_install_branch }}#egg=octavia"
   - systemd-python
+  - "tooz[{{ octavia_coordination_driver }}]"
 
 # Memcached override
 octavia_memcached_servers: "{{ memcached_servers }}"
@@ -424,6 +436,8 @@ octavia_uwsgi_bind_address: "{{ openstack_service_bind_address | default('0.0.0.
 octavia_api_uwsgi_ini_overrides: {}
 
 # Set up the drivers
+octavia_enabled_provider_drivers: "{{ _octavia_enabled_provider_drivers }}"
+octavia_default_provider_driver: "{{ (octavia_coordination_enable | bool) | ternary('amphorav2', 'amphora') }}"
 octavia_amphora_driver: amphora_haproxy_rest_driver
 octavia_compute_driver: compute_nova_driver
 octavia_network_driver: allowed_address_pairs_driver
