@@ -8,6 +8,7 @@ transport_url = {{ octavia_oslomsg_rpc_transport }}://{% for host in octavia_osl
 [api_settings]
 bind_host = {{ octavia_uwsgi_bind_address }}
 bind_port = {{ octavia_service_port }}
+healthcheck_enabled = True
 
 auth_strategy = {{ octavia_auth_strategy }}
 
