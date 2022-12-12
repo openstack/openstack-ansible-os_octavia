@@ -15,6 +15,9 @@ auth_strategy = {{ octavia_auth_strategy }}
 # Allow users to create TLS Terminated listeners?
 allow_tls_terminated_listeners = {{ octavia_tls_listener_enabled }}
 
+default_provider_driver = {{ octavia_default_provider_driver }}
+enabled_provider_drivers = {{ octavia_enabled_provider_drivers }}
+
 [oslo_messaging]
 topic = octavia_prov
 
@@ -114,9 +117,23 @@ loadbalancer_topology = {{ octavia_loadbalancer_topology }}
 
 
 [task_flow]
-# engine = serial
 max_workers = {{ octavia_task_flow_max_workers }}
 
+{% if octavia_coordination_enable %}
+persistence_connection = mysql+pymysql://{{ octavia_galera_user }}:{{ octavia_container_mysql_password }}@{{ octavia_galera_address }}/{{ octavia_galera_persistence_database }}?charset=utf8{% if octavia_galera_use_ssl | bool %}&ssl_verify_cert=true{% if octavia_galera_ssl_ca_cert | length > 0 %}&ssl_ca={{ octavia_galera_ssl_ca_cert }}{% endif %}{% endif +%}
+jobboard_enabled = True
+jobboard_backend_driver = {{ _octavia_jobboard_driver_map[octavia_coordination_driver] }}
+jobboard_backend_hosts = {{ groups[octavia_coordination_group] | map('extract', hostvars, 'ansible_host') | list | join(',') }}
+jobboard_backend_port = {{ octavia_coordination_port }}
+jobboard_backend_namespace = {{ octavia_coordination_namespace }}
+
+{% if octavia_coordination_driver == 'zookeeper' %}
+jobboard_zookeeper_ssl_options = use_ssl:{{ octavia_coordination_client_ssl | bool }},verify_certs:{{ octavia_coordination_verify_cert | bool }}
+{% endif %}
+{% if octavia_coordination_driver == 'redis' %}
+jobboard_redis_backend_ssl_options = ssl:{{ octavia_coordination_client_ssl | bool }},ssl_cert_reqs:{{ octavia_coordination_verify_cert | ternary('required', 'None') }}
+{% endif %}
+{% endif %}
 
 [service_auth]
 insecure = {{ keystone_service_internaluri_insecure | bool }}

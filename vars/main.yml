@@ -72,3 +72,14 @@ _octavia_legacy_policies:
     "load-balancer:read-quota": "rule:admin_or_owner"
     "load-balancer:read-quota-global": "is_admin:True"
     "load-balancer:write-quota": "is_admin:True"
+
+_octavia_jobboard_driver_map:
+  zookeeper: zookeeper_taskflow_driver
+  redis: redis_taskflow_driver
+
+_octavia_enabled_provider_drivers: |-
+  {% set drivers = ["amphora:'The Octavia Amphora driver.'", "octavia:'Deprecated name of Amphora driver.'"] %}
+  {% if (octavia_coordination_enable | bool) %}
+  {%   set _ = drivers.append("amphorav2:'The Octavia Amphora v2 driver.'") %}
+  {% endif %}
+  {{ drivers | join(',') }}
