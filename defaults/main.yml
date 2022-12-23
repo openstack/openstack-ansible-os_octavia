@@ -44,10 +44,15 @@ octavia_legacy_policy: False
 # Options are 'present' and 'latest'
 octavia_package_state: "{{ package_state | default('latest') }}"
 
+# Source git repo/branch settings
 octavia_git_repo: https://opendev.org/openstack/octavia
 octavia_git_install_branch: master
 octavia_upper_constraints_url: >-
   {{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}
+
+octavia_ovn_octavia_provider_git_repo: https://opendev.org/openstack/ovn-octavia-provider
+octavia_ovn_octavia_provider_git_install_branch: master
+
 octavia_git_constraints:
   - "--constraint {{ octavia_upper_constraints_url }}"
 
@@ -202,7 +207,10 @@ octavia_plugin_dirs:
   - /usr/lib/octavia
   - /usr/local/lib/octavia
 
-# Common pip packages
+###
+### Python code details
+###
+
 octavia_pip_packages:
   - cryptography
   - keystonemiddleware
@@ -220,19 +228,26 @@ octavia_pip_packages:
   - systemd-python
   - "tooz[{{ octavia_coordination_driver }}]"
 
-# Memcached override
-octavia_memcached_servers: "{{ memcached_servers }}"
-
 # Specific pip packages provided by the user
 octavia_user_pip_packages: []
 
 octavia_optional_oslomsg_amqp1_pip_packages:
   - oslo.messaging[amqp1]
 
+octavia_optional_ovn_octavia_provider_pip_packages:
+  - "git+{{ octavia_ovn_octavia_provider_git_repo }}@{{ octavia_ovn_octavia_provider_git_install_branch }}#egg=ovn-octavia-provider"
+
+
+# Memcached override
+octavia_memcached_servers: "{{ memcached_servers }}"
+
 octavia_api_init_overrides: {}
 octavia_worker_init_overrides: {}
 octavia_housekeeping_init_overrides: {}
 octavia_health_manager_init_overrides: {}
+octavia_driver_agent_init_overrides:
+  Service:
+    Killmode: process
 
 ## Service Name-Group Mapping
 octavia_services:
@@ -267,6 +282,14 @@ octavia_services:
     start_order: 2
     init_config_overrides: "{{ octavia_health_manager_init_overrides }}"
     execstarts: "{{ octavia_bin }}/octavia-health-manager"
+    execreloads: "/bin/kill -HUP $MAINPID"
+  octavia-driver-agent:
+    group: octavia-api
+    service_name: octavia-driver-agent
+    service_en: "{{ octavia_ovn_enabled }}"
+    start_order: 5
+    init_config_overrides: "{{ octavia_driver_agent_init_overrides }}"
+    execstarts: "{{ octavia_bin }}/octavia-driver-agent --config-file /etc/octavia/octavia.conf"
     execreloads: "/bin/kill -HUP $MAINPID"
 
 # Required secrets for the role
@@ -463,12 +486,27 @@ octavia_uwsgi_tls:
   key: "{{ octavia_api_ssl_key }}"
 
 # Set up the drivers
+# Provider agents are optional and not required for a successful Octavia provider driver
+# Possible options: amphora_agent, noop_agent, ovn
+octavia_enabled_provider_agents: []
 octavia_enabled_provider_drivers:
   - "amphorav2:'The Octavia Amphora v2 driver.'"
+  - "{{ (octavia_ovn_enabled | bool) | ternary(\"ovn:'The Octavia OVN provider driver.'\", False) }}"
 octavia_default_provider_driver: "amphorav2"
 octavia_amphora_driver: amphora_haproxy_rest_driver
 octavia_compute_driver: compute_nova_driver
 octavia_network_driver: allowed_address_pairs_driver
+
+# OVN Defaults
+octavia_ovn_enabled: "{{ neutron_plugin_type | default('ml2.ovn') == 'ml2.ovn' }}"
+octavia_ovn_ssl: "{{ neutron_ovn_ssl | default(True) }}"
+octavia_ovn_proto: "{{ (octavia_ovn_ssl) | ternary('ssl', 'tcp') }}"
+
+octavia_ovn_nb_connection: >-
+  {{ octavia_ovn_proto }}:{{ groups['neutron_ovn_northd'] | map('extract', hostvars, ['ansible_host']) | join(':6641,' + octavia_ovn_proto + ':') }}:6641
+octavia_ovn_sb_connection: >-
+  {{ octavia_ovn_proto }}:{{ groups['neutron_ovn_northd'] | map('extract', hostvars, ['ansible_host']) | join(':6642,' + octavia_ovn_proto + ':') }}:6642
+
 
 #
 # Certificate generation
@@ -486,6 +524,7 @@ octavia_cert_dir: "{{ openstack_pki_dir | default(lookup('env', 'HOME') ~ '/open
 octavia_cert_keys_dir: "{{ octavia_cert_dir }}/certs/private/"
 octavia_cert_certs_dir: "{{ octavia_cert_dir }}/certs/certs/"
 octavia_cert_dir_owner: "{{ lookup('env', 'USER') }}"
+octavia_cert_dest_dir: "/etc/octavia/certs"
 
 octavia_cert_client_req_common_name: 'www.example.com' # change this to something more real
 octavia_cert_client_req_country_name: 'US'
@@ -498,6 +537,17 @@ octavia_generate_client_cert: True
 octavia_generate_ca: True
 octavia_regenerate_client_cert: ''
 octavia_regenerate_ca: ''
+
+# OVN server certificate
+# The local address used for the ovn certificate
+octavia_ovn_node_address: "{{ management_address | default('127.0.0.1') }}"
+# OVN destination files for SSL certificates
+octavia_ovn_pki_intermediate_cert_name: "{{ octavia_api_intermediate_cert_name }}"
+octavia_ovn_pki_intermediate_chain_path: >-
+  {{ octavia_cert_dir ~ '/roots/' ~ octavia_ovn_pki_intermediate_cert_name ~ '/certs/' ~ octavia_ovn_pki_intermediate_cert_name ~ '-chain.crt' }}
+octavia_ovn_ssl_cert: "octavia_ovn.pem"
+octavia_ovn_ssl_key: "octavia_ovn.key"
+octavia_ovn_ssl_ca_cert: "octavia_ovn-ca.pem"
 
 octavia_cert_authorities:
   - name: "OctaviaServerRoot"
@@ -551,6 +601,13 @@ octavia_cert_certificates:
       - clientAuth
       - emailProtection
     condition: "{{ octavia_generate_certs | bool }}"
+  # OVN NB/SB communication
+  - name: "octavia_ovn_{{ ansible_facts['hostname'] }}"
+    provider: ownca
+    cn: "{{ ansible_facts['hostname'] }}"
+    san: "{{ 'DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ octavia_ovn_node_address }}"
+    signed_by: "{{ octavia_ovn_pki_intermediate_cert_name }}"
+    condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
 
 # Installation details for SSL certificates
 octavia_cert_install_certificates:
@@ -569,37 +626,56 @@ octavia_cert_install_certificates:
     condition: "{{ octavia_backend_ssl | bool }}"
   # Server CA
   - src: "{{ octavia_ca_certificate | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/certs/OctaviaServerRoot.crt') }}"
-    dest: "/etc/octavia/certs/server_ca.pem"
+    dest: "{{ octavia_cert_dest_dir }}/server_ca.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
   - src: "{{ octavia_ca_private_key | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/private/OctaviaServerRoot.key.pem') }}"
-    dest: "/etc/octavia/certs/ca_key.pem"
+    dest: "{{ octavia_cert_dest_dir }}/ca_key.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
   # Client CA
   - src: "{{ octavia_client_ca | default(octavia_cert_dir ~ '/roots/OctaviaClientRoot/certs/OctaviaClientRoot.crt') }}"
-    dest: "/etc/octavia/certs/client_ca.pem"
+    dest: "{{ octavia_cert_dest_dir }}/client_ca.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
   # Client certificate
   - src: "{{ octavia_client_cert | default(octavia_cert_certs_dir ~ '/octavia_client.crt') }}"
-    dest: "/etc/octavia/certs/client.pem.crt"
+    dest: "{{ octavia_cert_dest_dir }}/client.pem.crt"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
   - src: "{{ octavia_client_key | default(octavia_cert_keys_dir ~ '/octavia_client.key.pem') }}"
-    dest: "/etc/octavia/certs/client.pem.key"
+    dest: "{{ octavia_cert_dest_dir }}/client.pem.key"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
+  # OVN certificates
+  - src: "{{ octavia_ovn_user_ssl_cert | default(octavia_cert_certs_dir ~ 'octavia_ovn_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
+    dest: "{{ [octavia_cert_dest_dir, octavia_ovn_ssl_cert] | join('/') }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0644"
+    condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
+  - src: "{{ octavia_ovn_user_ssl_key | default(octavia_cert_keys_dir ~ 'octavia_ovn_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
+    dest: "{{ [octavia_cert_dest_dir, octavia_ovn_ssl_key] | join('/') }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0600"
+    condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
+  - src: "{{ octavia_ovn_user_ssl_ca_cert | default(octavia_ovn_pki_intermediate_chain_path) }}"
+    dest: "{{ [octavia_cert_dest_dir, octavia_ovn_ssl_ca_cert] | join('/') }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0644"
+    condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
 
 # Custom client CA
 # octavia_client_ca: "{{ octavia_cert_dir }}/ca_01.pem"
@@ -612,7 +688,11 @@ octavia_cert_install_certificates:
 # octavia_ca_private_key: "{{ octavia_cert_dir }}/private/cakey.pem"
 octavia_ca_private_key_passphrase: "{{ octavia_cert_client_password }}"
 # octavia_ca_certificate: "{{ octavia_cert_dir }}/ca_server_01.pem"
-
+# Custom OVN certs
+# octavia_ovnnb_user_ssl_cert: <path to cert on ansible deployment host>
+# octavia_ovnnb_user_ssl_key: <path to cert on ansible deployment host>
+# octavia_ovnsb_user_ssl_cert: <path to cert on ansible deployment host>
+# octavia_ovnsb_user_ssl_key: <path to cert on ansible deployment host>
 
 # Quotas for the Octavia user - assuming active/passive topology
 octavia_num_instances: 10000 # 5000 LB in active/passive
@@ -643,8 +723,8 @@ octavia_api_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_
 octavia_api_cert_san: "{{ openstack_pki_san | default('DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ management_address) }}"
 
 # octavia destination files for SSL certificates
-octavia_api_ssl_cert: /etc/octavia/certs/octavia-api.pem
-octavia_api_ssl_key: /etc/octavia/certs/octavia-api.key
+octavia_api_ssl_cert: "{{ octavia_cert_dest_dir }}/octavia-api.pem"
+octavia_api_ssl_key: "{{ octavia_cert_dest_dir }}/octavia-api.key"
 
 # Define user-provided SSL certificates
 # octavia_api_user_ssl_cert: <path to cert on ansible deployment host>

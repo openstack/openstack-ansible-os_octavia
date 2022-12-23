@@ -16,7 +16,7 @@ auth_strategy = {{ octavia_auth_strategy }}
 allow_tls_terminated_listeners = {{ octavia_tls_listener_enabled }}
 
 default_provider_driver = {{ octavia_default_provider_driver }}
-enabled_provider_drivers = {{ octavia_enabled_provider_drivers | join(',') }}
+enabled_provider_drivers = {{ octavia_enabled_provider_drivers | select() | join(',') }}
 
 [oslo_messaging]
 topic = octavia_prov
@@ -195,3 +195,22 @@ endpoint_type = {{ octavia_clients_endpoint }}
 [neutron]
 region_name = {{ keystone_service_region }}
 endpoint_type = {{ octavia_clients_endpoint }}
+
+{% if octavia_enabled_provider_agents | length > 0 %}
+[driver_agent]
+enabled_provider_agents = "{{ octavia_enabled_provider_agents | join(',') }}
+{% endif %}
+
+{% if octavia_ovn_enabled %}
+[ovn]
+ovn_nb_connection = {{ octavia_ovn_nb_connection }}
+ovn_sb_connection = {{ octavia_ovn_sb_connection }}
+{%   if octavia_ovn_ssl %}
+ovn_sb_ca_cert={{ ["/etc/octavia/certs", octavia_ovn_ssl_ca_cert] | join('/') }}
+ovn_sb_certificate={{ ["/etc/octavia/certs", octavia_ovn_ssl_cert] | join('/') }}
+ovn_sb_private_key={{ ["/etc/octavia/certs", octavia_ovn_ssl_key] | join('/') }}
+ovn_nb_ca_cert={{ ["/etc/octavia/certs", octavia_ovn_ssl_ca_cert] | join('/') }}
+ovn_nb_certificate={{ ["/etc/octavia/certs", octavia_ovn_ssl_cert] | join('/') }}
+ovn_nb_private_key={{ ["/etc/octavia/certs", octavia_ovn_ssl_key] | join('/') }}
+{%   endif %}
+{% endif %}
