@@ -68,7 +68,7 @@
 
     - name: Set Octavia flavor UUID fact
       set_fact:
-        octavia_nova_flavor_uuid: "{{ get_flavor_info.openstack_flavors[0].id }}"
+        octavia_nova_flavor_uuid: "{{ get_flavor_info.flavors[0].id }}"
 
 - name: Set octavia_neutron_management_network_uuid if it is not already set
   delegate_to: "{{ octavia_service_setup_host }}"
@@ -105,7 +105,7 @@
   vars:
     ansible_python_interpreter: "{{ octavia_service_setup_host_python_interpreter }}"
   when:
-    - octavia_amp_image_owner_id is not defined
+    - octavia_amp_image_owner_id is not defined or not octavia_amp_image_owner_id
   block:
     - name: Get octavia service project details
       openstack.cloud.project_info:
@@ -127,7 +127,7 @@
 
     - name: Set Octavia amp image owner UUID fact
       set_fact:
-        octavia_amp_image_owner_id: "{{ get_project_info.openstack_projects[0].id }}"
+        octavia_amp_image_owner_id: "{{ get_project_info.projects[0].id }}"
 
 - name: Drop octavia Config(s)
   openstack.config_template.config_template:

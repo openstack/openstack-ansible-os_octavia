@@ -86,7 +86,7 @@
               project_domain_name: "{{ octavia_service_project_domain_id }}"
             state: absent
             region_name: "{{ octavia_service_region }}"
-            name: "{{ get_image_info.openstack_image.id }}"
+            name: "{{ get_image_info.images[0].id }}"
             interface: admin
             verify: "{{ not keystone_service_adminuri_insecure }}"
           register: remove_old_image
@@ -94,4 +94,4 @@
           retries: 5
           delay: 10
           when:
-            - get_image_info.openstack_image.id is defined
+            - get_image_info.images | length > 0
