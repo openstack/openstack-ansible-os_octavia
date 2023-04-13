@@ -20,3 +20,4 @@
   with_items: "{{ filtered_octavia_services }}"
   listen:
     - "venv changed"
+    - "systemd service changed"
