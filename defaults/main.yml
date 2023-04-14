@@ -273,7 +273,7 @@ octavia_amp_image_upload_enabled: "{{ octavia_download_artefact }}"
 # Name of the Octavia security group
 octavia_security_group_name: octavia_sec_grp
 # Restrict access to only authorized hosts
-octavia_security_group_rule_cidr:
+octavia_security_group_rule_cidr: "{{ octavia_management_net_subnet_cidr }}"
 # ssh enabled - switch to True if you need ssh access to the amphora
 octavia_ssh_enabled: False
 octavia_ssh_key_name: octavia_key
