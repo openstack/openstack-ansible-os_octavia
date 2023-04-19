@@ -139,7 +139,6 @@
         port_range_min: 67
         port_range_max: 67
         direction: egress
-        remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
         interface: admin
         verify: "{{ not keystone_service_adminuri_insecure }}"
       register: add_security_group_rule
