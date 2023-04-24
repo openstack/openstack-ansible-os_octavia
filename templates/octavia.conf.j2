@@ -16,7 +16,7 @@ auth_strategy = {{ octavia_auth_strategy }}
 allow_tls_terminated_listeners = {{ octavia_tls_listener_enabled }}
 
 default_provider_driver = {{ octavia_default_provider_driver }}
-enabled_provider_drivers = {{ octavia_enabled_provider_drivers }}
+enabled_provider_drivers = {{ octavia_enabled_provider_drivers | join(',') }}
 
 [oslo_messaging]
 topic = octavia_prov

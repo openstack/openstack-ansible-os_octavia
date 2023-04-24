@@ -434,8 +434,11 @@ octavia_uwsgi_bind_address: "{{ openstack_service_bind_address | default('0.0.0.
 octavia_api_uwsgi_ini_overrides: {}
 
 # Set up the drivers
-octavia_enabled_provider_drivers: "{{ _octavia_enabled_provider_drivers }}"
-octavia_default_provider_driver: "{{ (octavia_coordination_enable | bool) | ternary('amphorav2', 'amphora') }}"
+octavia_enabled_provider_drivers:
+  - "amphora:'The Octavia Amphora driver.'"
+  - "amphorav2:'The Octavia Amphora v2 driver.'"
+  - "octavia:'Deprecated name of Amphora driver.'"
+octavia_default_provider_driver: "amphorav2"
 octavia_amphora_driver: amphora_haproxy_rest_driver
 octavia_compute_driver: compute_nova_driver
 octavia_network_driver: allowed_address_pairs_driver
