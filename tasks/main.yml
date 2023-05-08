@@ -111,6 +111,10 @@
 - name: Create and install SSL certificates
   include_role:
     name: pki
+    apply:
+      tags:
+        - octavia-config
+        - pki
   vars:
     pki_setup_host: "{{ octavia_cert_setup_host }}"
     pki_dir: "{{ octavia_cert_dir }}"
@@ -122,7 +126,7 @@
     pki_certificates: "{{ octavia_cert_certificates }}"
     pki_install_certificates: "{{ octavia_cert_install_certificates }}"
   when:
-    - octavia_generate_certs | bool
+    - (octavia_generate_certs | bool) or (octavia_backend_ssl | bool)
   tags:
     - always
 

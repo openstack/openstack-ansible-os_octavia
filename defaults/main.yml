@@ -218,6 +218,7 @@ octavia_services:
     uwsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
     uwsgi_port: "{{ octavia_service_port }}"
     uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
+    uwsgi_tls: "{{ octavia_backend_ssl | ternary(octavia_uwsgi_tls, {}) }}"
   octavia-worker:
     group: octavia-worker
     service_name: octavia-worker
@@ -431,7 +432,9 @@ octavia_wsgi_processes_max: 16
 octavia_wsgi_processes: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['processor_threads_per_core'])|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
 octavia_wsgi_threads: 1
 octavia_uwsgi_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
-octavia_api_uwsgi_ini_overrides: {}
+octavia_uwsgi_tls:
+  crt: "{{ octavia_api_ssl_cert }}"
+  key: "{{ octavia_api_ssl_key }}"
 
 # Set up the drivers
 octavia_enabled_provider_drivers:
@@ -503,6 +506,14 @@ octavia_cert_authorities:
     not_after: "+{{ octavia_cert_validity_days }}d"
 
 octavia_cert_certificates:
+  # Communication between haproxy and octavia API
+  - name: "octavia-api_{{ ansible_facts['hostname'] }}"
+    provider: ownca
+    cn: "{{ ansible_facts['hostname'] }}"
+    san: "{{ octavia_api_cert_san }}"
+    signed_by: "{{ octavia_api_intermediate_cert_name }}"
+    condition: "{{ octavia_backend_ssl | bool }}"
+  # Communication between octavia control plane and amphoras
   - name: "octavia_client"
     provider: ownca
     cn: "{{ octavia_cert_client_req_common_name }}"
@@ -515,38 +526,56 @@ octavia_cert_certificates:
     extended_key_usage:
       - clientAuth
       - emailProtection
+    condition: "{{ octavia_generate_certs | bool }}"
 
 # Installation details for SSL certificates
 octavia_cert_install_certificates:
+  # Communication between haproxy and octavia API
+  - src: "{{ octavia_api_user_ssl_cert | default(octavia_cert_certs_dir ~ 'octavia-api_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
+    dest: "{{ octavia_api_ssl_cert }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_user_name }}"
+    mode: "0644"
+    condition: "{{ octavia_backend_ssl | bool }}"
+  - src: "{{ octavia_api_user_ssl_key | default(octavia_cert_keys_dir ~ 'octavia-api_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
+    dest: "{{ octavia_api_ssl_key }}"
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_user_name }}"
+    mode: "0600"
+    condition: "{{ octavia_backend_ssl | bool }}"
   # Server CA
   - src: "{{ octavia_ca_certificate | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/certs/OctaviaServerRoot.crt') }}"
     dest: "/etc/octavia/certs/server_ca.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
+    condition: "{{ octavia_generate_certs | bool }}"
   - src: "{{ octavia_ca_private_key | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/private/OctaviaServerRoot.key.pem') }}"
     dest: "/etc/octavia/certs/ca_key.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
+    condition: "{{ octavia_generate_certs | bool }}"
   # Client CA
   - src: "{{ octavia_client_ca | default(octavia_cert_dir ~ '/roots/OctaviaClientRoot/certs/OctaviaClientRoot.crt') }}"
     dest: "/etc/octavia/certs/client_ca.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
+    condition: "{{ octavia_generate_certs | bool }}"
   # Client certificate
   - src: "{{ octavia_client_cert | default(octavia_cert_certs_dir ~ '/octavia_client.crt') }}"
     dest: "/etc/octavia/certs/client.pem.crt"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
+    condition: "{{ octavia_generate_certs | bool }}"
   - src: "{{ octavia_client_key | default(octavia_cert_keys_dir ~ '/octavia_client.key.pem') }}"
     dest: "/etc/octavia/certs/client.pem.key"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
-
+    condition: "{{ octavia_generate_certs | bool }}"
 
 # Custom client CA
 #octavia_client_ca: "{{ octavia_cert_dir }}/ca_01.pem"
@@ -575,3 +604,24 @@ octavia_num_security_group_rules: "{{ (octavia_num_secgroups|int)*100 }}"
 octavia_octavia_conf_overrides: {}
 octavia_api_paste_ini_overrides: {}
 octavia_policy_overrides: {}
+octavia_api_uwsgi_ini_overrides: {}
+
+###
+### Backend TLS
+###
+
+# Define if communication between haproxy and service backends should be
+# encrypted with TLS.
+octavia_backend_ssl: "{{ openstack_service_backend_ssl | default(False) }}"
+
+# octavia server certificate
+octavia_api_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_name | default('ExampleCorpIntermediate') }}"
+octavia_api_cert_san: "{{ openstack_pki_san | default('DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ management_address) }}"
+
+# octavia destination files for SSL certificates
+octavia_api_ssl_cert: /etc/octavia/certs/octavia-api.pem
+octavia_api_ssl_key: /etc/octavia/certs/octavia-api.key
+
+# Define user-provided SSL certificates
+#octavia_api_user_ssl_cert: <path to cert on ansible deployment host>
+#octavia_api_user_ssl_key: <path to cert on ansible deployment host>
