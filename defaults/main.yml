@@ -450,9 +450,7 @@ octavia_uwsgi_tls:
 
 # Set up the drivers
 octavia_enabled_provider_drivers:
-  - "amphora:'The Octavia Amphora driver.'"
   - "amphorav2:'The Octavia Amphora v2 driver.'"
-  - "octavia:'Deprecated name of Amphora driver.'"
 octavia_default_provider_driver: "amphorav2"
 octavia_amphora_driver: amphora_haproxy_rest_driver
 octavia_compute_driver: compute_nova_driver
