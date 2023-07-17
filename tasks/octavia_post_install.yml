@@ -15,7 +15,7 @@
 
 # iptables module doesn't see empty string as a null value so this is the only
 # way to get a configurable rule definition in right now
-- name: iptables rules
+- name: IPtables rules
   iptables: "{{ item }}"
   with_items: "{{ octavia_iptables_rules }}"
   when: octavia_ip_tables_fw | bool
@@ -23,13 +23,15 @@
 # This is totally odd: If you run the commands via run-parts (as the script
 # in the distro does) they return 1; but do their job. If you run them
 # directly they work. Ignoring errors for now --
-- name: save iptables rules (Debian/Ubuntu)
+- name: Save iptables rules (Debian/Ubuntu)
   command: netfilter-persistent save
+  changed_when: false
   failed_when: false
   when: ansible_facts['os_family'] == 'Debian'
 
-- name: save iptables rules (CentOS)
+- name: Save iptables rules (CentOS)
   shell: iptables-save > /etc/sysconfig/iptables
+  changed_when: false
   when:
     - ansible_facts['distribution'] == 'CentOS'
 

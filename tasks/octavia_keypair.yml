@@ -35,6 +35,7 @@
   copy:
     content: "{{ _octavia_keypair['keypair']['private_key'] }}"
     dest: "{{ lookup('env', 'HOME') }}/.ssh/{{ octavia_ssh_key_name }}"
+    mode: "0600"
   delegate_to: localhost
   when:
     - _octavia_keypair is changed

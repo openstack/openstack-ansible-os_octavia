@@ -20,7 +20,11 @@ debug: False
 # for the service setup. The host must already have
 # clouds.yaml properly configured.
 octavia_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
-octavia_service_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
+octavia_service_setup_host_python_interpreter: >-
+  {{
+    openstack_service_setup_host_python_interpreter | default(
+      (octavia_service_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']))
+  }}
 
 # Set installation method.
 octavia_install_method: "{{ service_install_method | default('source') }}"
@@ -42,7 +46,8 @@ octavia_package_state: "{{ package_state | default('latest') }}"
 
 octavia_git_repo: https://opendev.org/openstack/octavia
 octavia_git_install_branch: master
-octavia_upper_constraints_url: "{{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}"
+octavia_upper_constraints_url: >-
+  {{ requirements_git_url | default('https://releases.openstack.org/constraints/upper/' ~ requirements_git_install_branch | default('master')) }}
 octavia_git_constraints:
   - "--constraint {{ octavia_upper_constraints_url }}"
 
@@ -67,7 +72,11 @@ octavia_cinder_volume_type: "volumes-hdd"
 
 ## Database info
 octavia_db_setup_host: "{{ openstack_db_setup_host | default('localhost') }}"
-octavia_db_setup_python_interpreter: "{{ openstack_db_setup_python_interpreter | default((octavia_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
+octavia_db_setup_python_interpreter: >-
+  {{
+    openstack_db_setup_python_interpreter | default(
+      (octavia_db_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable']))
+  }}
 octavia_galera_address: "{{ galera_address | default('127.0.0.1') }}"
 octavia_galera_user: octavia
 octavia_galera_database: octavia
@@ -75,7 +84,7 @@ octavia_galera_persistence_database: octavia_persistence
 octavia_galera_use_ssl: "{{ galera_use_ssl | default(False) }}"
 octavia_galera_ssl_ca_cert: "{{ galera_ssl_ca_cert | default('') }}"
 octavia_db_max_overflow: "{{ openstack_db_max_overflow | default('50') }}"
-octavia_db_max_pool_size: "{{ openstack_db_max_pool_size |  default('5') }}"
+octavia_db_max_pool_size: "{{ openstack_db_max_pool_size | default('5') }}"
 octavia_db_pool_timeout: "{{ openstack_db_pool_timeout | default('30') }}"
 octavia_db_connection_recycle_time: "{{ openstack_db_connection_recycle_time | default('600') }}"
 octavia_galera_port: "{{ galera_port | default('3306') }}"
@@ -106,7 +115,8 @@ octavia_oslomsg_rpc_ssl_ca_file: "{{ oslomsg_rpc_ssl_ca_file | default('') }}"
 
 # Notify
 octavia_oslomsg_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
-octavia_oslomsg_notify_setup_host: "{{ (octavia_oslomsg_notify_host_group in groups) | ternary(groups[octavia_oslomsg_notify_host_group][0], 'localhost') }}"
+octavia_oslomsg_notify_setup_host: >-
+  {{ (octavia_oslomsg_notify_host_group in groups) | ternary(groups[octavia_oslomsg_notify_host_group][0], 'localhost') }}
 octavia_oslomsg_notify_transport: "{{ oslomsg_notify_transport | default('rabbit') }}"
 octavia_oslomsg_notify_servers: "{{ oslomsg_notify_servers | default('127.0.0.1') }}"
 octavia_oslomsg_notify_port: "{{ oslomsg_notify_port | default('5672') }}"
@@ -279,17 +289,21 @@ octavia_security_group_rule_cidr: "{{ octavia_management_net_subnet_cidr }}"
 octavia_ssh_enabled: False
 octavia_ssh_key_name: octavia_key
 octavia_keypair_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
-octavia_keypair_setup_host_python_interpreter: "{{ openstack_service_setup_host_python_interpreter | default((octavia_keypair_setup_host == 'localhost') | ternary(ansible_playbook_python, ansible_facts['python']['executable'])) }}"
+octavia_keypair_setup_host_python_interpreter: >-
+  {{
+    openstack_service_setup_host_python_interpreter | default((octavia_keypair_setup_host == 'localhost') | ternary(
+      ansible_playbook_python, ansible_facts['python']['executable']))
+  }}
 # port the agent listens on
 octavia_agent_port: "9443"
 octavia_health_manager_port: 5555
 
-#Octavia Nova flavor
+# Octavia Nova flavor
 octavia_amp_flavor_name: "m1.amphora"
 octavia_amp_ram: 1024
 octavia_amp_vcpu: 1
 octavia_amp_disk: 20
-#octavia_amp_extra_specs:
+# octavia_amp_extra_specs:
 
 # only increase when it's a really busy system since this is by deployed host,
 # e.g. 3 hosts, 5 workers (this param) per host, results in 15 worker total
@@ -337,7 +351,7 @@ octavia_amp_availability_zone: nova
 #    dest: "/etc/octavia/templates/macros.cfg.j2"
 octavia_user_haproxy_templates: {}
 # Path of custom haproxy template file
-#octavia_haproxy_amphora_template: /etc/octavia/templates/haproxy.cfg.j2
+# octavia_haproxy_amphora_template: /etc/octavia/templates/haproxy.cfg.j2
 
 # Name of the Octavia management network in Neutron
 octavia_neutron_management_network_name: lbaas-mgmt
@@ -346,7 +360,7 @@ octavia_provider_network_name: lbaas
 # Network type
 octavia_provider_network_type: flat
 # Network segmentation ID if vlan, gre...
-#octavia_provider_segmentation_id:
+# octavia_provider_segmentation_id:
 # Network CIDR
 octavia_management_net_subnet_cidr: 172.29.232.0/22
 # Example allocation range:
@@ -359,13 +373,18 @@ octavia_service_net_setup: True
 # This should match net_name from provider_networks structure in openstack_user_config
 octavia_provider_inventory_net_name: "{{ octavia_provider_network_name }}"
 # This gets container managment network structure based on octavia_provider_inventory_net_name
-octavia_provider_network: "{{ provider_networks|map(attribute='network')|selectattr('net_name','defined')|selectattr('net_name', 'equalto', octavia_provider_inventory_net_name)|list|first }}"
+octavia_provider_network: >-
+  {{ provider_networks | map(attribute='network') | selectattr('net_name', 'defined') | selectattr(
+    'net_name', 'equalto', octavia_provider_inventory_net_name) | list | first
+  }}
 # The name of the network address pool
 octavia_container_network_name: "{{ octavia_provider_network['ip_from_q'] }}_address"
 octavia_hm_group: "octavia-health-manager"
 # Note: We use some heuristics here but if you do anything special make sure to use the
 # ip addresses on the right network. This will use the container networking to figure out the ip
-octavia_hm_hosts: "{% for host in groups[octavia_hm_group] %}{{ hostvars[host]['container_networks'][octavia_container_network_name]['address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+octavia_hm_hosts: >-
+  {% for host in groups[octavia_hm_group] %}{{ hostvars[host]['container_networks'][octavia_container_network_name]['address'] }}{%
+    if not loop.last %},{% endif %}{% endfor %}
 # Set this to the right container port aka the eth you connect to the octavia
 # management network
 octavia_container_interface: "{{ octavia_provider_network.container_interface }}"
@@ -382,7 +401,7 @@ octavia_iptables_rules:
   - # Allow existing connections:
     chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
-    ctstate:  RELATED,ESTABLISHED
+    ctstate: RELATED,ESTABLISHED
     jump: ACCEPT
   - # Allow heartbeat:
     chain: INPUT
@@ -406,7 +425,7 @@ octavia_iptables_rules:
   - # Allow existing connections
     chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
-    ctstate:  RELATED,ESTABLISHED
+    ctstate: RELATED,ESTABLISHED
     jump: ACCEPT
     ip_version: ipv6
   - # Allow heartbeat
@@ -429,7 +448,8 @@ octavia_iptables_rules:
 
 # uWSGI Settings
 octavia_wsgi_processes_max: 16
-octavia_wsgi_processes: "{{ [[(ansible_facts['processor_vcpus']//ansible_facts['processor_threads_per_core'])|default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}"
+octavia_wsgi_processes: >-
+  {{ [[(ansible_facts['processor_vcpus'] // ansible_facts['processor_threads_per_core']) | default(1), 1] | max * 2, octavia_wsgi_processes_max] | min }}
 octavia_wsgi_threads: 1
 octavia_uwsgi_bind_address: "{{ openstack_service_bind_address | default('0.0.0.0') }}"
 octavia_uwsgi_tls:
@@ -578,27 +598,27 @@ octavia_cert_install_certificates:
     condition: "{{ octavia_generate_certs | bool }}"
 
 # Custom client CA
-#octavia_client_ca: "{{ octavia_cert_dir }}/ca_01.pem"
+# octavia_client_ca: "{{ octavia_cert_dir }}/ca_01.pem"
 ## Custom client certs
-#octavia_client_cert: "{{ octavia_cert_dir }}/client.pem"
-#octavia_client_key: "{{ octavia_cert_dir }}/client.key.pem"
+# octavia_client_cert: "{{ octavia_cert_dir }}/client.pem"
+# octavia_client_key: "{{ octavia_cert_dir }}/client.key.pem"
 ## server
-#octavia_server_ca: "{{ octavia_ca_certificate }}"
+# octavia_server_ca: "{{ octavia_ca_certificate }}"
 ## ca certs
-#octavia_ca_private_key: "{{ octavia_cert_dir }}/private/cakey.pem"
+# octavia_ca_private_key: "{{ octavia_cert_dir }}/private/cakey.pem"
 octavia_ca_private_key_passphrase: "{{ octavia_cert_client_password }}"
-#octavia_ca_certificate: "{{ octavia_cert_dir }}/ca_server_01.pem"
+# octavia_ca_certificate: "{{ octavia_cert_dir }}/ca_server_01.pem"
 
 
 # Quotas for the Octavia user - assuming active/passive topology
 octavia_num_instances: 10000 # 5000 LB in active/passive
-octavia_ram: "{{ (octavia_num_instances|int)*1024 }}"
-octavia_num_server_groups: "{{ ((octavia_num_instances|int)*0.5)|int|abs }}"
+octavia_ram: "{{ (octavia_num_instances | int) * 1024 }}"
+octavia_num_server_groups: "{{ ((octavia_num_instances | int) * 0.5) | int | abs }}"
 octavia_num_server_group_members: 50
 octavia_num_cores: "{{ octavia_num_instances }}"
-octavia_num_secgroups: "{{ (octavia_num_instances|int)*1.5|int|abs }}" # average 3 listener per lb
-octavia_num_ports: "{{ (octavia_num_instances|int)*10 }}" # at least instances * 10
-octavia_num_security_group_rules: "{{ (octavia_num_secgroups|int)*100 }}"
+octavia_num_secgroups: "{{ (octavia_num_instances | int) * 1.5 | int | abs }}" # average 3 listener per lb
+octavia_num_ports: "{{ (octavia_num_instances | int) * 10 }}" # at least instances * 10
+octavia_num_security_group_rules: "{{ (octavia_num_secgroups | int) * 100 }}"
 
 ## Tunable overrides
 octavia_octavia_conf_overrides: {}
@@ -623,5 +643,5 @@ octavia_api_ssl_cert: /etc/octavia/certs/octavia-api.pem
 octavia_api_ssl_key: /etc/octavia/certs/octavia-api.key
 
 # Define user-provided SSL certificates
-#octavia_api_user_ssl_cert: <path to cert on ansible deployment host>
-#octavia_api_user_ssl_key: <path to cert on ansible deployment host>
+# octavia_api_user_ssl_cert: <path to cert on ansible deployment host>
+# octavia_api_user_ssl_key: <path to cert on ansible deployment host>

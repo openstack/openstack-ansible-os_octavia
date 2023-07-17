@@ -13,7 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_octavia_is_first_play_host: "{{ (octavia_services['octavia-api']['group'] in group_names and inventory_hostname == (groups[octavia_services['octavia-api']['group']] | intersect(ansible_play_hosts)) | first) | bool }}"
+_octavia_is_first_play_host: >-
+  {{
+    (octavia_services['octavia-api']['group'] in group_names and
+      inventory_hostname == (groups[octavia_services['octavia-api']['group']] | intersect(ansible_play_hosts)) | first) | bool
+  }}
 
 #
 # Compile a list of the services on a host based on whether
@@ -65,14 +69,14 @@ uwsgi_octavia_services: |-
   {{ services }}
 
 _octavia_legacy_policies:
-    "context_is_admin": "role:admin or role:load-balancer_admin"
-    "admin_or_owner": "is_admin:True or project_id:%(project_id)s"
-    "load-balancer:read": "rule:admin_or_owner"
-    "load-balancer:read-global": "is_admin:True"
-    "load-balancer:write": "rule:admin_or_owner"
-    "load-balancer:read-quota": "rule:admin_or_owner"
-    "load-balancer:read-quota-global": "is_admin:True"
-    "load-balancer:write-quota": "is_admin:True"
+  "context_is_admin": "role:admin or role:load-balancer_admin"
+  "admin_or_owner": "is_admin:True or project_id:%(project_id)s"
+  "load-balancer:read": "rule:admin_or_owner"
+  "load-balancer:read-global": "is_admin:True"
+  "load-balancer:write": "rule:admin_or_owner"
+  "load-balancer:read-quota": "rule:admin_or_owner"
+  "load-balancer:read-quota-global": "is_admin:True"
+  "load-balancer:write-quota": "is_admin:True"
 
 _octavia_jobboard_driver_map:
   zookeeper: zookeeper_taskflow_driver

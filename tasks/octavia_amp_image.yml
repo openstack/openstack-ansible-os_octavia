@@ -34,6 +34,7 @@
       get_url:
         url: "{{ octavia_artefact_url }}"
         dest: "{{ octavia_amp_image_path }}"
+        mode: "0644"
       retries: 10
       delay: 10
       register: octavia_download_result
@@ -74,6 +75,7 @@
             --private
             --project {{ octavia_service_project_name }}
             amphora-x64-haproxy
+          changed_when: false
 
         - name: Delete old image from glance
           openstack.cloud.image:

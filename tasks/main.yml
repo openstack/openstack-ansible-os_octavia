@@ -51,7 +51,8 @@
   tags:
     - always
 
-- include_role:
+- name: Including osa.db_setup role
+  include_role:
     name: openstack.osa.db_setup
     apply:
       tags:
@@ -77,7 +78,8 @@
   tags:
     - always
 
-- include_role:
+- name: Including osa.mq_setup role
+  include_role:
     name: openstack.osa.mq_setup
     apply:
       tags:
@@ -104,7 +106,8 @@
   tags:
     - always
 
-- import_tasks: octavia_pre_install.yml
+- name: Importing octavia_pre_install tasks
+  import_tasks: octavia_pre_install.yml
   tags:
     - octavia-install
 
@@ -135,6 +138,9 @@
     src: /etc/octavia/certs/
     dest: /etc/octavia/certs/client.pem
     regexp: '(client\.pem\.crt|client\.pem\.key)$'
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
   notify:
     - Restart octavia services
     - Restart uwsgi services
@@ -145,7 +151,8 @@
     - octavia-install
 
 
-- import_tasks: octavia_install.yml
+- name: Importing octavia_install tasks
+  import_tasks: octavia_install.yml
   tags:
     - octavia-install
 
@@ -169,16 +176,17 @@
     systemd_tempd_prefix: openstack
     systemd_slice_name: "{{ octavia_system_slice_name }}"
     systemd_lock_dir: "{{ octavia_lock_dir }}"
-    systemd_CPUAccounting: true
-    systemd_BlockIOAccounting: true
-    systemd_MemoryAccounting: true
-    systemd_TasksAccounting: true
+    systemd_service_cpu_accounting: true
+    systemd_service_block_io_accounting: true
+    systemd_service_memory_accounting: true
+    systemd_service_tasks_accounting: true
     systemd_services: "{{ filtered_octavia_services }}"
   tags:
     - octavia-config
     - systemd-service
 
-- include_role:
+- name: Including osa.service_setup role
+  include_role:
     name: openstack.osa.service_setup
     apply:
       tags:
@@ -218,7 +226,8 @@
   tags:
     - always
 
-- include_tasks: octavia_mgmt_network.yml
+- name: Including octavia_mgmt_network tasks
+  include_tasks: octavia_mgmt_network.yml
   args:
     apply:
       tags:
@@ -231,13 +240,15 @@
   tags:
     - always
 
-- import_tasks: octavia_security_group.yml
+- name: Importing octavia_security_group tasks
+  import_tasks: octavia_security_group.yml
   when:
     - _octavia_is_first_play_host
   tags:
     - octavia-install
 
-- include_tasks: octavia_keypair.yml
+- name: Including octavia_keypair tasks
+  include_tasks: octavia_keypair.yml
   args:
     apply:
       tags:
@@ -247,7 +258,8 @@
   tags:
     - always
 
-- include_tasks: octavia_flavor_create.yml
+- name: Importing octavia_flavor_create tasks
+  include_tasks: octavia_flavor_create.yml
   args:
     apply:
       tags:
@@ -259,24 +271,28 @@
   tags:
     - always
 
-- import_tasks: octavia_post_install.yml
+- name: Importing octavia_post_install tasks
+  import_tasks: octavia_post_install.yml
   tags:
     - octavia-install
     - octavia-config
 
-- import_tasks: octavia_db_sync.yml
+- name: Importing octavia_db_sync tasks
+  import_tasks: octavia_db_sync.yml
   when:
     - _octavia_is_first_play_host
   tags:
     - octavia-install
 
-- import_tasks: octavia_policy.yml
+- name: Importing octavia_policy tasks
+  import_tasks: octavia_policy.yml
   tags:
     - octavia-install
     - octavia-config
     - octavia-policy-override
 
-- include_tasks: octavia_amp_image.yml
+- name: Including octavia_amp_image tasks
+  include_tasks: octavia_amp_image.yml
   args:
     apply:
       tags:
