@@ -226,50 +226,18 @@
   tags:
     - always
 
-- name: Including octavia_mgmt_network tasks
-  include_tasks: octavia_mgmt_network.yml
-  args:
-    apply:
-      tags:
-        - octavia-install
-        - octavia-config
-  when:
-    - octavia_neutron_management_network_uuid is not defined
-    - octavia_neutron_management_network_name is defined
-    - _octavia_is_first_play_host
-  tags:
-    - always
-
-- name: Importing octavia_security_group tasks
-  import_tasks: octavia_security_group.yml
-  when:
-    - _octavia_is_first_play_host
-  tags:
-    - octavia-install
-
-- name: Including octavia_keypair tasks
-  include_tasks: octavia_keypair.yml
+- name: Including octavia_resources tasks
+  include_tasks: octavia_resources.yml
   args:
     apply:
       tags:
         - octavia-config
+        - octavia-resources
   when:
     - _octavia_is_first_play_host
   tags:
-    - always
-
-- name: Importing octavia_flavor_create tasks
-  include_tasks: octavia_flavor_create.yml
-  args:
-    apply:
-      tags:
-        - octavia-install
-        - octavia-config
-  when:
-    - _octavia_is_first_play_host
-    - octavia_nova_flavor_uuid is not defined
-  tags:
-    - always
+    - octavia-config
+    - octavia-resources
 
 - name: Importing octavia_post_install tasks
   import_tasks: octavia_post_install.yml
@@ -290,18 +258,6 @@
     - octavia-install
     - octavia-config
     - octavia-policy-override
-
-- name: Including octavia_amp_image tasks
-  include_tasks: octavia_amp_image.yml
-  args:
-    apply:
-      tags:
-        - octavia-config
-  when:
-    - _octavia_is_first_play_host
-    - octavia_download_artefact | bool
-  tags:
-    - always
 
 - name: Flush handlers
   meta: flush_handlers

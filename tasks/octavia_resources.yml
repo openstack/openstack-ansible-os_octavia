@@ -1,0 +1,140 @@
+---
+# Copyright 2023, Cleura AB.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Create image download directory
+  delegate_to: "{{ octavia_service_setup_host }}"
+  file:
+    path: "{{ octavia_amp_image_path }}"
+    state: directory
+    mode: "0750"
+    owner: "{{ octavia_amp_image_path_owner }}"
+  when:
+    - octavia_download_artefact | bool
+
+- name: Creating OpenStack resources
+  ansible.builtin.include_role:
+    name: openstack.osa.openstack_resources
+  vars:
+    openstack_resources_setup_host: "{{ octavia_service_setup_host }}"
+    openstack_resources_python_interpreter: "{{ octavia_service_setup_host_python_interpreter }}"
+    openstack_resources_image: "{{ (octavia_download_artefact | bool) | ternary({'images': octavia_amp_image_resource}, {}) }}"
+    openstack_resources_identity:
+      quotas:
+        - name: "{{ octavia_service_project_name }}"
+          cores: "{{ octavia_num_cores }}"
+          instances: "{{ octavia_num_instances }}"
+          ram: "{{ octavia_ram }}"
+          server_groups: "{{ octavia_num_server_groups }}"
+          server_group_members: "{{ octavia_num_server_group_members }}"
+          security_group: "{{ octavia_num_secgroups }}"
+          security_group_rule: "{{ octavia_num_security_group_rules }}"
+          port: "{{ octavia_num_ports }}"
+    # Network Resources
+    _octavia_networks:
+      networks:
+        - name: "{{ octavia_neutron_management_network_name }}"
+          network_type: "{{ octavia_provider_network_type }}"
+          physical_network: "{{ octavia_provider_network_name }}"
+          segmentation_id: "{{ octavia_provider_segmentation_id | default(omit) }}"
+          mtu: "{{ octavia_provider_network_mtu | default('1500') }}"
+          project: "{{ octavia_service_project_name }}"
+          subnets:
+            - name: "{{ octavia_neutron_management_network_name }}-subnet"
+              cidr: "{{ octavia_management_net_subnet_cidr }}"
+              dhcp: "{{ octavia_management_net_dhcp }}"
+              allocation_start: "{{ octavia_management_net_subnet_allocation_pools.split('-')[0] | default(omit) }}"
+              allocation_end: "{{ octavia_management_net_subnet_allocation_pools.split('-')[1] | default(omit) }}"
+              gateway: "{{ octavia_management_net_subnet_gateway | default(omit) }}"
+    _octavia_security_rule_agent:
+      protocol: "tcp"
+      port_range_min: "{{ octavia_agent_port }}"
+      port_range_max: "{{ octavia_agent_port }}"
+      remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+    _octavia_security_rule_healthmanager:
+      protocol: udp
+      port_range_min: "{{ octavia_health_manager_port }}"
+      port_range_max: "{{ octavia_health_manager_port }}"
+      remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+      direction: egress
+    _octavia_security_rule_ssh:
+      protocol: tcp
+      port_range_min: 22
+      port_range_max: 22
+      remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+    _octavia_security_rule_icmp:
+      protocol: icmp
+      remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+    _octavia_security_rule_dhcp:
+      protocol: udp
+      port_range_min: 67
+      port_range_max: 67
+      direction: egress
+    _octavia_security_groups:
+      security_groups:
+        - name: "{{ octavia_security_group_name }}"
+          description: "security group for octavia amphora"
+          project: "{{ octavia_service_project_name }}"
+          security_group_rules: |-
+            {% set rules = [_octavia_security_rule_agent, _octavia_security_rule_healthmanager] %}
+            {% if octavia_ssh_enabled %}
+            {%   set _ = rules.append(_octavia_security_rule_ssh) %}
+            {% endif %}
+            {% if debug %}
+            {%   set _ = rules.append(_octavia_security_rule_icmp) %}
+            {% endif %}
+            {% if octavia_management_net_dhcp %}
+            {%   set _ = rules.append(_octavia_security_rule_dhcp) %}
+            {% endif %}
+            {{ rules }}
+    openstack_resources_network: |-
+      {% set network_resources = _octavia_security_groups %}
+      {% if octavia_service_net_setup and octavia_neutron_management_network_uuid is not defined %}
+      {%   set _ = network_resources.update(_octavia_networks) %}
+      {% endif %}
+      {{ network_resources }}
+    # Compute resources
+    _octavia_flavors:
+      flavors:
+        - specs:
+            - name: "{{ octavia_amp_flavor_name }}"
+              ram: "{{ octavia_amp_ram }}"
+              vcpus: "{{ octavia_amp_vcpu }}"
+              disk: "{{ octavia_amp_disk }}"
+          extra_specs: "{{ octavia_amp_extra_specs | default({}) }}"
+    _octavia_keypairs:
+      keypairs:
+        # NOTE(noonedeadpunk): We define old/short keypair algorythms for backwards compatibiltiy with
+        #                      previous keypair generation which was handled by Nova:
+        #                      https://opendev.org/openstack/nova/src/commit/7e8e0dd1ab2e46c6f95746b47189e81b5a228c69/nova/crypto.py#L97
+        - name: "{{ octavia_ssh_key_name }}"
+          path: "{{ octavia_ssh_key_dir | default(lookup('env', 'HOME') ~ '/.ssh') }}/{{ octavia_ssh_key_name }}"
+          state: "{{ (octavia_ssh_enabled | bool) | ternary('present', 'absent') }}"
+          private_key_format: ssh
+          size: 2048
+          comment: Generated-by-Nova
+          auth:
+            auth_url: "{{ keystone_service_adminurl }}"
+            username: "{{ octavia_service_user_name }}"
+            password: "{{ octavia_service_password }}"
+            project_name: "{{ octavia_service_project_name }}"
+            user_domain_name: "{{ octavia_service_user_domain_id }}"
+            project_domain_name: "{{ octavia_service_project_domain_id }}"
+
+    openstack_resources_compute: |-
+      {% set compute_resources = _octavia_keypairs %}
+      {% if octavia_nova_flavor_uuid is not defined %}
+      {%   set _ = compute_resources.update(_octavia_flavors) %}
+      {% endif %}
+      {{ compute_resources }}
