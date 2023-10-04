@@ -78,6 +78,29 @@
       retries: 5
       delay: 10
 
+    - name: Create security group rule for healthmanager
+      openstack.cloud.security_group_rule:
+        auth:
+          auth_url: "{{ keystone_service_adminurl }}"
+          username: "{{ octavia_service_user_name }}"
+          password: "{{ octavia_service_password }}"
+          project_name: "{{ octavia_service_project_name }}"
+          user_domain_name: "{{ octavia_service_user_domain_id }}"
+          project_domain_name: "{{ octavia_service_project_domain_id }}"
+        state: present
+        security_group: "{{ octavia_security_group_name }}"
+        protocol: udp
+        port_range_min: "{{ octavia_health_manager_port }}"
+        port_range_max: "{{ octavia_health_manager_port }}"
+        remote_ip_prefix: "{{ octavia_security_group_rule_cidr }}"
+        direction: egress
+        interface: admin
+        verify: "{{ not keystone_service_adminuri_insecure }}"
+      register: add_security_group_rule
+      until: add_security_group_rule is success
+      retries: 5
+      delay: 10
+
     - name: Create security group rule for ssh
       openstack.cloud.security_group_rule:
         auth:
