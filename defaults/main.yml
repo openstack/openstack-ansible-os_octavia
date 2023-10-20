@@ -109,7 +109,13 @@ octavia_oslomsg_rpc_servers: "{{ oslomsg_rpc_servers | default('127.0.0.1') }}"
 octavia_oslomsg_rpc_port: "{{ oslomsg_rpc_port | default('5672') }}"
 octavia_oslomsg_rpc_use_ssl: "{{ oslomsg_rpc_use_ssl | default(False) }}"
 octavia_oslomsg_rpc_userid: octavia
-octavia_oslomsg_rpc_vhost: /octavia
+# vhost name depends on value of oslomsg_rabbit_quorum_queues. In case quorum queues
+# are not used - vhost name will be prefixed with leading `/`.
+octavia_oslomsg_rpc_vhost:
+  - name: /octavia
+    state: "{{ octavia_oslomsg_rabbit_quorum_queues | ternary('absent', 'present') }}"
+  - name: octavia
+    state: "{{ octavia_oslomsg_rabbit_quorum_queues | ternary('present', 'absent') }}"
 octavia_oslomsg_rpc_ssl_version: "{{ oslomsg_rpc_ssl_version | default('TLSv1_2') }}"
 octavia_oslomsg_rpc_ssl_ca_file: "{{ oslomsg_rpc_ssl_ca_file | default('') }}"
 
@@ -126,6 +132,11 @@ octavia_oslomsg_notify_password: "{{ octavia_oslomsg_rpc_password }}"
 octavia_oslomsg_notify_vhost: "{{ octavia_oslomsg_rpc_vhost }}"
 octavia_oslomsg_notify_ssl_version: "{{ oslomsg_notify_ssl_version | default('TLSv1_2') }}"
 octavia_oslomsg_notify_ssl_ca_file: "{{ oslomsg_notify_ssl_ca_file | default('') }}"
+
+## RabbitMQ integration
+octavia_oslomsg_rabbit_quorum_queues: "{{ oslomsg_rabbit_quorum_queues | default(True) }}"
+octavia_oslomsg_rabbit_quorum_delivery_limit: "{{ oslomsg_rabbit_quorum_delivery_limit | default(0) }}"
+octavia_oslomsg_rabbit_quorum_max_memory_bytes: "{{ oslomsg_rabbit_quorum_max_memory_bytes | default(0) }}"
 
 ## (Qdrouterd) integration
 # TODO(ansmith): Change structure when more backends will be supported
