@@ -312,25 +312,6 @@ octavia_task_flow_max_workers: 5
 # Enable provisioning status sync with neutron db
 octavia_sync_provisioning_status: False
 
-# For convenience, we make use of the neutron message vhost
-# for the LBAAS event stream. We could make a completely
-# separate vhost, but the old LBAAS functionality is
-# deprecated so it's a bit pointless unless there is demand
-# for doing it. As such, we provide these defaults here for
-# the template to use.
-neutron_oslomsg_rpc_userid: neutron
-neutron_oslomsg_rpc_vhost: /neutron
-neutron_oslomsg_rpc_transport: "{{ octavia_oslomsg_rpc_transport }}"
-neutron_oslomsg_rpc_port: "{{ octavia_oslomsg_rpc_port }}"
-neutron_oslomsg_rpc_servers: "{{ octavia_oslomsg_rpc_servers }}"
-neutron_oslomsg_rpc_use_ssl: "{{ octavia_oslomsg_rpc_use_ssl }}"
-
-# For additional security use a different user on the Neutron queue
-# for Octavia with restricted access to only the event streamer
-# queues
-octavia_neutron_oslomsg_rpc_userid: "{{ neutron_oslomsg_rpc_userid }}"
-octavia_neutron_oslomsg_rpc_password: "{{ neutron_oslomsg_rpc_password }}"
-
 # this controls if Octavia should add an anti-affinity hint to make sure
 # two amphora are not placed pn the same host (the most common setup of
 # ant affinity features in Nova).
