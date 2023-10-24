@@ -169,7 +169,7 @@ region_name = {{ keystone_service_region }}
 endpoint_type = {{ octavia_clients_endpoint }}
 enable_anti_affinity = {{ octavia_enable_anti_affinity }}
 
-{% if octavia_amp_availability_zone is defined %}availability_zone={{ octavia_amp_availability_zone }}{%endif%}
+{% if octavia_amp_availability_zone %}availability_zone={{ octavia_amp_availability_zone }}{% endif %}
 
 {% if octavia_cinder_enabled %}
 [cinder]
