@@ -24,6 +24,10 @@ topic = octavia_prov
 [oslo_messaging_rabbit]
 ssl = {{ octavia_oslomsg_rpc_use_ssl }}
 rabbit_quorum_queue = {{ octavia_oslomsg_rabbit_quorum_queues }}
+rabbit_transient_quorum_queue = {{ octavia_oslomsg_rabbit_transient_quorum_queues }}
+rabbit_qos_prefetch_count = {{ octavia_oslomsg_rabbit_qos_prefetch_count }}
+use_queue_manager = {{ octavia_oslomsg_rabbit_queue_manager }}
+rabbit_stream_fanout = {{ octavia_oslomsg_rabbit_stream_fanout }}
 rabbit_quorum_delivery_limit = {{ octavia_oslomsg_rabbit_quorum_delivery_limit }}
 rabbit_quorum_max_memory_bytes = {{ octavia_oslomsg_rabbit_quorum_max_memory_bytes }}
 
