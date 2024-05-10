@@ -28,7 +28,7 @@ rabbit_quorum_delivery_limit = {{ octavia_oslomsg_rabbit_quorum_delivery_limit }
 rabbit_quorum_max_memory_bytes = {{ octavia_oslomsg_rabbit_quorum_max_memory_bytes }}
 
 [oslo_messaging_notifications]
-driver = {{ (octavia_ceilometer_enabled | bool) | ternary('messagingv2', 'noop') }}
+driver = {{ (octavia_oslomsg_notify_configure | bool) | ternary('messagingv2', 'noop') }}
 transport_url = {{ octavia_oslomsg_notify_transport }}://{% for host in octavia_oslomsg_notify_servers.split(',') %}{{ octavia_oslomsg_notify_userid }}:{{ octavia_oslomsg_notify_password }}@{{ host }}:{{ octavia_oslomsg_notify_port }}{% if not loop.last %},{% else %}/{{ _octavia_oslomsg_notify_vhost_conf }}{% if octavia_oslomsg_notify_use_ssl | bool %}?ssl=1&ssl_version={{ octavia_oslomsg_notify_ssl_version }}&ssl_ca_file={{ octavia_oslomsg_notify_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
 
 [database]

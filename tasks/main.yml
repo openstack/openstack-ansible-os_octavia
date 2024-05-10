@@ -100,6 +100,7 @@
     _oslomsg_notify_vhost: "{{ octavia_oslomsg_notify_vhost }}"
     _oslomsg_notify_transport: "{{ octavia_oslomsg_notify_transport }}"
     _oslomsg_notify_policies: "{{ octavia_oslomsg_notify_policies }}"
+    _oslomsg_notify_configure: "{{ octavia_oslomsg_notify_configure }}"
   tags:
     - always
 

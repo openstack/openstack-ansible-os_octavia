@@ -121,6 +121,7 @@ octavia_oslomsg_rpc_ssl_version: "{{ oslomsg_rpc_ssl_version | default('TLSv1_2'
 octavia_oslomsg_rpc_ssl_ca_file: "{{ oslomsg_rpc_ssl_ca_file | default('') }}"
 
 # Notify
+octavia_oslomsg_notify_configure: "{{ oslomsg_notify_configure | default(octavia_ceilometer_enabled) }}"
 octavia_oslomsg_notify_host_group: "{{ oslomsg_notify_host_group | default('rabbitmq_all') }}"
 octavia_oslomsg_notify_setup_host: >-
   {{ (octavia_oslomsg_notify_host_group in groups) | ternary(groups[octavia_oslomsg_notify_host_group][0], 'localhost') }}
