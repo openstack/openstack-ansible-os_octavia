@@ -247,6 +247,7 @@
   tags:
     - octavia-install
     - octavia-config
+    - post-install
 
 - name: Importing octavia_db_sync tasks
   import_tasks: octavia_db_sync.yml
