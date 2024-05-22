@@ -31,5 +31,6 @@ octavia_service_distro_packages:
   - octavia-health-manager
   - octavia-housekeeping
   - octavia-worker
+  - "{{ octavia_ovn_enabled | ternary('python3-ovn-octavia-provider', '') }}"
   - python3-pymysql
   - python3-systemd

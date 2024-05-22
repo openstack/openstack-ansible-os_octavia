@@ -34,11 +34,7 @@
     venv_install_destination_path: "{{ octavia_bin | dirname }}"
     venv_install_distro_package_list: "{{ octavia_distro_packages }}"
     venv_pip_install_args: "{{ octavia_pip_install_args }}"
-    venv_pip_packages: >-
-      {{
-        octavia_pip_packages | union(octavia_user_pip_packages) +
-          (octavia_oslomsg_amqp1_enabled | bool) | ternary(octavia_optional_oslomsg_amqp1_pip_packages, [])
-      }}
+    venv_pip_packages: "{{ _octavia_venv_packages }}"
     venv_facts_when_changed:
       - section: "octavia"
         option: "venv_tag"

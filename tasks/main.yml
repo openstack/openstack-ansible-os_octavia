@@ -132,7 +132,7 @@
     pki_certificates: "{{ octavia_cert_certificates }}"
     pki_install_certificates: "{{ octavia_cert_install_certificates }}"
   when:
-    - (octavia_generate_certs | bool) or (octavia_backend_ssl | bool)
+    - (octavia_generate_certs | bool) or (octavia_backend_ssl | bool) or (octavia_ovn_ssl | bool)
   tags:
     - always
 
@@ -152,7 +152,6 @@
   tags:
     - octavia-config
     - octavia-install
-
 
 - name: Importing octavia_install tasks
   import_tasks: octavia_install.yml

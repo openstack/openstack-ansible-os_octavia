@@ -1,5 +1,5 @@
 ---
-# Copyright 2017, Rackspace US, Inc.
+# Copyright 2024, Cleura AB.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,20 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-octavia_distro_packages:
-  - haproxy
-  - iptables-services
-  - libxml2-devel
-  - git
+- job:
+    name: openstack-ansible-deploy-aio_lxc_ovnprovider-ubuntu-jammy
+    parent: openstack-ansible-deploy-aio
+    nodeset: ubuntu-jammy
 
-octavia_devel_distro_packages:
-  - systemd-devel
-
-octavia_service_distro_packages:
-  - openstack-octavia-common
-  - openstack-octavia-api
-  - openstack-octavia-health-manager
-  - openstack-octavia-housekeeping
-  - openstack-octavia-worker
-  - "{{ octavia_ovn_enabled | ternary('python3-ovn-octavia-provider', '') }}"
-  - python3-systemd
+- job:
+    name: openstack-ansible-deploy-aio_lxc_ovnprovider-rockylinux-9
+    parent: openstack-ansible-deploy-aio
+    nodeset: rockylinux-9

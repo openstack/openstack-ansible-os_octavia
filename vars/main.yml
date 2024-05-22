@@ -31,6 +31,14 @@ _octavia_oslomsg_notify_vhost_conf: >-
       octavia_oslomsg_notify_vhost, octavia_oslomsg_notify_vhost | selectattr('state', 'eq', 'present') | map(attribute='name') | first)
   }}
 
+_octavia_venv_packages: >-
+  {%- set pkg_list = octavia_pip_packages | union(octavia_user_pip_packages) +
+            (octavia_oslomsg_amqp1_enabled | bool) | ternary(octavia_optional_oslomsg_amqp1_pip_packages, []) %}
+  {%- if octavia_ovn_enabled %}
+  {%-     set _ = pkg_list.extend(octavia_optional_ovn_octavia_provider_pip_packages) %}
+  {%- endif %}
+  {{- pkg_list | unique }}
+
 #
 # Compile a list of the services on a host based on whether
 # the host is in the host group and the service is enabled.

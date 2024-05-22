@@ -24,9 +24,13 @@
 
     check:
       jobs:
+        - openstack-ansible-deploy-aio_lxc_ovnprovider-ubuntu-jammy
+        - openstack-ansible-deploy-aio_lxc_ovnprovider-rockylinux-9
         - openstack-ansible-deploy-aio_metal-centos-9-stream:
             voting: false
     gate:
       jobs:
+        - openstack-ansible-deploy-aio_lxc_ovnprovider-ubuntu-jammy
+        - openstack-ansible-deploy-aio_lxc_ovnprovider-rockylinux-9
         - openstack-ansible-deploy-aio_metal-centos-9-stream:
             voting: false
