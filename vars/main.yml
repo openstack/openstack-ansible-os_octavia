@@ -16,7 +16,7 @@
 _octavia_is_first_play_host: >-
   {{
     (octavia_services['octavia-api']['group'] in group_names and
-      inventory_hostname == (groups[octavia_services['octavia-api']['group']] | intersect(ansible_play_hosts)) | first) | bool
+      inventory_hostname == (groups[octavia_services['octavia-api']['group']] | select('in', ansible_play_hosts)) | first) | bool
   }}
 
 _octavia_oslomsg_rpc_vhost_conf: >-
