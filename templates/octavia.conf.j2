@@ -152,7 +152,7 @@ password = {{ octavia_service_password }}
 region_name = {{ keystone_service_region }}
 auth_type = password
 memcached_servers = {{ octavia_memcached_servers }}
-endpoint_type = {{ octavia_clients_endpoint }}
+valid_interfaces = {{ octavia_clients_endpoint }}
 token_cache_time = 300
 
 # if your memcached server is shared, use these settings to avoid cache poisoning
@@ -190,4 +190,4 @@ endpoint_type = {{ octavia_clients_endpoint }}
 
 [neutron]
 region_name = {{ keystone_service_region }}
-endpoint_type = {{ octavia_clients_endpoint }}
+valid_interfaces = {{ octavia_clients_endpoint }}
