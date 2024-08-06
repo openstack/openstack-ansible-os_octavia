@@ -62,7 +62,7 @@ octavia_pip_install_args: "{{ pip_install_options | default('') }}"
 octavia_venv_tag: "{{ venv_tag | default('untagged') }}"
 octavia_bin: "{{ _octavia_bin }}"
 
-octavia_clients_endpoint: internalURL
+octavia_clients_endpoint: internal
 
 octavia_auth_strategy: keystone
 
