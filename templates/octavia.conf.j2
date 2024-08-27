@@ -201,7 +201,7 @@ endpoint_type = {{ octavia_clients_endpoint }}
 
 {% if octavia_enabled_provider_agents | length > 0 %}
 [driver_agent]
-enabled_provider_agents = "{{ octavia_enabled_provider_agents | join(',') }}
+enabled_provider_agents = {{ octavia_enabled_provider_agents | join(',') }}
 {% endif %}
 
 {% if octavia_ovn_enabled %}
