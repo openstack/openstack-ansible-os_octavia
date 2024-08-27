@@ -488,7 +488,9 @@ octavia_uwsgi_tls:
 # Set up the drivers
 # Provider agents are optional and not required for a successful Octavia provider driver
 # Possible options: amphora_agent, noop_agent, ovn
-octavia_enabled_provider_agents: []
+octavia_enabled_provider_agents:
+  - "{{ (octavia_ovn_enabled | bool) | ternary('ovn', None) }}"
+
 octavia_enabled_provider_drivers:
   - "amphorav2:'The Octavia Amphora v2 driver.'"
   - "{{ (octavia_ovn_enabled | bool) | ternary(\"ovn:'The Octavia OVN provider driver.'\", False) }}"
