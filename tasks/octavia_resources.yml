@@ -97,6 +97,7 @@
             {% if octavia_management_net_dhcp %}
             {%   set _ = rules.append(_octavia_security_rule_dhcp) %}
             {% endif %}
+            {% set _ = rules.extend(octavia_security_group_additional_rules) %}
             {{ rules }}
     openstack_resources_network: |-
       {% set network_resources = _octavia_security_groups %}

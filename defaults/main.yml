@@ -337,6 +337,8 @@ octavia_amp_image_resource:
 
 # Name of the Octavia security group
 octavia_security_group_name: octavia_sec_grp
+# Additional rules to add to the security group for the amphora
+octavia_security_group_additional_rules: []
 # Restrict access to only authorized hosts
 octavia_security_group_rule_cidr: "{{ octavia_management_net_subnet_cidr }}"
 # ssh enabled - switch to True if you need ssh access to the amphora
