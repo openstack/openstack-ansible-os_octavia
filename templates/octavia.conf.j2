@@ -199,9 +199,10 @@ endpoint_type = {{ octavia_clients_endpoint }}
 region_name = {{ keystone_service_region }}
 valid_interfaces = {{ octavia_clients_endpoint }}
 
-{% if octavia_enabled_provider_agents | length > 0 %}
+{% set _enabled_provider_agents = octavia_enabled_provider_agents | select() %}
+{% if _enabled_provider_agents | length > 0 %}
 [driver_agent]
-enabled_provider_agents = {{ octavia_enabled_provider_agents | join(',') }}
+enabled_provider_agents = {{ _enabled_provider_agents | join(',') }}
 {% endif %}
 
 {% if octavia_ovn_enabled %}
