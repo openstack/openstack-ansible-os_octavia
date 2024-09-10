@@ -492,6 +492,7 @@ octavia_enabled_provider_agents:
   - "{{ (octavia_ovn_enabled | bool) | ternary('ovn', None) }}"
 
 octavia_enabled_provider_drivers:
+  - "amphora:'The Octavia Amphora driver.'"
   - "amphorav2:'The Octavia Amphora v2 driver.'"
   - "{{ (octavia_ovn_enabled | bool) | ternary(\"ovn:'The Octavia OVN provider driver.'\", False) }}"
 octavia_default_provider_driver: "amphorav2"
