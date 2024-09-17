@@ -341,9 +341,22 @@ octavia_security_group_name: octavia_sec_grp
 octavia_security_group_additional_rules: []
 # Restrict access to only authorized hosts
 octavia_security_group_rule_cidr: "{{ octavia_management_net_subnet_cidr }}"
+
+octavia_resources_deploy_host: localhost
+octavia_resources_deploy_python_interpreter: "{{ ansible_playbook_python }}"
 # ssh enabled - switch to True if you need ssh access to the amphora
 octavia_ssh_enabled: False
+octavia_ssh_key_manage: True
 octavia_ssh_key_name: octavia_key
+octavia_ssh_key_dir: "{{ lookup('env', 'HOME') ~ '/.ssh' }}"
+# SSH Key variables below are set to "old" values for backwards compatability
+# of how Nova used to generate keypairs.
+octavia_ssh_key_comment: Generated-by-Nova
+# Options: ssh, pkcs1 and pkcs8
+octavia_ssh_key_format: ssh
+# Options: rsa, dsa, rsa1, ecdsa, ed25519
+octavia_ssh_key_type: rsa
+octavia_ssh_key_size: 2048
 # port the agent listens on
 octavia_agent_port: "9443"
 octavia_health_manager_port: 5555

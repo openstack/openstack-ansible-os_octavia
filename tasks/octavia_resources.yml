@@ -29,6 +29,8 @@
   vars:
     openstack_resources_setup_host: "{{ octavia_service_setup_host }}"
     openstack_resources_python_interpreter: "{{ octavia_service_setup_host_python_interpreter }}"
+    openstack_resources_deploy_host: "{{ octavia_resources_deploy_host }}"
+    openstack_resources_deploy_python_interpreter: "{{ octavia_resources_deploy_python_interpreter }}"
     openstack_resources_image: "{{ (octavia_download_artefact | bool) | ternary({'images': octavia_amp_image_resource}, {}) }}"
     openstack_resources_identity:
       quotas:
@@ -116,15 +118,13 @@
           extra_specs: "{{ octavia_amp_extra_specs | default({}) }}"
     _octavia_keypairs:
       keypairs:
-        # NOTE(noonedeadpunk): We define old/short keypair algorythms for backwards compatibiltiy with
-        #                      previous keypair generation which was handled by Nova:
-        #                      https://opendev.org/openstack/nova/src/commit/7e8e0dd1ab2e46c6f95746b47189e81b5a228c69/nova/crypto.py#L97
         - name: "{{ octavia_ssh_key_name }}"
-          path: "{{ octavia_ssh_key_dir | default(lookup('env', 'HOME') ~ '/.ssh') }}/{{ octavia_ssh_key_name }}"
+          path: "{{ octavia_ssh_key_dir }}/{{ octavia_ssh_key_name }}"
           state: "{{ (octavia_ssh_enabled | bool) | ternary('present', 'absent') }}"
-          private_key_format: ssh
-          size: 2048
-          comment: Generated-by-Nova
+          private_key_format: "{{ octavia_ssh_key_format }}"
+          size: "{{ octavia_ssh_key_size }}"
+          comment: "{{ octavia_ssh_key_comment }}"
+          type: "{{ octavia_ssh_key_type }}"
           auth:
             auth_url: "{{ keystone_service_adminurl }}"
             username: "{{ octavia_service_user_name }}"
@@ -134,7 +134,10 @@
             project_domain_name: "{{ octavia_service_project_domain_id }}"
 
     openstack_resources_compute: |-
-      {% set compute_resources = _octavia_keypairs %}
+      {% set compute_resources = {} %}
+      {% if octavia_ssh_key_manage %}
+      {%   set _ = compute_resources.update(_octavia_keypairs) %}
+      {% endif %}
       {% if octavia_nova_flavor_uuid is not defined %}
       {%   set _ = compute_resources.update(_octavia_flavors) %}
       {% endif %}
