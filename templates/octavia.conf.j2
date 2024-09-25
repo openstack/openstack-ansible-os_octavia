@@ -2,7 +2,6 @@
 debug = {{ debug }}
 use_journal = True
 executor_thread_pool_size = {{ octavia_rpc_thread_pool_size }}
-rpc_conn_pool_size = {{ octavia_rpc_conn_pool_size }}
 transport_url = {{ octavia_oslomsg_rpc_transport }}://{% for host in octavia_oslomsg_rpc_servers.split(',') %}{{ octavia_oslomsg_rpc_userid }}:{{ octavia_oslomsg_rpc_password }}@{{ host }}:{{ octavia_oslomsg_rpc_port }}{% if not loop.last %},{% else %}/{{ _octavia_oslomsg_rpc_vhost_conf }}{% if octavia_oslomsg_rpc_use_ssl | bool %}?ssl=1&ssl_version={{ octavia_oslomsg_rpc_ssl_version }}&ssl_ca_file={{ octavia_oslomsg_rpc_ssl_ca_file }}{% else %}?ssl=0{% endif %}{% endif %}{% endfor %}
 
 [api_settings]
@@ -23,6 +22,7 @@ topic = octavia_prov
 
 [oslo_messaging_rabbit]
 ssl = {{ octavia_oslomsg_rpc_use_ssl }}
+rpc_conn_pool_size = {{ octavia_rpc_conn_pool_size }}
 rabbit_quorum_queue = {{ octavia_oslomsg_rabbit_quorum_queues }}
 rabbit_transient_quorum_queue = {{ octavia_oslomsg_rabbit_transient_quorum_queues }}
 rabbit_qos_prefetch_count = {{ octavia_oslomsg_rabbit_qos_prefetch_count }}
