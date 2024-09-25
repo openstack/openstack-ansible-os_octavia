@@ -100,7 +100,7 @@ octavia_coordination_driver: "{{ coordination_driver | default('zookeeper') }}"
 octavia_coordination_group: "{{ coordination_host_group | default('zookeeper_all') }}"
 octavia_coordination_enable: "{{ octavia_coordination_group in groups and groups[octavia_coordination_group] | length > 0 }}"
 octavia_coordination_namespace: octavia_jobboard
-octavia_coordination_client_ssl: "{{ coordination_client_ssl | default(True) }}"
+octavia_coordination_client_ssl: "{{ coordination_client_ssl | default(False) }}"
 octavia_coordination_verify_cert: "{{ coordination_verify_cert | default(True) }}"
 octavia_coordination_port: "{{ coordination_port | default(octavia_coordination_client_ssl | ternary('2281', '2181')) }}"
 
