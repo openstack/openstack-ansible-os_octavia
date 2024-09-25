@@ -411,7 +411,7 @@ octavia_management_net_subnet_cidr: 172.29.232.0/22
 # octavia_management_net_subnet_allocation_pools: "172.29.232.10-172.29.235.200"
 octavia_management_net_subnet_allocation_pools: ""
 # Do we require the Neutron DHCP server
-octavia_management_net_dhcp: "True"
+octavia_management_net_dhcp: "False"
 # Should Octavia set up the network and subnet?
 octavia_service_net_setup: True
 # This should match net_name from provider_networks structure in openstack_user_config
