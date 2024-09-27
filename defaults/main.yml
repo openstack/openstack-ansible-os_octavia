@@ -72,7 +72,7 @@ octavia_barbican_enabled: false
 ## Cinder Volume
 octavia_cinder_enabled: False
 cinder_default_availability_zone: "{{ octavia_amp_availability_zone }}"
-octavia_cinder_volume_size: 16
+octavia_cinder_volume_size: 20
 octavia_cinder_volume_type: "volumes-hdd"
 
 ## Database info
@@ -365,7 +365,7 @@ octavia_health_manager_port: 5555
 octavia_amp_flavor_name: "m1.amphora"
 octavia_amp_ram: 1024
 octavia_amp_vcpu: 1
-octavia_amp_disk: 20
+octavia_amp_disk: "{{ octavia_cinder_enabled | ternary(0, 20) }}"
 # octavia_amp_extra_specs:
 
 # only increase when it's a really busy system since this is by deployed host,
@@ -715,12 +715,14 @@ octavia_ca_private_key_passphrase: "{{ octavia_cert_client_password }}"
 # Quotas for the Octavia user - assuming active/passive topology
 octavia_num_instances: 10000 # 5000 LB in active/passive
 octavia_ram: "{{ (octavia_num_instances | int) * 1024 }}"
+octavia_gigabytes: "{{ (octavia_num_volumes | int) * (octavia_cinder_volume_size | int) }}"
 octavia_num_server_groups: "{{ ((octavia_num_instances | int) * 0.5) | int | abs }}"
 octavia_num_server_group_members: 50
 octavia_num_cores: "{{ octavia_num_instances }}"
 octavia_num_secgroups: "{{ (octavia_num_instances | int) * 1.5 | int | abs }}" # average 3 listener per lb
 octavia_num_ports: "{{ (octavia_num_instances | int) * 10 }}" # at least instances * 10
 octavia_num_security_group_rules: "{{ (octavia_num_secgroups | int) * 100 }}"
+octavia_num_volumes: "{{ octavia_num_instances }}"
 
 ## Tunable overrides
 octavia_octavia_conf_overrides: {}

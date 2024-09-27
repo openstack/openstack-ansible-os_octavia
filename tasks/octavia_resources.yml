@@ -36,6 +36,7 @@
       quotas:
         - name: "{{ octavia_service_project_name }}"
           cores: "{{ octavia_num_cores }}"
+          gigabytes: "{{ octavia_cinder_enabled | ternary(octavia_gigabytes, omit) }}"
           instances: "{{ octavia_num_instances }}"
           ram: "{{ octavia_ram }}"
           server_groups: "{{ octavia_num_server_groups }}"
@@ -43,6 +44,7 @@
           security_group: "{{ octavia_num_secgroups }}"
           security_group_rule: "{{ octavia_num_security_group_rules }}"
           port: "{{ octavia_num_ports }}"
+          volumes: "{{ octavia_cinder_enabled | ternary(octavia_num_volumes, omit) }}"
     # Network Resources
     _octavia_networks:
       networks:
