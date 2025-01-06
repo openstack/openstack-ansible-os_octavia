@@ -150,10 +150,6 @@ octavia_oslomsg_rabbit_queue_manager: "{{ oslomsg_rabbit_queue_manager | default
 octavia_oslomsg_rabbit_quorum_delivery_limit: "{{ oslomsg_rabbit_quorum_delivery_limit | default(0) }}"
 octavia_oslomsg_rabbit_quorum_max_memory_bytes: "{{ oslomsg_rabbit_quorum_max_memory_bytes | default(0) }}"
 
-## (Qdrouterd) integration
-# TODO(ansmith): Change structure when more backends will be supported
-octavia_oslomsg_amqp1_enabled: "{{ octavia_oslomsg_rpc_transport == 'amqp' }}"
-
 octavia_ceilometer_enabled: "{{ (groups['ceilometer_all'] is defined) and (groups['ceilometer_all'] | length > 0) }}"
 
 ## octavia User / Group
@@ -230,9 +226,6 @@ octavia_pip_packages:
 
 # Specific pip packages provided by the user
 octavia_user_pip_packages: []
-
-octavia_optional_oslomsg_amqp1_pip_packages:
-  - oslo.messaging[amqp1]
 
 octavia_optional_ovn_octavia_provider_pip_packages:
   - "git+{{ octavia_ovn_octavia_provider_git_repo }}@{{ octavia_ovn_octavia_provider_git_install_branch }}#egg=ovn-octavia-provider"
