@@ -14,13 +14,13 @@
 # limitations under the License.
 
 - name: Create the system group
-  group:
+  ansible.builtin.group:
     name: "{{ octavia_system_group_name }}"
     state: "present"
     system: "yes"
 
 - name: Create the octavia system user
-  user:
+  ansible.builtin.user:
     name: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     comment: "{{ octavia_system_comment }}"
@@ -30,7 +30,7 @@
     home: "{{ octavia_system_home_folder }}"
 
 - name: Create octavia dir
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
     owner: "{{ item.owner | default(octavia_system_user_name) }}"

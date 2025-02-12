@@ -25,7 +25,7 @@
     - (octavia_policy_overrides | length > 0) or (octavia_legacy_policy | bool)
 
 - name: Remove legacy policy.yaml file
-  file:
+  ansible.builtin.file:
     path: "/etc/octavia/policy.yaml"
     state: absent
   when:

@@ -15,7 +15,7 @@
 
 - name: Create image download directory
   delegate_to: "{{ octavia_service_setup_host }}"
-  file:
+  ansible.builtin.file:
     path: "{{ octavia_amp_image_path }}"
     state: directory
     mode: "0750"
