@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ## Verbosity Options
-debug: False
+debug: false
 
 # Set the host which will execute the shade modules
 # for the service setup. The host must already have
@@ -31,14 +31,14 @@ octavia_install_method: "{{ service_install_method | default('source') }}"
 octavia_venv_python_executable: "{{ openstack_venv_python_executable | default('python3') }}"
 
 ## Allow TLS listener
-octavia_tls_listener_enabled: True
+octavia_tls_listener_enabled: true
 
 # Legacy policy disables the requirement for load-balancer service users to
 # have one of the load-balancer:* roles.  It provides a similar policy to
 # legacy OpenStack policies where any user or admin has access to load-balancer
 # resources that they own.  Users with the admin role has access to all
 # load-balancer resources, whether they own them or not.
-octavia_legacy_policy: False
+octavia_legacy_policy: false
 
 # Set the package install state for distribution packages
 # Options are 'present' and 'latest'
@@ -70,7 +70,7 @@ octavia_auth_strategy: keystone
 octavia_barbican_enabled: false
 
 ## Cinder Volume
-octavia_cinder_enabled: False
+octavia_cinder_enabled: false
 cinder_default_availability_zone: "{{ octavia_amp_availability_zone }}"
 octavia_cinder_volume_size: 20
 octavia_cinder_volume_type: "volumes-hdd"
@@ -230,7 +230,6 @@ octavia_user_pip_packages: []
 octavia_optional_ovn_octavia_provider_pip_packages:
   - "git+{{ octavia_ovn_octavia_provider_git_repo }}@{{ octavia_ovn_octavia_provider_git_install_branch }}#egg=ovn-octavia-provider"
 
-
 # Memcached override
 octavia_memcached_servers: "{{ memcached_servers }}"
 
@@ -249,7 +248,7 @@ octavia_services:
     service_name: octavia-api
     start_order: 4
     init_config_overrides: "{{ octavia_api_init_overrides }}"
-    wsgi_app: True
+    wsgi_app: true
     wsgi_name: octavia-wsgi
     uwsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
     uwsgi_port: "{{ octavia_service_port }}"
@@ -304,7 +303,7 @@ octavia_glance_image_tag: octavia-amphora-image
 octavia_amp_image_owner_id:
 # download the image from an artefact server
 # Note: The default is the Octavia test image so don't use that in prod
-octavia_download_artefact: True
+octavia_download_artefact: true
 # The URL to download from
 octavia_artefact_url: http://tarballs.openstack.org/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-jammy.qcow2
 # Set the directory where the downloaded image will be stored
@@ -327,7 +326,6 @@ octavia_amp_image_resource:
     owner_domain: "{{ octavia_service_project_domain_id }}"
     image_download_path: "{{ octavia_amp_image_path }}"
 
-
 # Name of the Octavia security group
 octavia_security_group_name: octavia_sec_grp
 # Additional rules to add to the security group for the amphora
@@ -338,8 +336,8 @@ octavia_security_group_rule_cidr: "{{ octavia_management_net_subnet_cidr }}"
 octavia_resources_deploy_host: localhost
 octavia_resources_deploy_python_interpreter: "{{ ansible_playbook_python }}"
 # ssh enabled - switch to True if you need ssh access to the amphora
-octavia_ssh_enabled: False
-octavia_ssh_key_manage: True
+octavia_ssh_enabled: false
+octavia_ssh_key_manage: true
 octavia_ssh_key_name: octavia_key
 octavia_ssh_key_dir: "{{ lookup('env', 'HOME') ~ '/.ssh' }}"
 # SSH Key variables below are set to "old" values for backwards compatability
@@ -366,12 +364,12 @@ octavia_amp_disk: "{{ octavia_cinder_enabled | ternary(0, 20) }}"
 octavia_task_flow_max_workers: 5
 
 # Enable provisioning status sync with neutron db
-octavia_sync_provisioning_status: False
+octavia_sync_provisioning_status: false
 
 # this controls if Octavia should add an anti-affinity hint to make sure
 # two amphora are not placed pn the same host (the most common setup of
 # ant affinity features in Nova).
-octavia_enable_anti_affinity: True
+octavia_enable_anti_affinity: true
 
 # Some installations put hardware more suited for load balancing in special
 # availability zones. This allows to target a specific availability zone
@@ -406,7 +404,7 @@ octavia_management_net_subnet_allocation_pools: ""
 # Do we require the Neutron DHCP server
 octavia_management_net_dhcp: "False"
 # Should Octavia set up the network and subnet?
-octavia_service_net_setup: True
+octavia_service_net_setup: true
 # This should match net_name from provider_networks structure in openstack_user_config
 octavia_provider_inventory_net_name: "{{ octavia_provider_network_name }}"
 # This gets container managment network structure based on octavia_provider_inventory_net_name
@@ -426,59 +424,59 @@ octavia_hm_hosts: >-
 # management network
 octavia_container_interface: "{{ octavia_provider_network.container_interface }}"
 # Set this to true to drop the iptables rules
-octavia_ip_tables_fw: True
+octavia_ip_tables_fw: true
 # The iptable rules
 octavia_iptables_rules:
-  - # Allow icmp
-    chain: INPUT
+  # Allow icmp
+  - chain: INPUT
     protocol: icmp
     ctstate: NEW
     icmp_type: 8
     jump: ACCEPT
-  - # Allow existing connections:
-    chain: INPUT
+  # Allow existing connections:
+  - chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
     ctstate: RELATED,ESTABLISHED
     jump: ACCEPT
-  - # Allow heartbeat:
-    chain: INPUT
+  # Allow heartbeat:
+  - chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
     protocol: udp
     destination_port: "{{ octavia_health_manager_port }}"
     jump: ACCEPT
-  - # Reject INPUT:
-    chain: INPUT
+  # Reject INPUT:
+  - chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
     reject_with: icmp-port-unreachable
-  - # Reject FORWARD:
-    chain: FORWARD
+  # Reject FORWARD:
+  - chain: FORWARD
     in_interface: "{{ octavia_container_interface }}"
     reject_with: icmp-port-unreachable
-  - # Allow icmp6
-    chain: INPUT
+  # Allow icmp6
+  - chain: INPUT
     protocol: icmpv6
     jump: ACCEPT
     ip_version: ipv6
-  - # Allow existing connections
-    chain: INPUT
+  # Allow existing connections
+  - chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
     ctstate: RELATED,ESTABLISHED
     jump: ACCEPT
     ip_version: ipv6
-  - # Allow heartbeat
-    chain: INPUT
+  # Allow heartbeat
+  - chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
     protocol: udp
     destination_port: "{{ octavia_health_manager_port }}"
     jump: ACCEPT
     ip_version: ipv6
-  - # Reject INPUT
-    chain: INPUT
+  # Reject INPUT
+  - chain: INPUT
     in_interface: "{{ octavia_container_interface }}"
     reject_with: icmp6-port-unreachable
     ip_version: ipv6
-  - # Reject FORWARD
-    chain: FORWARD
+  # Reject FORWARD
+  - chain: FORWARD
     in_interface: "{{ octavia_container_interface }}"
     reject_with: icmp6-port-unreachable
     ip_version: ipv6
@@ -537,17 +535,17 @@ octavia_cert_certs_dir: "{{ octavia_cert_dir }}/certs/certs/"
 octavia_cert_dir_owner: "{{ lookup('env', 'USER') }}"
 octavia_cert_dest_dir: "/etc/octavia/certs"
 
-octavia_cert_client_req_common_name: 'www.example.com' # change this to something more real
-octavia_cert_client_req_country_name: 'US'
-octavia_cert_client_req_state_or_province_name: 'Denial'
-octavia_cert_client_req_locality_name: 'Nowhere'
-octavia_cert_client_req_organization_name: 'Dis'
+octavia_cert_client_req_common_name: "www.example.com" # change this to something more real
+octavia_cert_client_req_country_name: "US"
+octavia_cert_client_req_state_or_province_name: "Denial"
+octavia_cert_client_req_locality_name: "Nowhere"
+octavia_cert_client_req_organization_name: "Dis"
 octavia_cert_validity_days: 1825 # 5 years
-octavia_generate_certs: True # generate self signed client certs
-octavia_generate_client_cert: True
-octavia_generate_ca: True
-octavia_regenerate_client_cert: ''
-octavia_regenerate_ca: ''
+octavia_generate_certs: true # generate self signed client certs
+octavia_generate_client_cert: true
+octavia_generate_ca: true
+octavia_regenerate_client_cert: ""
+octavia_regenerate_ca: ""
 
 # OVN server certificate
 # The local address used for the ovn certificate

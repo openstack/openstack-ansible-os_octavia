@@ -15,13 +15,13 @@
 
 - name: Perform a octavia DB sync
   command: "{{ octavia_bin }}/octavia-db-manage upgrade head"
-  become: yes
+  become: true
   become_user: "{{ octavia_system_user_name }}"
   changed_when: false
 
 - name: Perform a octavia DB sync
   command: "{{ octavia_bin }}/octavia-db-manage upgrade_persistence"
-  become: yes
+  become: true
   become_user: "{{ octavia_system_user_name }}"
   changed_when: false
   when: octavia_coordination_enable | bool

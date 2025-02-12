@@ -140,7 +140,7 @@
   assemble:
     src: /etc/octavia/certs/
     dest: /etc/octavia/certs/client.pem
-    regexp: '(client\.pem\.crt|client\.pem\.key)$'
+    regexp: "(client\\.pem\\.crt|client\\.pem\\.key)$"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"

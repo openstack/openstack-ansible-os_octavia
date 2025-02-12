@@ -1,5 +1,4 @@
 ---
-
 - name: Record the installation method
   ini_file:
     dest: "/etc/ansible/facts.d/openstack_ansible.fact"
