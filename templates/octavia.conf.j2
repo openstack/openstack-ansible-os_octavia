@@ -180,7 +180,7 @@ enable_anti_affinity = {{ octavia_enable_anti_affinity }}
 
 {% if octavia_cinder_enabled %}
 [cinder]
-service_name = {{ cinder_service_v3_name | default('cinderv3') }}
+service_name = {{ cinder_service_name | default('cinder') }}
 region_name = {{ keystone_service_region }}
 endpoint_type = {{ octavia_clients_endpoint }}
 availability_zone = {{ cinder_default_availability_zone }}
