@@ -122,6 +122,7 @@
         - octavia-config
         - pki
   vars:
+    pki_backend: "{{ octavia_pki_backend }}"
     pki_setup_host: "{{ octavia_cert_setup_host }}"
     pki_dir: "{{ octavia_cert_dir }}"
     pki_create_ca: "{{ octavia_generate_ca }}"

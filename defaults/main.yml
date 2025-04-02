@@ -520,6 +520,8 @@ octavia_ovn_sb_connection: >-
 # have access to pyOpenSSL.
 octavia_cert_setup_host: "{{ openstack_pki_setup_host | default('localhost') }}"
 
+octavia_pki_backend: "{{ openstack_pki_backend | default('standalone') }}"
+
 # Set the directory where the certificates will be stored
 # on the above host. If the host is localhost, then the user
 # running the playbook must have access to it.
@@ -553,6 +555,7 @@ octavia_ovn_ssl_ca_cert: "octavia_ovn-ca.pem"
 
 octavia_cert_authorities:
   - name: "OctaviaServerRoot"
+    backend: "standalone"
     country: "{{ octavia_cert_client_req_country_name }}"
     state_or_province_name: "{{ octavia_cert_client_req_state_or_province_name }}"
     organization_name: "{{ octavia_cert_client_req_organization_name }}"
@@ -565,8 +568,9 @@ octavia_cert_authorities:
       - digitalSignature
       - cRLSign
       - keyCertSign
-    not_after: "+{{ octavia_cert_validity_days }}d"
+    ttl: "{{ octavia_cert_validity_days }}d"
   - name: "OctaviaClientRoot"
+    backend: "standalone"
     country: "{{ octavia_cert_client_req_country_name }}"
     state_or_province_name: "{{ octavia_cert_client_req_state_or_province_name }}"
     organization_name: "{{ octavia_cert_client_req_organization_name }}"
@@ -579,21 +583,21 @@ octavia_cert_authorities:
       - digitalSignature
       - cRLSign
       - keyCertSign
-    not_after: "+{{ octavia_cert_validity_days }}d"
+    ttl: "{{ octavia_cert_validity_days }}d"
 
 octavia_cert_certificates:
   # Communication between haproxy and octavia API
   - name: "octavia-api_{{ ansible_facts['hostname'] }}"
-    provider: ownca
     cn: "{{ ansible_facts['hostname'] }}"
     san: "{{ octavia_api_cert_san }}"
-    signed_by: "{{ octavia_api_intermediate_cert_name }}"
     condition: "{{ octavia_backend_ssl | bool }}"
+    # standalone backend only
+    provider: ownca
+    signed_by: "{{ octavia_api_intermediate_cert_name }}"
   # Communication between octavia control plane and amphoras
   - name: "octavia_client"
-    provider: ownca
+    backend: "standalone"
     cn: "{{ octavia_cert_client_req_common_name }}"
-    signed_by: "OctaviaClientRoot"
     ownca_key_passphrase: "{{ octavia_cert_client_password }}"
     key_usage:
       - nonRepudiation
@@ -603,81 +607,104 @@ octavia_cert_certificates:
       - clientAuth
       - emailProtection
     condition: "{{ octavia_generate_certs | bool }}"
+    # standalone backend only
+    provider: ownca
+    signed_by: "OctaviaClientRoot"
   # OVN NB/SB communication
   - name: "octavia_ovn_{{ ansible_facts['hostname'] }}"
-    provider: ownca
     cn: "{{ ansible_facts['hostname'] }}"
-    san: "{{ 'DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ octavia_ovn_node_address }}"
-    signed_by: "{{ octavia_ovn_pki_intermediate_cert_name }}"
+    san:
+      dns:
+        - "{{ ansible_facts['hostname'] }}"
+      ip:
+        - "{{ octavia_ovn_node_address }}"
     condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
+    # standalone backend only
+    provider: ownca
+    signed_by: "{{ octavia_ovn_pki_intermediate_cert_name }}"
 
 # Installation details for SSL certificates
 octavia_cert_install_certificates:
   # Communication between haproxy and octavia API
-  - src: "{{ octavia_api_user_ssl_cert | default(octavia_cert_certs_dir ~ 'octavia-api_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
+  - name: "octavia-api_{{ ansible_facts['hostname'] }}"
+    type: "certificate_chain"
     dest: "{{ octavia_api_ssl_cert }}"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_user_name }}"
-    mode: "0644"
     condition: "{{ octavia_backend_ssl | bool }}"
-  - src: "{{ octavia_api_user_ssl_key | default(octavia_cert_keys_dir ~ 'octavia-api_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
+    # standalone backend only
+    src: "{{ octavia_api_user_ssl_cert }}"
+  - name: "octavia-api_{{ ansible_facts['hostname'] }}"
+    type: "private_key"
     dest: "{{ octavia_api_ssl_key }}"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_user_name }}"
-    mode: "0600"
     condition: "{{ octavia_backend_ssl | bool }}"
+    # standalone backend only
+    src: "{{ octavia_api_user_ssl_key }}"
   # Server CA
-  - src: "{{ octavia_ca_certificate | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/certs/OctaviaServerRoot.crt') }}"
-    dest: "{{ octavia_cert_dest_dir }}/server_ca.pem"
+  - dest: "{{ octavia_cert_dest_dir }}/server_ca.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
-  - src: "{{ octavia_ca_private_key | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/private/OctaviaServerRoot.key.pem') }}"
-    dest: "{{ octavia_cert_dest_dir }}/ca_key.pem"
+    backend: "standalone"
+    # standalone backend only
+    src: "{{ octavia_ca_certificate | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/certs/OctaviaServerRoot.crt') }}"
+  - dest: "{{ octavia_cert_dest_dir }}/ca_key.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
+    backend: "standalone"
+    # standalone backend only
+    src: "{{ octavia_ca_private_key | default(octavia_cert_dir ~ '/roots/OctaviaServerRoot/private/OctaviaServerRoot.key.pem') }}"
   # Client CA
-  - src: "{{ octavia_client_ca | default(octavia_cert_dir ~ '/roots/OctaviaClientRoot/certs/OctaviaClientRoot.crt') }}"
-    dest: "{{ octavia_cert_dest_dir }}/client_ca.pem"
+  - dest: "{{ octavia_cert_dest_dir }}/client_ca.pem"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
+    backend: "standalone"
+    # standalone backend only
+    src: "{{ octavia_client_ca | default(octavia_cert_dir ~ '/roots/OctaviaClientRoot/certs/OctaviaClientRoot.crt') }}"
   # Client certificate
-  - src: "{{ octavia_client_cert | default(octavia_cert_certs_dir ~ '/octavia_client.crt') }}"
-    dest: "{{ octavia_cert_dest_dir }}/client.pem.crt"
+  - dest: "{{ octavia_cert_dest_dir }}/client.pem.crt"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
-  - src: "{{ octavia_client_key | default(octavia_cert_keys_dir ~ '/octavia_client.key.pem') }}"
-    dest: "{{ octavia_cert_dest_dir }}/client.pem.key"
+    backend: "standalone"
+    # standalone backend only
+    src: "{{ octavia_client_cert | default(octavia_cert_certs_dir ~ '/octavia_client.crt') }}"
+  - dest: "{{ octavia_cert_dest_dir }}/client.pem.key"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0640"
     condition: "{{ octavia_generate_certs | bool }}"
+    backend: "standalone"
+    # standalone backend only
+    src: "{{ octavia_client_key | default(octavia_cert_keys_dir ~ '/octavia_client.key.pem') }}"
   # OVN certificates
-  - src: "{{ octavia_ovn_user_ssl_cert | default(octavia_cert_certs_dir ~ 'octavia_ovn_' ~ ansible_facts['hostname'] ~ '-chain.crt') }}"
+  - name: "octavia_ovn_{{ ansible_facts['hostname'] }}"
+    type: "certificate_chain"
     dest: "{{ [octavia_cert_dest_dir, octavia_ovn_ssl_cert] | join('/') }}"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0644"
     condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
-  - src: "{{ octavia_ovn_user_ssl_key | default(octavia_cert_keys_dir ~ 'octavia_ovn_' ~ ansible_facts['hostname'] ~ '.key.pem') }}"
+    # standalone backend only
+    src: "{{ octavia_ovn_user_ssl_cert }}"
+  - name: "octavia_ovn_{{ ansible_facts['hostname'] }}"
+    type: "private_key"
     dest: "{{ [octavia_cert_dest_dir, octavia_ovn_ssl_key] | join('/') }}"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0600"
     condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
-  - src: "{{ octavia_ovn_user_ssl_ca_cert | default(octavia_ovn_pki_intermediate_chain_path) }}"
+    # standalone backend only
+    src: "{{ octavia_ovn_user_ssl_key }}"
+  - name: "octavia_ovn_{{ ansible_facts['hostname'] }}"
+    type: "ca_bundle"
     dest: "{{ [octavia_cert_dest_dir, octavia_ovn_ssl_ca_cert] | join('/') }}"
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
-    mode: "0644"
     condition: "{{ (octavia_ovn_ssl and octavia_ovn_enabled) }}"
+    # standalone backend only
+    src: "{{ octavia_ovn_user_ssl_ca_cert }}"
 
 # Custom client CA
 # octavia_client_ca: "{{ octavia_cert_dir }}/ca_01.pem"
@@ -691,10 +718,9 @@ octavia_cert_install_certificates:
 octavia_ca_private_key_passphrase: "{{ octavia_cert_client_password }}"
 # octavia_ca_certificate: "{{ octavia_cert_dir }}/ca_server_01.pem"
 # Custom OVN certs
-# octavia_ovnnb_user_ssl_cert: <path to cert on ansible deployment host>
-# octavia_ovnnb_user_ssl_key: <path to cert on ansible deployment host>
-# octavia_ovnsb_user_ssl_cert: <path to cert on ansible deployment host>
-# octavia_ovnsb_user_ssl_key: <path to cert on ansible deployment host>
+octavia_ovn_user_ssl_cert: ""
+octavia_ovn_user_ssl_key: ""
+octavia_ovn_user_ssl_ca_cert: ""
 
 ## Tunable overrides
 octavia_octavia_conf_overrides: {}
@@ -712,12 +738,12 @@ octavia_backend_ssl: "{{ openstack_service_backend_ssl | default(False) }}"
 
 # octavia server certificate
 octavia_api_intermediate_cert_name: "{{ openstack_pki_service_intermediate_cert_name | default('ExampleCorpIntermediate') }}"
-octavia_api_cert_san: "{{ openstack_pki_san | default('DNS:' ~ ansible_facts['hostname'] ~ ',IP:' ~ management_address) }}"
+octavia_api_cert_san: "{{ openstack_pki_san | default({'dns': [ansible_facts['hostname']], 'ip': [management_address]}) }}"
 
 # octavia destination files for SSL certificates
 octavia_api_ssl_cert: "{{ octavia_cert_dest_dir }}/octavia-api.pem"
 octavia_api_ssl_key: "{{ octavia_cert_dest_dir }}/octavia-api.key"
 
 # Define user-provided SSL certificates
-# octavia_api_user_ssl_cert: <path to cert on ansible deployment host>
-# octavia_api_user_ssl_key: <path to cert on ansible deployment host>
+octavia_api_user_ssl_cert: ""
+octavia_api_user_ssl_key: ""
