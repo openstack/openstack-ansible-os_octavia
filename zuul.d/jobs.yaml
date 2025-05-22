@@ -14,11 +14,6 @@
 # limitations under the License.
 
 - job:
-    name: openstack-ansible-deploy-aio_lxc_ovnprovider-ubuntu-jammy
+    name: openstack-ansible-deploy-aio_lxc_ovnprovider-ubuntu-noble
     parent: openstack-ansible-deploy-aio
-    nodeset: ubuntu-jammy
-
-- job:
-    name: openstack-ansible-deploy-aio_lxc_ovnprovider-rockylinux-9
-    parent: openstack-ansible-deploy-aio
-    nodeset: rockylinux-9
+    nodeset: ubuntu-noble

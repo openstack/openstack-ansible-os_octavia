@@ -249,7 +249,7 @@ octavia_services:
     start_order: 4
     init_config_overrides: "{{ octavia_api_init_overrides }}"
     wsgi_app: true
-    wsgi_name: octavia-wsgi
+    wsgi: "octavia.wsgi.api:application"
     uwsgi_overrides: "{{ octavia_api_uwsgi_ini_overrides }}"
     uwsgi_port: "{{ octavia_service_port }}"
     uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
