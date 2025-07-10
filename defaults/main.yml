@@ -309,8 +309,8 @@ octavia_artefact_url: http://tarballs.openstack.org/octavia/test-images/test-onl
 # Set the directory where the downloaded image will be stored
 # on the octavia_service_setup_host host. If the host is localhost,
 # then the user running the playbook must have access to it.
-octavia_amp_image_path: "{{ lookup('env', 'HOME') }}/openstack-ansible/octavia"
-octavia_amp_image_path_owner: "{{ lookup('env', 'USER') }}"
+octavia_amp_image_path: "{{ lookup('env', 'HOME', default='/root') }}/openstack-ansible/octavia"
+octavia_amp_image_path_owner: "{{ lookup('env', 'USER', default='root') }}"
 # enable uploading image to glance automatically
 octavia_amp_image_upload_enabled: "{{ octavia_download_artefact }}"
 octavia_amp_image_resource:
@@ -339,7 +339,7 @@ octavia_resources_deploy_python_interpreter: "{{ ansible_playbook_python }}"
 octavia_ssh_enabled: false
 octavia_ssh_key_manage: true
 octavia_ssh_key_name: octavia_key
-octavia_ssh_key_dir: "{{ lookup('env', 'HOME') ~ '/.ssh' }}"
+octavia_ssh_key_dir: "{{ lookup('env', 'HOME', default='/root') ~ '/.ssh' }}"
 # SSH Key variables below are set to "old" values for backwards compatability
 # of how Nova used to generate keypairs.
 octavia_ssh_key_comment: Generated-by-Nova
@@ -529,7 +529,7 @@ octavia_cert_setup_host: "{{ openstack_pki_setup_host | default('localhost') }}"
 # Set the directory where the certificates will be stored
 # on the above host. If the host is localhost, then the user
 # running the playbook must have access to it.
-octavia_cert_dir: "{{ openstack_pki_dir | default(lookup('env', 'HOME') ~ '/openstack-ansible') }}"
+octavia_cert_dir: "{{ openstack_pki_dir | default(lookup('env', 'HOME', default='/root') ~ '/openstack-ansible') }}"
 octavia_cert_keys_dir: "{{ octavia_cert_dir }}/certs/private/"
 octavia_cert_certs_dir: "{{ octavia_cert_dir }}/certs/certs/"
 octavia_cert_dir_owner: "{{ lookup('env', 'USER') }}"
