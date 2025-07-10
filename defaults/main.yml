@@ -532,7 +532,6 @@ octavia_cert_setup_host: "{{ openstack_pki_setup_host | default('localhost') }}"
 octavia_cert_dir: "{{ openstack_pki_dir | default(lookup('env', 'HOME') ~ '/openstack-ansible') }}"
 octavia_cert_keys_dir: "{{ octavia_cert_dir }}/certs/private/"
 octavia_cert_certs_dir: "{{ octavia_cert_dir }}/certs/certs/"
-octavia_cert_dir_owner: "{{ lookup('env', 'USER') }}"
 octavia_cert_dest_dir: "/etc/octavia/certs"
 
 octavia_cert_client_req_common_name: "www.example.com" # change this to something more real
