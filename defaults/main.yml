@@ -703,18 +703,6 @@ octavia_ca_private_key_passphrase: "{{ octavia_cert_client_password }}"
 # octavia_ovnsb_user_ssl_cert: <path to cert on ansible deployment host>
 # octavia_ovnsb_user_ssl_key: <path to cert on ansible deployment host>
 
-# Quotas for the Octavia user - assuming active/passive topology
-octavia_num_instances: 10000 # 5000 LB in active/passive
-octavia_ram: "{{ (octavia_num_instances | int) * 1024 }}"
-octavia_gigabytes: "{{ (octavia_num_volumes | int) * (octavia_cinder_volume_size | int) }}"
-octavia_num_server_groups: "{{ ((octavia_num_instances | int) * 0.5) | int | abs }}"
-octavia_num_server_group_members: 50
-octavia_num_cores: "{{ octavia_num_instances }}"
-octavia_num_secgroups: "{{ (octavia_num_instances | int) * 1.5 | int | abs }}" # average 3 listener per lb
-octavia_num_ports: "{{ (octavia_num_instances | int) * 10 }}" # at least instances * 10
-octavia_num_security_group_rules: "{{ (octavia_num_secgroups | int) * 100 }}"
-octavia_num_volumes: "{{ octavia_num_instances }}"
-
 ## Tunable overrides
 octavia_octavia_conf_overrides: {}
 octavia_api_paste_ini_overrides: {}

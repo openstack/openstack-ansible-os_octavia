@@ -32,19 +32,6 @@
     openstack_resources_deploy_host: "{{ octavia_resources_deploy_host }}"
     openstack_resources_deploy_python_interpreter: "{{ octavia_resources_deploy_python_interpreter }}"
     openstack_resources_image: "{{ (octavia_download_artefact | bool) | ternary({'images': octavia_amp_image_resource}, {}) }}"
-    openstack_resources_identity:
-      quotas:
-        - name: "{{ octavia_service_project_name }}"
-          cores: "{{ octavia_num_cores }}"
-          gigabytes: "{{ octavia_cinder_enabled | ternary(octavia_gigabytes, omit) }}"
-          instances: "{{ octavia_num_instances }}"
-          ram: "{{ octavia_ram }}"
-          server_groups: "{{ octavia_num_server_groups }}"
-          server_group_members: "{{ octavia_num_server_group_members }}"
-          security_group: "{{ octavia_num_secgroups }}"
-          security_group_rule: "{{ octavia_num_security_group_rules }}"
-          port: "{{ octavia_num_ports }}"
-          volumes: "{{ octavia_cinder_enabled | ternary(octavia_num_volumes, omit) }}"
     # Network Resources
     _octavia_networks:
       networks:

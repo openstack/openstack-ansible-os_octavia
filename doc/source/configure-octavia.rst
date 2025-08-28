@@ -34,6 +34,50 @@ OpenStack-Ansible deployment
 #. Run the haproxy-install.yml playbook to add the new octavia API endpoints
    to the load balancer.
 
+Define project quota for Amphora driver
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Amphora driver for Octavia is a default option on spawning Load Balancers
+with Octavia. The driver relies on OpenStack Nova/Neutron services to spawn
+VMs from a specialized image which serve as Load Balancers.
+
+These VMs are created in a ``service`` project by default, and tenants have
+no direct access to them.
+
+With that operator must ensure, that the ``service`` project
+has sufficient quotas defined to handle all tenant Load Balancers in it.
+
+The suggested way of doing that is through leveraging the
+``openstack.osa.openstack_resources`` playbook and defining following
+variables in ``user_variables.yml`` or ``group_vars/utility_all``:
+
+.. code-block:: yaml
+
+   # In case of `octavia_loadbalancer_topology` set to ACTIVE_STANDBY (default)
+   # each Load Balancer will create 2 VMs
+   _max_amphora_instances: 10000
+   openstack_user_identity:
+      quotas:
+        - name: "service"
+          # Default Amphora flavor is 1 Core, 1024MB RAM
+          cores: "{{ _max_amphora_instances }}"
+          ram: "{{ (_max_amphora_instances | int) * 1024 }}"
+          instances: "{{ _max_amphora_instances }}"
+          port: "{{ (_max_amphora_instances | int) * 10 }}"
+          server_groups: "{{ ((_max_amphora_instances | int) * 0.5) | int | abs }}"
+          server_group_members: 50
+          # A security group is created per Load Balancer listener
+          security_group: "{{ (_max_amphora_instances | int) * 1.5 | int | abs }}"
+          security_group_rule: "{{ ((_max_amphora_instances | int) * 1.5 | int | abs) * 100 }}"
+          # If `octavia_cinder_enabled: true` also define these
+          volumes: "{{ _max_amphora_instances }}"
+          # Volume size is defined with `octavia_cinder_volume_size` with default of 20
+          gigabytes: "{{ (_max_amphora_instances | int) * 20 }}"
+
+These values will be applied on running ``openstack-ansible openstack.osa.openstack_resources``,
+or as part of ``openstack.osa.setup_openstack`` playbook.
+
+
 Setup a neutron network for use by octavia
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
