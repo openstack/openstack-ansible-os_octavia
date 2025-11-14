@@ -255,12 +255,5 @@
   tags:
     - octavia-install
 
-- name: Importing octavia_policy tasks
-  ansible.builtin.import_tasks: octavia_policy.yml
-  tags:
-    - octavia-install
-    - octavia-config
-    - octavia-policy-override
-
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers

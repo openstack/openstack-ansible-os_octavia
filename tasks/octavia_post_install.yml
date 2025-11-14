@@ -148,3 +148,16 @@
   notify:
     - Restart octavia services
     - Restart uwsgi services
+
+- name: Implement policy.yaml file
+  openstack.config_template.config_template:
+    dest: /etc/octavia/policy.yaml
+    owner: "{{ octavia_system_user_name }}"
+    group: "{{ octavia_system_group_name }}"
+    mode: "0640"
+    content: "{{ octavia_policy_overrides }}"
+    config_type: "yaml"
+  when:
+    - octavia_services['octavia-api']['group'] in group_names
+  tags:
+    - octavia-policy-override
