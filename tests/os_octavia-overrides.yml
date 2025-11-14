@@ -12,7 +12,6 @@
 # limitations under the License.
 
 test_octavia_amphora: True
-octavia_legacy_policy: True
 
 octavia_amp_active_retries: 20
 

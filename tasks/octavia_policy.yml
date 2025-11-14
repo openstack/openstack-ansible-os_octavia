@@ -19,10 +19,10 @@
     owner: "{{ octavia_system_user_name }}"
     group: "{{ octavia_system_group_name }}"
     mode: "0640"
-    content: "{{ (octavia_legacy_policy | bool) | ternary(_octavia_legacy_policies, {}) | combine(octavia_policy_overrides) }}"
+    content: "{{ octavia_policy_overrides }}"
     config_type: "yaml"
   when:
-    - (octavia_policy_overrides | length > 0) or (octavia_legacy_policy | bool)
+    - (octavia_policy_overrides | length > 0)
 
 - name: Remove legacy policy.yaml file
   ansible.builtin.file:
@@ -30,4 +30,3 @@
     state: absent
   when:
     - octavia_policy_overrides | length == 0
-    - not octavia_legacy_policy | bool
