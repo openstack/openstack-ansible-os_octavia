@@ -33,21 +33,21 @@ galera_all
 memcached_all
 
 [octavia_all:children]
-octavia-api
-octavia-worker
-octavia-housekeeping
-octavia-health-manager
+octavia_api
+octavia_worker
+octavia_housekeeping
+octavia_health_manager
 
-[octavia-api]
+[octavia_api]
 octavia1
 
-[octavia-worker]
+[octavia_worker]
 octavia1
 
-[octavia-housekeeping]
+[octavia_housekeeping]
 octavia1
 
-[octavia-health-manager]
+[octavia_health_manager]
 octavia1
 
 [keystone_all]
