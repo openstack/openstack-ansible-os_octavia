@@ -377,7 +377,7 @@ octavia_amp_availability_zone: nova
 #    dest: "/etc/octavia/templates/haproxy.cfg.j2"
 #  - src: "/etc/openstack_deploy/octavia/haproxy_templates/macros.cfg.j2"
 #    dest: "/etc/octavia/templates/macros.cfg.j2"
-octavia_user_haproxy_templates: {}
+octavia_user_haproxy_templates: []
 # Path of custom haproxy template file
 # octavia_haproxy_amphora_template: /etc/octavia/templates/haproxy.cfg.j2
 
