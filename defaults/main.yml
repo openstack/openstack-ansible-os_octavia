@@ -299,7 +299,7 @@ octavia_amp_image_owner_id:
 # Note: The default is the Octavia test image so don't use that in prod
 octavia_download_artefact: true
 # The URL to download from
-octavia_artefact_url: http://tarballs.openstack.org/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-noble.qcow2
+octavia_artefact_url: https://tarballs.opendev.org/openstack/octavia/test-images/test-only-amphora-x64-haproxy-ubuntu-noble.qcow2
 # Set the directory where the downloaded image will be stored
 # on the octavia_service_setup_host host. If the host is localhost,
 # then the user running the playbook must have access to it.
@@ -491,11 +491,11 @@ octavia_uwsgi_tls:
 octavia_enabled_provider_agents:
   - "{{ (octavia_ovn_enabled | bool) | ternary('ovn', None) }}"
 
+# Default - Amphora v2
 octavia_enabled_provider_drivers:
   - "amphora:'The Octavia Amphora driver.'"
-  - "amphorav2:'The Octavia Amphora v2 driver.'"
   - "{{ (octavia_ovn_enabled | bool) | ternary(\"ovn:'The Octavia OVN provider driver.'\", False) }}"
-octavia_default_provider_driver: "amphorav2"
+octavia_default_provider_driver: "amphora"
 octavia_amphora_driver: amphora_haproxy_rest_driver
 octavia_compute_driver: compute_nova_driver
 octavia_network_driver: allowed_address_pairs_driver
