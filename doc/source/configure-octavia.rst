@@ -90,6 +90,14 @@ variables in ``user_variables.yml`` or ``group_vars/utility_all``:
 These values will be applied on running ``openstack-ansible openstack.osa.openstack_resources``,
 or as part of ``openstack.osa.setup_openstack`` playbook.
 
+.. warning::
+
+   Octavia uses ``ACTIVE_STANDBY`` topology by default
+   (``octavia_loadbalancer_topology``) and enables amphora
+   anti-affinity (``octavia_enable_anti_affinity: true``).
+   Deployments with only one compute host will fail to create
+   load balancers.
+
 Setup a neutron network for use by Octavia
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -372,12 +380,5 @@ enable access.
 Optional: Tuning Octavia for production use
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Please have a close look at the ``main.yml`` for tunable parameters.
-The most important change is to set Octavia into ACTIVE_STANDBY mode
-by adding ``octavia_loadbalancer_topology: ACTIVE_STANDBY`` and
-``octavia_enable_anti_affinity=True`` to ensure that the active and passive
-amphora are (depending on the anti-affinity filter deployed in nova)  on two
-different hosts to the user file in /etc/openstack-deploy
-
-Also we suggest setting more specific ``octavia_cert_dir`` to prevent
+We suggest setting more specific ``octavia_cert_dir`` to prevent
 accidental certificate rotation.
