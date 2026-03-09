@@ -185,6 +185,14 @@ region_name = {{ keystone_service_region }}
 endpoint_type = {{ octavia_clients_endpoint }}
 
 [neutron]
+insecure = {{ keystone_service_internaluri_insecure | bool }}
+auth_type = {{ octavia_keystone_auth_plugin }}
+auth_url = {{ keystone_service_internaluri }}
+project_domain_name = {{ octavia_service_project_domain_id }}
+user_domain_name = {{ octavia_service_user_domain_id }}
+project_name = {{ octavia_service_project_name }}
+username = {{ octavia_service_user_name }}
+password = {{ octavia_service_password }}
 region_name = {{ keystone_service_region }}
 valid_interfaces = {{ octavia_clients_endpoint }}
 
