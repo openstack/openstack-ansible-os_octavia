@@ -1,10 +1,10 @@
-=========================================================
-Configuring the Octavia Load Balancing service (optional)
-=========================================================
+==============================================
+Configuring the Octavia Load Balancing service
+==============================================
 
 Octavia is an OpenStack project which provides operator-grade Load Balancing
 (as opposed to the namespace driver) by deploying each individual load
-balancer to its own virtual machine and leveraging haproxy to perform the
+balancer to its own instance and leveraging HAProxy to perform the
 load balancing.
 
 Octavia is scalable and has built-in high availability through active-passive.
@@ -13,39 +13,52 @@ OpenStack-Ansible deployment
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #. Create ``br-lbaas`` bridge on the controllers. Creating br-lbaas is done during
-   the deployers host preparation and is out of scope of openstack-ansible.
+   the deployers host preparation and is out of scope of OpenStack-Ansible.
    Some explanation of how br-lbaas is used is given below.
-#. Create the openstack-ansible container(s) for Octavia. To do that you need
+
+#. Create the OpenStack-Ansible container(s) for Octavia. To do that you need
    to define hosts for ``octavia-infra_hosts`` group in
    ``openstack_user_config.yml``. Once you do this, run the following playbook:
 
-   .. code-block:: yaml
+   .. code-block:: console
 
-      openstack-ansible playbooks/containers-lxc-create.yml --limit lxc_hosts,octavia_all
+      # openstack-ansible openstack.osa.containers_lxc_create --limit octavia_all,octavia-infra_hosts
 
 #. Define required overrides of the variables in defaults/main.yml of the
-   openstack-ansible octavia role.
-#. Run the os-octavia playbook
+   OpenStack-Ansible Octavia role.
 
-   .. code-block:: yaml
+#. Run the OpenStack-Ansible Octavia playbook:
 
-      openstack-ansible playbooks/os-octavia-install.yml
+   .. code-block:: console
 
-#. Run the haproxy-install.yml playbook to add the new octavia API endpoints
-   to the load balancer.
+      # openstack-ansible openstack.osa.octavia
+
+#. Run the HAProxy playbook to add the new Octavia API endpoints to the
+   load balancer.
+
+   .. code-block:: console
+
+      # openstack-ansible openstack.osa.haproxy --tags haproxy-service-config
+
+#. In order to enable Octavia dashboard panel in your Horizon dashboard, run
+   Horizon playbook:
+
+   .. code-block:: console
+
+      # openstack-ansible openstack.osa.horizon
 
 Define project quota for Amphora driver
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Amphora driver for Octavia is a default option on spawning Load Balancers
 with Octavia. The driver relies on OpenStack Nova/Neutron services to spawn
-VMs from a specialized image which serve as Load Balancers.
+instances from a specialized image which serve as Load Balancers.
 
-These VMs are created in a ``service`` project by default, and tenants have
+These instances are created in a ``service`` project by default, and projects have
 no direct access to them.
 
 With that operator must ensure, that the ``service`` project
-has sufficient quotas defined to handle all tenant Load Balancers in it.
+has sufficient quotas defined to handle all projects Load Balancers in it.
 
 The suggested way of doing that is through leveraging the
 ``openstack.osa.openstack_resources`` playbook and defining following
@@ -54,7 +67,7 @@ variables in ``user_variables.yml`` or ``group_vars/utility_all``:
 .. code-block:: yaml
 
    # In case of `octavia_loadbalancer_topology` set to ACTIVE_STANDBY (default)
-   # each Load Balancer will create 2 VMs
+   # each Load Balancer will create 2 instances
    _max_amphora_instances: 10000
    openstack_user_identity:
       quotas:
@@ -77,15 +90,14 @@ variables in ``user_variables.yml`` or ``group_vars/utility_all``:
 These values will be applied on running ``openstack-ansible openstack.osa.openstack_resources``,
 or as part of ``openstack.osa.setup_openstack`` playbook.
 
-
-Setup a neutron network for use by octavia
+Setup a neutron network for use by Octavia
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Octavia needs connectivity between the control plane and the
-load balancing VMs. For this purpose a provider network should be
+load balancing instances. For this purpose a provider network should be
 created which gives L2 connectivity between the octavia services
 on the controllers (either containerised or deployed on metal)
-and the octavia amphora VMs. Refer to the appropriate documentation
+and the Octavia amphora instances. Refer to the appropriate documentation
 for the octavia service and consult the tests in this project
 for a working example.
 
@@ -94,7 +106,7 @@ Special attention needs to be applied to the provider network
 those assigned to hosts, lxc containers or other infrastructure such
 as routers or firewalls which may be in use.
 
-An example which gives 172.29.232.0-9/22 to the OSA dynamic inventory
+An example which gives ``172.29.232.0-9/22`` to the OSA dynamic inventory
 and the remainder of the addresses to the neutron allocation pool
 without overlap is as follows:
 
@@ -114,12 +126,12 @@ And define in ``user_variables.yml``:
 
 .. code-block:: yaml
 
-   #the range of addresses which neutron can allocate for amphora VM
+   #the range of addresses which neutron can allocate for amphora instances
    octavia_management_net_subnet_allocation_pools: "172.29.232.10-172.29.235.200"
 
 .. note::
     The system will deploy an iptables firewall if ``octavia_ip_tables_fw`` is set
-    to ``True`` (the default). This adds additional protection to the control plane
+    to ``true`` (the default). This adds additional protection to the control plane
     in the rare instance a load balancing vm is compromised. Please review carefully
     the rules and adjust them for your installation. Please be aware that logging
     of dropped packages is not enabled and you will need to add those rules manually.
@@ -143,10 +155,13 @@ shown below:
         type: "flat"
         net_name: "octavia"
         group_binds:
-          - neutron_linuxbridge_agent
           - octavia-worker
           - octavia-housekeeping
           - octavia-health-manager
+          # in case of OVN
+          - neutron_ovn_gateway
+          # in case of OVS
+          - neutron_openvswitch_agent
 
 
 There are a couple of variables which need to be adjusted if you don't use
@@ -155,12 +170,11 @@ name. Furthermore, the system tries to infer certain values based on the
 inventory which might not always work and hence might need to be explicitly
 declared. Review the file ``defaults/main.yml`` for more information.
 
-The octavia ansible role can create the required neutron networks itself.
+The Octavia Ansible role can create the required neutron networks itself.
 Please review the corresponding settings - especially
 ``octavia_management_net_subnet_cidr`` should be adjusted to suit your
-environment. Alternatively, the neutron network  can be pre-created elsewhere
+environment. Alternatively, the neutron network can be pre-created elsewhere
 and consumed by Octavia.
-
 
 VLAN networking scenario
 ------------------------
@@ -179,10 +193,13 @@ look like this:
         type: "raw"
         net_name: lbaas
         group_binds:
-          - neutron_linuxbridge_agent
           - octavia-worker
           - octavia-housekeeping
           - octavia-health-manager
+          # in case of OVN
+          - neutron_ovn_gateway
+          # in case of OVS
+          - neutron_openvswitch_agent
 
 Add extend ``user_variables.yml`` with following overrides:
 
@@ -218,7 +235,7 @@ For this process, use one of the physical hosts within the environment.
 
    .. code-block:: bash
 
-      apt-get install qemu uuid-runtime curl kpartx git jq python3-pip
+      apt-get install qemu-system uuid-runtime curl kpartx git jq python3-pip
       pip3 install virtualenv
 
       virtualenv -p /usr/bin/python3 /opt/octavia-image-build
@@ -228,10 +245,10 @@ For this process, use one of the physical hosts within the environment.
 
    .. code-block:: bash
 
-     git clone https://opendev.org/openstack/octavia.git
+     # git clone https://opendev.org/openstack/octavia
 
-     /opt/octavia-image-build/bin/pip install --isolated \
-       git+https://git.openstack.org/openstack/diskimage-builder.git
+       /opt/octavia-image-build/bin/pip install --isolated \
+       git+https://opendev.org/openstack/diskimage-builder
 
 #. Run Octavia's diskimage script
 
@@ -247,7 +264,6 @@ For this process, use one of the physical hosts within the environment.
 
       deactivate
 
-
 #. Upload the created user images into the Image (glance) Service:
 
    .. code-block:: bash
@@ -261,43 +277,66 @@ For this process, use one of the physical hosts within the environment.
         ansible with an appropriate tag.
 
 You can find more information about the diskimage script and the process at
-https://opendev.org/openstack/octavia/tree/master/diskimage-create
+https://opendev.org/openstack/octavia/src/branch/master/diskimage-create
 
 Here is a script to perform all those tasks at once:
 
-   .. code-block:: bash
+    .. code-block:: shell-session
 
-          #/bin/sh
+        #!/usr/bin/env bash
+        set -euo pipefail
 
-          apt-get install qemu uuid-runtime curl kpartx git jq
-          pip -v >/dev/null || {apt-get install python3-pip}
-          pip3 install virtualenv
-          virtualenv -p /usr/bin/python3 /opt/octavia-image-build || exit 1
-          source /opt/octavia-image-build/bin/activate
+        VENV_DIR="/opt/octavia-image-build"
+        WORK_DIR="/tmp"
+        OCTAVIA_REPO="${WORK_DIR}/octavia"
+        OUTPUT_IMAGE="amphora-x64-haproxy.qcow2"
 
-          pushd /tmp
-          git clone https://opendev.org/openstack/octavia.git
-          /opt/octavia-image-build/bin/pip install --isolated \
-           git+https://git.openstack.org/openstack/diskimage-builder.git
+        echo "Installing required packages..."
+        apt-get update
+        apt-get install -y \
+            qemu-system \
+            uuid-runtime \
+            curl \
+            kpartx \
+            git \
+            jq \
+            python3-pip \
+            python3-virtualenv \
+            debootstrap
 
-          pushd octavia/diskimage-create
-          ./diskimage-create.sh
-          mv amphora-x64-haproxy.qcow2 /tmp
-          deactivate
+        echo "Creating Python virtual environment..."
+        virtualenv -p /usr/bin/python3 "${VENV_DIR}"
 
-          popd
-          popd
+        source "${VENV_DIR}/bin/activate"
 
-          # upload image
-          openstack image delete amphora-x64-haproxy
-          openstack image create --disk-format qcow2 \
-            --container-format bare --tag octavia-amphora-image --file /tmp/amphora-x64-haproxy.qcow2 \
-            --private --project service amphora-x64-haproxy
+        echo "Cloning Octavia repository..."
+        cd "${WORK_DIR}"
+        rm -rf "${OCTAVIA_REPO}"
+        git clone https://opendev.org/openstack/octavia "${OCTAVIA_REPO}"
 
-.. note::
-    If you have trouble installing dib-utils from pipy consider
-    installing it directly from source
-    `pip install git+https://opendev.org/openstack/dib-utils.git`
+        echo "Installing diskimage-builder..."
+        "${VENV_DIR}/bin/pip" install --isolated \
+            git+https://opendev.org/openstack/diskimage-builder
+
+        echo "Building Amphora image..."
+        cd "${OCTAVIA_REPO}/diskimage-create"
+        ./diskimage-create.sh
+
+        echo "Moving output image to ${WORK_DIR}..."
+        mv "${OUTPUT_IMAGE}" "${WORK_DIR}/"
+
+        deactivate
+
+        echo "Done. Image available at: ${WORK_DIR}/${OUTPUT_IMAGE}"
+
+And upload image:
+
+     .. code-block:: shell-session
+
+        openstack image delete amphora-x64-haproxy
+        openstack image create --disk-format qcow2 \
+          --container-format bare --tag octavia-amphora-image --file /tmp/amphora-x64-haproxy.qcow2 \
+          --private --project service amphora-x64-haproxy
 
 Creating the cryptographic certificates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
