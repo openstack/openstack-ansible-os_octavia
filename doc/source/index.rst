@@ -8,13 +8,10 @@ OpenStack-Ansible role for the Octavia Load Balancing Service
    configure-octavia.rst
 
 This is an OpenStack-Ansible role to deploy the Octavia Load Balancing
-service. See the `role-octavia spec`_ for more information.
-
-.. _role-octavia spec: TBD
-
+service.
 
 To clone or view the source code for this repository, visit the role repository
-for `os_octavia <https://github.com/openstack/openstack-ansible-os_octavia>`_.
+for `os_octavia <https://opendev.org/openstack/openstack-ansible-os_octavia>`_.
 
 Default variables
 ~~~~~~~~~~~~~~~~~
@@ -23,18 +20,11 @@ Default variables
    :language: yaml
    :start-after: under the License.
 
-
-Dependencies
-~~~~~~~~~~~~
-
-This role needs pip >= 7.1 installed on the target host.
-
 Example playbook
 ~~~~~~~~~~~~~~~~
 
 .. literalinclude:: ../../examples/playbook.yml
    :language: yaml
-
 
 Tags
 ====
