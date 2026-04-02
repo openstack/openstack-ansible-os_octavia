@@ -91,7 +91,8 @@ octavia_galera_port: "{{ galera_port | default('3306') }}"
 # NOTE: Only Zookeeper and Redis are supported for Octavia
 octavia_coordination_driver: "{{ coordination_driver | default('zookeeper') }}"
 octavia_coordination_group: "{{ coordination_host_group | default('zookeeper_all') }}"
-octavia_coordination_enable: "{{ octavia_coordination_group in groups and groups[octavia_coordination_group] | length > 0 }}"
+# octavia_coordination_enable: "{{ octavia_coordination_group in groups and groups[octavia_coordination_group] | length > 0 }}"
+octavia_coordination_enable: false  # Temporarily disabled due to ZooKeeper/Kazoo instability; re-enable after issue is resolved
 octavia_coordination_namespace: octavia_jobboard
 octavia_coordination_client_ssl: "{{ coordination_client_ssl | default(False) }}"
 octavia_coordination_verify_cert: "{{ coordination_verify_cert | default(True) }}"
