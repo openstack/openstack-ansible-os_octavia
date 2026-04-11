@@ -163,14 +163,13 @@ shown below:
         type: "flat"
         net_name: "octavia"
         group_binds:
-          - octavia-worker
-          - octavia-housekeeping
-          - octavia-health-manager
+          - octavia_worker
+          - octavia_housekeeping
+          - octavia_health_manager
           # in case of OVN
           - neutron_ovn_gateway
           # in case of OVS
           - neutron_openvswitch_agent
-
 
 There are a couple of variables which need to be adjusted if you don't use
 ``lbaas`` for the provider network name and ``lbaas-mgmt`` for the neutron
@@ -201,9 +200,9 @@ look like this:
         type: "raw"
         net_name: lbaas
         group_binds:
-          - octavia-worker
-          - octavia-housekeeping
-          - octavia-health-manager
+          - octavia_worker
+          - octavia_housekeeping
+          - octavia_health_manager
           # in case of OVN
           - neutron_ovn_gateway
           # in case of OVS

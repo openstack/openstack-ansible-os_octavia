@@ -237,7 +237,7 @@ octavia_driver_agent_init_overrides:
 ## Service Name-Group Mapping
 octavia_services:
   octavia-api:
-    group: octavia-api
+    group: octavia_api
     service_name: octavia-api
     start_order: 4
     init_config_overrides: "{{ octavia_api_init_overrides }}"
@@ -248,28 +248,28 @@ octavia_services:
     uwsgi_bind_address: "{{ octavia_uwsgi_bind_address }}"
     uwsgi_tls: "{{ octavia_backend_ssl | ternary(octavia_uwsgi_tls, {}) }}"
   octavia-worker:
-    group: octavia-worker
+    group: octavia_worker
     service_name: octavia-worker
     start_order: 1
     init_config_overrides: "{{ octavia_worker_init_overrides }}"
     execstarts: "{{ octavia_bin }}/octavia-worker"
     execreloads: "/bin/kill -HUP $MAINPID"
   octavia-housekeeping:
-    group: octavia-housekeeping
+    group: octavia_housekeeping
     service_name: octavia-housekeeping
     start_order: 3
     init_config_overrides: "{{ octavia_housekeeping_init_overrides }}"
     execstarts: "{{ octavia_bin }}/octavia-housekeeping"
     execreloads: "/bin/kill -HUP $MAINPID"
   octavia-health-manager:
-    group: octavia-health-manager
+    group: octavia_health_manager
     service_name: octavia-health-manager
     start_order: 2
     init_config_overrides: "{{ octavia_health_manager_init_overrides }}"
     execstarts: "{{ octavia_bin }}/octavia-health-manager"
     execreloads: "/bin/kill -HUP $MAINPID"
   octavia-driver-agent:
-    group: octavia-api
+    group: octavia_api
     service_name: octavia-driver-agent
     service_en: "{{ octavia_ovn_enabled }}"
     start_order: 5
@@ -377,7 +377,7 @@ octavia_amp_availability_zone: nova
 #    dest: "/etc/octavia/templates/haproxy.cfg.j2"
 #  - src: "/etc/openstack_deploy/octavia/haproxy_templates/macros.cfg.j2"
 #    dest: "/etc/octavia/templates/macros.cfg.j2"
-octavia_user_haproxy_templates: {}
+octavia_user_haproxy_templates: []
 # Path of custom haproxy template file
 # octavia_haproxy_amphora_template: /etc/octavia/templates/haproxy.cfg.j2
 
@@ -407,7 +407,7 @@ octavia_provider_network: >-
   }}
 # The name of the network address pool
 octavia_container_network_name: "{{ octavia_provider_network['ip_from_q'] }}_address"
-octavia_hm_group: "octavia-health-manager"
+octavia_hm_group: "octavia_health_manager"
 # Note: We use some heuristics here but if you do anything special make sure to use the
 # ip addresses on the right network. This will use the container networking to figure out the ip
 octavia_hm_hosts: >-
