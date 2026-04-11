@@ -6,6 +6,7 @@ OpenStack-Ansible role for the Octavia Load Balancing Service
    :maxdepth: 2
 
    configure-octavia.rst
+   troubleshoot-octavia.rst
 
 This is an OpenStack-Ansible role to deploy the Octavia Load Balancing
 service.
