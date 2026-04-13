@@ -105,9 +105,6 @@ openstack1
 [nova_api_placement]
 openstack1
 
-[nova_cert]
-openstack1
-
 [nova_compute]
 compute1
 
@@ -124,7 +121,6 @@ openstack1
 nova_api_metadata
 nova_api_os_compute
 nova_api_placement
-nova_cert
 nova_compute
 nova_conductor
 nova_console
