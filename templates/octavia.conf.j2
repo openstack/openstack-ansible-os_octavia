@@ -68,7 +68,6 @@ project_name = {{ octavia_service_project_name }}
 username = {{ octavia_service_user_name }}
 password = {{ octavia_service_password }}
 region_name = {{ keystone_service_region }}
-auth_type = password
 endpoint_type = {{ octavia_clients_endpoint }}
 memcached_servers = {{ octavia_memcached_servers }}
 token_cache_time = 300
@@ -147,25 +146,15 @@ jobboard_redis_backend_ssl_options = ssl:{{ octavia_coordination_client_ssl | bo
 
 [service_auth]
 insecure = {{ keystone_service_internaluri_insecure | bool }}
-auth_plugin = {{ octavia_keystone_auth_plugin }}
+auth_type = {{ octavia_keystone_auth_plugin }}
 auth_url = {{ keystone_service_internaluri }}/v3
-www_authenticate_uri = {{ keystone_service_internaluri }}/v3
-auth_version = 3
 project_domain_name = {{ octavia_service_project_domain_id }}
 user_domain_name = {{ octavia_service_user_domain_id }}
 project_name = {{ octavia_service_project_name }}
 username = {{ octavia_service_user_name }}
 password = {{ octavia_service_password }}
 region_name = {{ keystone_service_region }}
-auth_type = password
-memcached_servers = {{ octavia_memcached_servers }}
 valid_interfaces = {{ octavia_clients_endpoint }}
-token_cache_time = 300
-
-# if your memcached server is shared, use these settings to avoid cache poisoning
-memcache_security_strategy = ENCRYPT
-memcache_secret_key = {{ memcached_encryption_key }}
-
 
 [octavia]
 region_name = {{ keystone_service_region }}
