@@ -222,6 +222,33 @@ links neutron-managed br-vlan with br-lbaas on the controller nodes (for the cas
 when br-vlan already exists on the controllers when they also host the neutron
 L3 agent). Making veth pairs or macvlans for this might be suitable.
 
+Configuring Cinder storage for Amphora instances
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It is recommended to use Cinder volumes for Amphora instances storage rather
+than ephemeral (compute-local) disk.
+
+To enable Cinder volumes for Amphora instances, set the following in
+``user_variables.yml``:
+
+.. code-block:: yaml
+
+   # enable Cinder volumes for Amphora instances (recommended for production)
+   octavia_cinder_enabled: true
+
+   # size of the Cinder volume in gigabytes (default: 20)
+   octavia_cinder_volume_size: 20
+
+   # Cinder volume type to use for Amphora volumes
+   octavia_cinder_volume_type: "your-volume-type"
+
+.. note::
+
+   When ``octavia_cinder_enabled`` is set to ``true``, ensure that the
+   ``service`` project has sufficient Cinder quota defined. The required
+   ``volumes`` and ``gigabytes`` quota entries are shown in the quota
+   example under `Define project quota for Amphora driver`_.
+
 Building Octavia images
 ~~~~~~~~~~~~~~~~~~~~~~~
 
