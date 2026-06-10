@@ -29,11 +29,10 @@
   failed_when: false
   when: ansible_facts['os_family'] == 'Debian'
 
-- name: Save iptables rules (CentOS)
+- name: Save iptables rules (RHEL)
   ansible.builtin.shell: iptables-save > /etc/sysconfig/iptables
   changed_when: false
-  when:
-    - ansible_facts['distribution'] == 'CentOS'
+  when: ansible_facts['os_family'] == 'RedHat'
 
 - name: Copy user provided HAProxy templates
   ansible.builtin.copy:
