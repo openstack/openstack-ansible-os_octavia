@@ -25,6 +25,10 @@
     check:
       jobs:
         - openstack-ansible-deploy-aio_lxc_ovnprovider-ubuntu-noble
+        - openstack-ansible-deploy-aio_distro_metal-ubuntu-resolute:
+            voting: false
     gate:
       jobs:
         - openstack-ansible-deploy-aio_lxc_ovnprovider-ubuntu-noble
+        - openstack-ansible-deploy-aio_distro_metal-ubuntu-resolute:
+            voting: false
