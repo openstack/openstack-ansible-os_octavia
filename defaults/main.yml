@@ -359,6 +359,8 @@ octavia_amp_disk: "{{ octavia_cinder_enabled | ternary(0, 20) }}"
 # only increase when it's a really busy system since this is by deployed host,
 # e.g. 3 hosts, 5 workers (this param) per host, results in 15 worker total
 octavia_task_flow_max_workers: 5
+octavia_healthmanager_failover_threads: "{{ octavia_wsgi_processes }}"
+octavia_housekeeper_cert_rotate_threads: "{{ octavia_wsgi_processes }}"
 
 # Enable provisioning status sync with neutron db
 octavia_sync_provisioning_status: false

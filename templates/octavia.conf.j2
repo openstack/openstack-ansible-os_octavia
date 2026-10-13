@@ -57,7 +57,7 @@ bind_ip = 0.0.0.0
 bind_port = {{ octavia_health_manager_port }}
 # controller_ip_port_list example: 127.0.0.1:5555, 127.0.0.1:5555
 controller_ip_port_list = {% for host in octavia_hm_hosts.split(',') %}{{ host }}:{{ octavia_health_manager_port }}{% if not loop.last %},{% endif %}{% endfor %}
-
+failover_threads = {{ octavia_healthmanager_failover_threads }}
 heartbeat_key = {{ octavia_health_hmac_key }}
 
 # Enable provisioning status sync with neutron db
@@ -131,6 +131,8 @@ volume_driver = volume_noop_driver
 
 loadbalancer_topology = {{ octavia_loadbalancer_topology }}
 
+[house_keeping]
+cert_rotate_threads = {{ octavia_housekeeper_cert_rotate_threads }}
 
 [task_flow]
 max_workers = {{ octavia_task_flow_max_workers }}
