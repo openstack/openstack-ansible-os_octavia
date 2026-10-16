@@ -1,0 +1,5 @@
+---
+features:
+  - |
+    The ``octavia_amp_availability_zone`` variable now defaults to
+    ``openstack_default_availability_zone``, which is ``nova``.
