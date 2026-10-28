@@ -249,6 +249,44 @@ To enable Cinder volumes for Amphora instances, set the following in
    ``volumes`` and ``gigabytes`` quota entries are shown in the quota
    example under `Define project quota for Amphora driver`_.
 
+Optional: Creating Octavia flavors and availability zones
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The role creates a **Nova** flavor for the amphora instances
+(``octavia_amp_flavor_name``) and uses it as the default for all load
+balancers. The ``Flavor`` and ``Availability Zone`` fields in Horizon (and the
+``--flavor`` and ``--availability-zone`` options of
+``openstack loadbalancer create``) are optional and list **Octavia** flavors
+and availability zones, not the Nova ones. These are stored in the Octavia
+database and are not created by the role, so the fields stay empty until an
+operator defines them.
+
+Each one consists of a profile and a flavor or availability zone referencing
+it. Run the following as an admin user, for example from the utility container:
+
+.. code-block:: shell
+
+   # Flavor, based on the Nova flavor created by the role
+   openstack loadbalancer flavorprofile create --name amphora-single \
+     --provider amphora \
+     --flavor-data '{"loadbalancer_topology": "SINGLE", "compute_flavor": "<nova_flavor_id>"}'
+   openstack loadbalancer flavor create --name amphora-single \
+     --flavorprofile amphora-single --enable
+
+   # Availability zone
+   openstack loadbalancer availabilityzoneprofile create --name az-example \
+     --provider amphora \
+     --availability-zone-data '{"compute_zone": "nova", "volume_zone": "nova"}'
+   openstack loadbalancer availabilityzone create --name az-example \
+     --availabilityzoneprofile az-example --enable
+
+Supported keys for the ``amphora`` provider:
+
+* Flavor profile: ``loadbalancer_topology``, ``compute_flavor``,
+  ``amp_image_tag``, ``sriov_vip``, ``allow_member_sriov``.
+* Availability zone profile: ``compute_zone``, ``volume_zone``,
+  ``management_network``, ``valid_vip_networks``.
+
 Building Octavia images
 ~~~~~~~~~~~~~~~~~~~~~~~
 
