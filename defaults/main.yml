@@ -373,7 +373,7 @@ octavia_enable_anti_affinity: true
 # Some installations put hardware more suited for load balancing in special
 # availability zones. This allows to target a specific availability zone
 # for amphora creation
-octavia_amp_availability_zone: nova
+octavia_amp_availability_zone: "{{ openstack_default_availability_zone | default('nova', true) }}"
 
 # List of haproxy template files to copy from deployment host to octavia hosts
 # octavia_user_haproxy_templates:
